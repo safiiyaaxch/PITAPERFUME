@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Scentify - Welcome</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f7f2ef, #fdfcfa);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .welcome-card {
+            border: none;
+            border-radius: 18px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.08);
+            padding: 3rem;
+            max-width: 600px;
+        }
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        .btn-group-vertical {
+            gap: 1rem;
+        }
+        .btn-scentify {
+            background: linear-gradient(135deg, #c2a98d, #b49374);
+            border: none;
+            border-radius: 12px;
+            padding: 0.9rem 1.5rem;
+            font-weight: 500;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .btn-scentify:hover {
+            background: linear-gradient(135deg, #b49374, #a88363);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(194, 169, 141, 0.3);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="welcome-card">
+    <h1 class="welcome-title">Welcome to Scentify</h1>
+    <p class="welcome-subtitle">Your premium fragrance marketplace</p>
+    
+    <div class="btn-group-vertical d-flex">
+        <a href="/login" class="btn btn-scentify">Login to Your Account</a>
+        <a href="/signup" class="btn btn-scentify">Create New Account</a>
+    </div>
+    
+    <hr class="my-4">
+    
+    <div class="alert alert-info" role="alert">
+        <strong>Demo Credentials:</strong><br>
+        <small>
+            Supplier: <code>testsupplier</code> / <code>password123</code><br>
+            Customer: <code>testcustomer</code> / <code>password123</code><br>
+            Manager: <code>testmanager</code> / <code>password123</code>
+        </small>
+    </div>
+</div>
+
+<script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

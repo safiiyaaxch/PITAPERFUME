@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Product</title>
+    <link rel="stylesheet"
+          th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}">
+    <style>
+        .drag-drop-area {
+            border: 2px dashed #007bff;
+            border-radius: 5px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+        .drag-drop-area:hover {
+            background-color: #e7f3ff;
+            border-color: #0056b3;
+        }
+        .drag-drop-area.dragover {
+            background-color: #cfe2ff;
+            border-color: #0056b3;
+        }
+        .image-preview {
+            margin-top: 20px;
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .upload-status {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container mt-4">
+    <h2 class="mb-3">Add Product</h2>
+
+    <form id="addProductForm"
+          th:action="@{/supplier/products/add}"
+          th:object="${product}"
+          method="post" class="card card-body">
+
+        <div class="mb-3">
+            <label class="form-label">Product Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" th:field="*{productName}" required maxlength="100">
+            <div class="form-text">Required field</div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" th:field="*{description}" rows="3"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Category ID <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" th:field="*{categoryId}" required maxlength="3">
+        </div>
+
+        <!-- Drag-Drop Image Upload -->
+        <div class="mb-3">
+            <label class="form-label">Product Image <span class="text-danger">*</span></label>
+            <div class="drag-drop-area" id="dragDropArea">
+                <div id="uploadPrompt">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #007bff; margin-bottom: 10px;"></i>
+                    <p><strong>Drag and drop your image here</strong></p>
+                    <p class="text-muted">or click to select a file</p>
+                    <p class="text-muted small">Supported: JPG, PNG, GIF, WebP</p>
+                </div>
+                <div id="uploadStatus" class="upload-status" style="display: none;">
+                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <span id="uploadMessage">Uploading...</span>
+                </div>
+                <img id="imagePreview" class="image-preview" style="display: none;" alt="Preview">
+            </div>
+            <input type="file" id="fileInput" class="form-control" accept="image/*" style="display: none;">
+            <input type="hidden" id="imageUrlInput" th:field="*{prodimage}" required>
+            <div id="uploadError" class="alert alert-danger mt-2" style="display: none;"></div>
+            <div id="uploadSuccess" class="alert alert-success mt-2" style="display: none;"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Price (RM)</label>
+            <input type="number" class="form-control" th:field="*{price}" step="0.01" min="0">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Stock</label>
+            <input type="number" class="form-control" th:field="*{stock}" min="0">
+        </div>
+
+        <button type="submit" class="btn btn-success">Save Product</button>
+        <a th:href="@{/supplier/dashboard}" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+</div>
+
+<script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
+<script>
+    const dragDropArea = document.getElementById('dragDropArea');
+    const fileInput = document.getElementById('fileInput');
+    const imageUrlInput = document.getElementById('imageUrlInput');
+    const imagePreview = document.getElementById('imagePreview');
+    const uploadPrompt = document.getElementById('uploadPrompt');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const uploadError = document.getElementById('uploadError');
+    const uploadSuccess = document.getElementById('uploadSuccess');
+    const uploadMessage = document.getElementById('uploadMessage');
+
+    // Click to select file
+    dragDropArea.addEventListener('click', () => fileInput.click());
+
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            uploadFile(e.target.files[0]);
+        }
+    });
+
+    // Drag and drop
+    dragDropArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dragDropArea.classList.add('dragover');
+    });
+
+    dragDropArea.addEventListener('dragleave', () => {
+        dragDropArea.classList.remove('dragover');
+    });
+
+    dragDropArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dragDropArea.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            uploadFile(files[0]);
+        }
+    });
+
+    function uploadFile(file) {
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            showError('Only image files are allowed');
+            return;
+        }
+
+        // Show uploading status
+        uploadPrompt.style.display = 'none';
+        uploadStatus.style.display = 'block';
+        uploadError.style.display = 'none';
+        uploadSuccess.style.display = 'none';
+
+        // Create FormData
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // Upload file
+        fetch('/supplier/upload-image', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Upload failed');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Set hidden input value
+                imageUrlInput.value = data.imageUrl;
+                
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsArrayBuffer(file);
+                
+                // Show success
+                uploadStatus.style.display = 'none';
+                uploadSuccess.style.display = 'block';
+                uploadSuccess.textContent = 'Image uploaded successfully! (' + file.name + ')';
+            } else {
+                showError(data.error || 'Upload failed');
+            }
+        })
+        .catch(error => {
+            showError(error.message);
+        });
+    }
+
+    function showError(message) {
+        uploadStatus.style.display = 'none';
+        uploadPrompt.style.display = 'block';
+        uploadError.style.display = 'block';
+        uploadError.textContent = message;
+        uploadSuccess.style.display = 'none';
+    }
+
+    // Form submission validation
+    document.getElementById('addProductForm').addEventListener('submit', (e) => {
+        if (!imageUrlInput.value) {
+            e.preventDefault();
+            showError('Please upload a product image before saving');
+        }
+    });
+</script>
+</body>
+</html>

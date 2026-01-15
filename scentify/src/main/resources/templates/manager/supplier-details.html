@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Details - Scentify Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 24px;
+        }
+
+        .back-btn {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background: #5568d3;
+        }
+
+        .details-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .details-card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 22px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #333;
+            width: 30%;
+        }
+
+        .detail-value {
+            color: #666;
+            word-break: break-word;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-approve {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #229954;
+        }
+
+        .btn-reject {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #c0392b;
+        }
+
+        .document-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #667eea;
+        }
+
+        .document-link {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+
+        .document-link:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Supplier Details</h1>
+            <a href="/manager/dashboard" class="back-btn">← Back to Dashboard</a>
+        </div>
+
+        <div class="details-card">
+            <h2 th:text="${supplier.brandName}"></h2>
+
+            <div class="detail-item">
+                <span class="detail-label">Brand Name:</span>
+                <span class="detail-value" th:text="${supplier.brandName}"></span>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-label">Username:</span>
+                <span class="detail-value" th:text="${supplier.user.username}"></span>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-label">Email:</span>
+                <span class="detail-value" th:text="${supplier.user.email}"></span>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-label">Status:</span>
+                <span th:class="'status-badge status-' + ${supplier.approvalStatus.toLowerCase()}" 
+                      th:text="${supplier.approvalStatus.toUpperCase()}"></span>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-label">Applied Date:</span>
+                <span class="detail-value" th:text="${#temporals.format(supplier.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+            </div>
+
+            <div class="detail-item" th:if="${supplier.approvalDate != null}">
+                <span class="detail-label">Approval Date:</span>
+                <span class="detail-value" th:text="${#temporals.format(supplier.approvalDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+            </div>
+
+            <div class="document-section">
+                <h3 style="color: #667eea; margin-bottom: 10px;">📄 Business Documentation</h3>
+                <p th:if="${supplier.businessRegistration}" style="color: #666; font-size: 14px;">
+                    <strong>File:</strong> <span th:text="${supplier.businessRegistration}"></span>
+                </p>
+                <a th:if="${supplier.businessRegistration}" th:href="@{/uploads/business-docs/{file}(file=${supplier.businessRegistration})}" 
+                   class="document-link" target="_blank">📥 Download PDF</a>
+                <p th:if="!${supplier.businessRegistration}" style="color: #999; font-style: italic;">
+                    No business documentation provided
+                </p>
+            </div>
+
+            <div class="actions" th:if="${supplier.approvalStatus.toLowerCase() == 'pending'}">
+                <form th:action="@{/manager/approve/{id}(id=${supplier.supplierId})}" method="POST" style="flex: 1;">
+                    <button type="submit" class="btn btn-approve">✓ Approve Supplier</button>
+                </form>
+                <form th:action="@{/manager/reject/{id}(id=${supplier.supplierId})}" method="POST" style="flex: 1;">
+                    <button type="submit" class="btn btn-reject">✗ Reject Supplier</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
