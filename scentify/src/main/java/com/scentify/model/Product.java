@@ -17,7 +17,7 @@ public class Product {
     @Column(name = "productid", columnDefinition = "char(3)")
     private String productId;  
     
-    @Column(name = "userid", nullable = false)
+    @Column(name = "userId", nullable = false)
     private Integer userId; 
     
     @Column(name = "categoryid", length = 3, nullable = false)
@@ -37,6 +37,9 @@ public class Product {
     
     @Column(name = "stock")
     private Integer stock = 0;
+    
+    @Transient
+    private String supplierName;  // Transient field to store supplier name, not persisted in DB
     
     @Column(name = "approvalStatus", length = 20)
     private String approvalStatus = "pending";  // pending, approved, rejected

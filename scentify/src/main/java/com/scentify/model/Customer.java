@@ -43,6 +43,9 @@ public class Customer {
     @Column(name = "loyalty_points")
     private Integer loyaltyPoints = 0;
     
+    @Column(name = "is_member")
+    private Boolean isMember = false;  // false = non-member, true = member
+    
     @Column(name = "created_date")
     private LocalDateTime createdDate;
 

@@ -2,7 +2,11 @@ package com.scentify.controller;
 
 import com.scentify.model.Product;
 import com.scentify.model.User;
+import com.scentify.model.PromotionVoucher;
+import com.scentify.model.VoucherProduct;
 import com.scentify.repository.ProductRepository;
+import com.scentify.repository.PromotionVoucherRepository;
+import com.scentify.repository.VoucherProductRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +21,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/supplier")
@@ -25,6 +31,12 @@ public class SupplierController {
     
     @Autowired
     private ProductRepository productRepository;
+    
+    @Autowired
+    private PromotionVoucherRepository promotionVoucherRepository;
+    
+    @Autowired
+    private VoucherProductRepository voucherProductRepository;
     
     // ========== SESSION VALIDATION HELPER ==========
     private boolean isSupplierLoggedIn(HttpSession session) {
@@ -38,16 +50,39 @@ public class SupplierController {
     
     // ========== DASHBOARD ==========
     @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
+    public String mainDashboard(HttpSession session, Model model) {
+        if (!isSupplierLoggedIn(session)) {
+            return "redirect:/login";
+        }
+        
+        User loggedInUser = getLoggedInUser(session);
+        
+        // Get total products count
+        List<Product> allProducts = productRepository.findByUserId(loggedInUser.getUserId());
+        int totalProducts = allProducts.size();
+        
+        // Get total active vouchers count
+        List<PromotionVoucher> allVouchers = promotionVoucherRepository.findBySupplierIdAndIsActive(loggedInUser.getUserId(), true);
+        int totalVouchers = allVouchers.size();
+        
+        model.addAttribute("user", loggedInUser);
+        model.addAttribute("totalProducts", totalProducts);
+        model.addAttribute("totalVouchers", totalVouchers);
+        
+        return "supplier/main-dashboard";
+    }
+    
+    @GetMapping("/products")
+    public String productsDashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("loggedInUser");
-        System.out.println("========== SUPPLIER DASHBOARD ==========");
+        System.out.println("========== SUPPLIER PRODUCTS DASHBOARD ==========");
         System.out.println("Session user: " + user);
         if (user != null) {
             System.out.println("User ID: " + user.getUserId());
             System.out.println("User Role: " + user.getRole());
             System.out.println("Is supplier: " + "supplier".equalsIgnoreCase(user.getRole()));
         }
-        System.out.println("========================================");
+        System.out.println("===============================================");
         
         if (!isSupplierLoggedIn(session)) {
             System.out.println("Supplier not logged in, redirecting to login");
@@ -57,9 +92,18 @@ public class SupplierController {
         User loggedInUser = getLoggedInUser(session);
         List<Product> products = productRepository.findByUserId(loggedInUser.getUserId());
         System.out.println("Found " + products.size() + " products for user " + loggedInUser.getUserId());
+        
+        // Separate products by approval status
+        List<Product> pendingProducts = productRepository.findByUserIdAndApprovalStatus(loggedInUser.getUserId(), "pending");
+        List<Product> approvedProducts = productRepository.findByUserIdAndApprovalStatus(loggedInUser.getUserId(), "approved");
+        List<Product> rejectedProducts = productRepository.findByUserIdAndApprovalStatus(loggedInUser.getUserId(), "rejected");
+        
         model.addAttribute("products", products);
+        model.addAttribute("pendingProducts", pendingProducts);
+        model.addAttribute("approvedProducts", approvedProducts);
+        model.addAttribute("rejectedProducts", rejectedProducts);
         model.addAttribute("user", loggedInUser);  // Add user to model for template
-        return "supplier/dashboard";
+        return "supplier/manage-product/dashboard";
     }
     
     // ========== FILE UPLOAD ==========
@@ -111,7 +155,7 @@ public class SupplierController {
             return "redirect:/login";
         }
         model.addAttribute("product", new Product());
-        return "supplier/add-product";
+        return "supplier/manage-product/add-product";
     }
     
     @PostMapping("/products/add")
@@ -173,7 +217,7 @@ public class SupplierController {
         }
         
         model.addAttribute("product", productOpt.get());
-        return "supplier/edit-product";
+        return "supplier/manage-product/edit-product";
     }
     
     @PostMapping("/products/edit/{id}")
@@ -258,6 +302,200 @@ public class SupplierController {
         }
         
         model.addAttribute("product", productOpt.get());
-        return "supplier/view-product";
+        return "supplier/manage-product/view-product";
+    }
+    
+    // ========== VOUCHER MANAGEMENT ==========
+    @GetMapping("/vouchers")
+    public String vouchersDashboard(Model model, HttpSession session) {
+        if (!isSupplierLoggedIn(session)) {
+            return "redirect:/login";
+        }
+        
+        User user = getLoggedInUser(session);
+        List<PromotionVoucher> vouchers = promotionVoucherRepository.findBySupplierId(user.getUserId());
+        
+        // Calculate stats
+        int totalVouchers = vouchers.size();
+        int activeVouchers = (int) vouchers.stream().filter(v -> v.isValid()).count();
+        int totalRedemptions = (int) vouchers.stream().mapToInt(PromotionVoucher::getCurrentUsage).sum();
+        
+        model.addAttribute("vouchers", vouchers);
+        model.addAttribute("totalVouchers", totalVouchers);
+        model.addAttribute("activeVouchers", activeVouchers);
+        model.addAttribute("totalRedemptions", totalRedemptions);
+        
+        return "supplier/manage-voucher/vouchers-dashboard";
+    }
+    
+    @GetMapping("/vouchers/add")
+    public String addVoucherForm(Model model, HttpSession session) {
+        if (!isSupplierLoggedIn(session)) {
+            return "redirect:/login";
+        }
+        
+        model.addAttribute("voucher", new PromotionVoucher());
+        model.addAttribute("isEdit", false);
+        return "supplier/manage-voucher/add-voucher";
+    }
+    
+    @PostMapping("/vouchers/add")
+    public String addVoucher(@ModelAttribute PromotionVoucher voucher,
+                            RedirectAttributes redirectAttributes,
+                            HttpSession session) {
+        if (!isSupplierLoggedIn(session)) {
+            return "redirect:/login";
+        }
+        
+        User user = getLoggedInUser(session);
+        voucher.setSupplierId(user.getUserId());
+        
+        promotionVoucherRepository.save(voucher);
+        redirectAttributes.addFlashAttribute("message", "Voucher created successfully!");
+        
+        return "redirect:/supplier/vouchers";
+    }
+    
+    @GetMapping("/vouchers/{id}/edit")
+    public String editVoucherForm(@PathVariable Integer id,
+                                 Model model,
+                                 HttpSession session) {
+        if (!isSupplierLoggedIn(session)) {
+            return "redirect:/login";
+        }
+        
+        User user = getLoggedInUser(session);
+        Optional<PromotionVoucher> voucherOpt = promotionVoucherRepository.findById(id);
+        
+        if (voucherOpt.isEmpty() || !voucherOpt.get().getSupplierId().equals(user.getUserId())) {
+            return "redirect:/supplier/vouchers";
+        }
+        
+        model.addAttribute("voucher", voucherOpt.get());
+        model.addAttribute("isEdit", true);
+        return "supplier/manage-voucher/add-voucher";
+    }
+    
+    @PostMapping("/vouchers/{id}/edit")
+    public String editVoucher(@PathVariable Integer id,
+                             @ModelAttribute PromotionVoucher voucherDetails,
+                             RedirectAttributes redirectAttributes,
+                             HttpSession session) {
+        if (!isSupplierLoggedIn(session)) {
+            return "redirect:/login";
+        }
+        
+        User user = getLoggedInUser(session);
+        Optional<PromotionVoucher> voucherOpt = promotionVoucherRepository.findById(id);
+        
+        if (voucherOpt.isEmpty() || !voucherOpt.get().getSupplierId().equals(user.getUserId())) {
+            return "redirect:/supplier/vouchers";
+        }
+        
+        PromotionVoucher voucher = voucherOpt.get();
+        voucher.setVoucherCode(voucherDetails.getVoucherCode());
+        voucher.setDiscountType(voucherDetails.getDiscountType());
+        voucher.setDiscountValue(voucherDetails.getDiscountValue());
+        voucher.setMinPurchaseAmount(voucherDetails.getMinPurchaseAmount());
+        voucher.setStartDate(voucherDetails.getStartDate());
+        voucher.setEndDate(voucherDetails.getEndDate());
+        voucher.setMaxUsage(voucherDetails.getMaxUsage());
+        voucher.setIsActive(voucherDetails.getIsActive());
+        
+        promotionVoucherRepository.save(voucher);
+        redirectAttributes.addFlashAttribute("message", "Voucher updated successfully!");
+        
+        return "redirect:/supplier/vouchers";
+    }
+    
+    @GetMapping("/vouchers/{id}/products")
+    public String assignProductsForm(@PathVariable Integer id,
+                                    Model model,
+                                    HttpSession session) {
+        if (!isSupplierLoggedIn(session)) {
+            return "redirect:/login";
+        }
+        
+        User user = getLoggedInUser(session);
+        Optional<PromotionVoucher> voucherOpt = promotionVoucherRepository.findById(id);
+        
+        if (voucherOpt.isEmpty() || !voucherOpt.get().getSupplierId().equals(user.getUserId())) {
+            return "redirect:/supplier/vouchers";
+        }
+        
+        PromotionVoucher voucher = voucherOpt.get();
+        List<Product> supplierProducts = productRepository.findByUserId(user.getUserId());
+        List<VoucherProduct> assignedProducts = voucherProductRepository.findByPromotionVoucher_VoucherId(id);
+        
+        // Mark which products are assigned
+        Set<String> assignedProductIds = assignedProducts.stream()
+            .map(VoucherProduct::getProductId)
+            .collect(Collectors.toSet());
+        
+        model.addAttribute("voucher", voucher);
+        model.addAttribute("products", supplierProducts);
+        model.addAttribute("assignedProductIds", assignedProductIds);
+        
+        return "supplier/manage-voucher/vouchers-products";
+    }
+    
+    @PostMapping("/vouchers/{id}/products/save")
+    public String saveProductAssignments(@PathVariable Integer id,
+                                        @RequestParam(value = "productIds", required = false) List<String> productIds,
+                                        RedirectAttributes redirectAttributes,
+                                        HttpSession session) {
+        if (!isSupplierLoggedIn(session)) {
+            return "redirect:/login";
+        }
+        
+        User user = getLoggedInUser(session);
+        Optional<PromotionVoucher> voucherOpt = promotionVoucherRepository.findById(id);
+        
+        if (voucherOpt.isEmpty() || !voucherOpt.get().getSupplierId().equals(user.getUserId())) {
+            return "redirect:/supplier/vouchers";
+        }
+        
+        // Clear existing assignments
+        List<VoucherProduct> existingProducts = voucherProductRepository.findByPromotionVoucher_VoucherId(id);
+        voucherProductRepository.deleteAll(existingProducts);
+        
+        // Add new assignments
+        if (productIds != null && !productIds.isEmpty()) {
+            for (String productId : productIds) {
+                VoucherProduct vp = new VoucherProduct();
+                vp.setPromotionVoucher(voucherOpt.get());
+                vp.setProductId(productId);
+                voucherProductRepository.save(vp);
+            }
+        }
+        
+        redirectAttributes.addFlashAttribute("message", "Product assignments saved successfully!");
+        return "redirect:/supplier/vouchers";
+    }
+    
+    @PostMapping("/vouchers/{id}/delete")
+    public String deleteVoucher(@PathVariable Integer id,
+                               RedirectAttributes redirectAttributes,
+                               HttpSession session) {
+        if (!isSupplierLoggedIn(session)) {
+            return "redirect:/login";
+        }
+        
+        User user = getLoggedInUser(session);
+        Optional<PromotionVoucher> voucherOpt = promotionVoucherRepository.findById(id);
+        
+        if (voucherOpt.isEmpty() || !voucherOpt.get().getSupplierId().equals(user.getUserId())) {
+            return "redirect:/supplier/vouchers";
+        }
+        
+        // Delete associated product assignments
+        List<VoucherProduct> products = voucherProductRepository.findByPromotionVoucher_VoucherId(id);
+        voucherProductRepository.deleteAll(products);
+        
+        // Delete voucher
+        promotionVoucherRepository.delete(voucherOpt.get());
+        redirectAttributes.addFlashAttribute("message", "Voucher deleted successfully!");
+        
+        return "redirect:/supplier/vouchers";
     }
 }

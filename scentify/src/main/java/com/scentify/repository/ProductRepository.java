@@ -16,4 +16,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     
     // Search products by name for a specific supplier
     List<Product> findByUserIdAndProductNameContainingIgnoreCase(Integer userId, String productName);
+    
+    // Find all products by approval status (for manager dashboard)
+    List<Product> findByApprovalStatus(String approvalStatus);
 }

@@ -3,37 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <title>Add Product</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet"
           th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}">
     <style>
-        .drag-drop-area {
-            border: 2px dashed #007bff;
-            border-radius: 5px;
-            padding: 40px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background-color: #f8f9fa;
-        }
-        .drag-drop-area:hover {
-            background-color: #e7f3ff;
-            border-color: #0056b3;
-        }
-        .drag-drop-area.dragover {
-            background-color: #cfe2ff;
-            border-color: #0056b3;
-        }
-        .image-preview {
-            margin-top: 20px;
-            max-width: 200px;
-            max-height: 200px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .upload-status {
-            margin-top: 10px;
-        }
-    </style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #fdfcfa;
+    }
+
+    h2 {
+        font-family: 'Playfair Display', serif;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Card */
+    .card {
+        border-radius: 18px;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.08);
+        border: none;
+    }
+
+    .form-control {
+        border-radius: 12px;
+    }
+
+    /* Buttons */
+    .btn-success {
+        background: linear-gradient(135deg, #c2a98d, #b49374);
+        border: none;
+        border-radius: 14px;
+    }
+
+    .btn-success:hover {
+        opacity: 0.9;
+    }
+
+    .btn-secondary {
+        border-radius: 14px;
+    }
+
+    /* Drag & Drop Upload */
+    .drag-drop-area {
+        border: 2px dashed #c2a98d;
+        border-radius: 18px;
+        padding: 40px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background-color: #faf7f5;
+    }
+
+    .drag-drop-area:hover {
+        background-color: #f7f2ef;
+        border-color: #b49374;
+    }
+
+    .drag-drop-area.dragover {
+        background-color: #f1ebe6;
+        border-color: #b49374;
+    }
+
+    /* Upload icon + text */
+    .drag-drop-area i {
+        color: #b49374 !important;
+    }
+
+    /* Image preview */
+    .image-preview {
+        margin-top: 20px;
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 14px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    }
+
+    /* Alerts */
+    .alert {
+        border-radius: 14px;
+        font-size: 0.9rem;
+    }
+
+    .upload-status {
+        margin-top: 10px;
+        font-size: 0.9rem;
+    }
+
+</style>
+
 </head>
 <body class="bg-light">
 

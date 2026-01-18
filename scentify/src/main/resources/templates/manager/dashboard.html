@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manager Dashboard - Scentify</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,10 +13,10 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', sans-serif;
+            background: #fdfcfa;
             min-height: 100vh;
-            padding: 20px;
+            padding: 30px;
         }
 
         .container {
@@ -23,11 +24,12 @@
             margin: 0 auto;
         }
 
+        /* HEADER */
         .header {
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px 25px;
+            border-radius: 18px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.08);
             margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
@@ -35,199 +37,196 @@
         }
 
         .header h1 {
-            color: #667eea;
-            font-size: 28px;
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            color: #5c4a3f;
         }
 
         .logout-btn {
-            background: #e74c3c;
+            background: linear-gradient(135deg, #c2a98d, #b49374);
             color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            padding: 10px 18px;
+            border-radius: 14px;
             text-decoration: none;
             font-size: 14px;
+            border: none;
         }
 
         .logout-btn:hover {
-            background: #c0392b;
+            opacity: 0.9;
         }
 
+        /* ALERTS */
         .alerts {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .alert {
-            padding: 15px;
-            border-radius: 5px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-size: 0.9rem;
             margin-bottom: 10px;
-            font-weight: 500;
         }
 
         .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: #eef6f1;
+            color: #2f6b47;
         }
 
         .alert-warning {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
+            background: #fdf3e6;
+            color: #8a6a2f;
         }
 
         .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: #f8ecec;
+            color: #8b2f2f;
         }
 
+        /* SECTION CARD */
         .section {
             background: white;
             padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 18px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.08);
             margin-bottom: 30px;
         }
 
         .section h2 {
-            color: #667eea;
-            margin-bottom: 20px;
+            font-family: 'Playfair Display', serif;
             font-size: 22px;
-            border-bottom: 2px solid #667eea;
+            color: #5c4a3f;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e8ddd2;
             padding-bottom: 10px;
         }
 
+        /* STATS */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: #f7f2ef;
+            padding: 22px;
+            border-radius: 18px;
+            text-align: center;
+        }
+
+        .stat-box h3 {
+            font-size: 32px;
+            color: #b49374;
+            margin-bottom: 5px;
+        }
+
+        .stat-box p {
+            font-size: 14px;
+            color: #6b5c52;
+        }
+
+        /* SUPPLIER CARD */
         .supplier-card {
-            background: #f9f9f9;
-            border-left: 4px solid #667eea;
-            padding: 15px;
+            background: #faf7f5;
+            padding: 18px;
             margin-bottom: 15px;
-            border-radius: 5px;
+            border-radius: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .supplier-card.rejected {
-            border-left-color: #e74c3c;
+            border-left: 5px solid #c2a98d;
         }
 
         .supplier-card.approved {
-            border-left-color: #27ae60;
+            border-left-color: #7aa38d;
+        }
+
+        .supplier-card.rejected {
+            border-left-color: #c26a6a;
         }
 
         .supplier-info h3 {
-            color: #333;
+            font-size: 18px;
+            color: #4a3b32;
             margin-bottom: 5px;
         }
 
         .supplier-info p {
-            color: #666;
-            font-size: 14px;
-            margin: 3px 0;
+            font-size: 13px;
+            color: #6b5c52;
+            margin: 2px 0;
         }
 
+        /* STATUS BADGES */
         .supplier-status {
             display: inline-block;
             padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-top: 5px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 6px;
         }
 
         .status-pending {
-            background: #fff3cd;
-            color: #856404;
+            background: #fdf3e6;
+            color: #8a6a2f;
         }
 
         .status-approved {
-            background: #d4edda;
-            color: #155724;
+            background: #eef6f1;
+            color: #2f6b47;
         }
 
         .status-rejected {
-            background: #f8d7da;
-            color: #721c24;
+            background: #f8ecec;
+            color: #8b2f2f;
         }
 
+        /* ACTION BUTTONS */
         .actions {
             display: flex;
             gap: 10px;
         }
 
         .btn {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            padding: 8px 14px;
+            border-radius: 14px;
             font-size: 13px;
-            font-weight: bold;
+            font-weight: 500;
+            border: none;
             text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-approve {
-            background: #27ae60;
-            color: white;
-        }
-
-        .btn-approve:hover {
-            background: #229954;
-        }
-
-        .btn-reject {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .btn-reject:hover {
-            background: #c0392b;
+            cursor: pointer;
         }
 
         .btn-view {
-            background: #667eea;
+            background: #b49374;
             color: white;
         }
 
-        .btn-view:hover {
-            background: #5568d3;
-        }
-
-        .empty-message {
-            color: #999;
-            text-align: center;
-            padding: 20px;
-            font-style: italic;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .stat-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .btn-approve {
+            background: #7aa38d;
             color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
         }
 
-        .stat-box h3 {
-            font-size: 32px;
-            margin-bottom: 5px;
+        .btn-reject {
+            background: #c26a6a;
+            color: white;
         }
 
-        .stat-box p {
-            font-size: 14px;
+        .btn:hover {
             opacity: 0.9;
         }
+
+        /* EMPTY STATE */
+        .empty-message {
+            text-align: center;
+            padding: 25px;
+            color: #9a8f86;
+            font-style: italic;
+        }
     </style>
+
 </head>
 <body>
     <div class="container">

@@ -76,7 +76,7 @@ public class LoginController {
         return switch (role) {
             case "customer" -> "redirect:/customer/dashboard";
             case "supplier" -> "redirect:/supplier/dashboard";
-            case "manager" -> "redirect:/manager/dashboard";
+            case "system_manager", "manager" -> "redirect:/manager/dashboard";
             default -> {
                 System.out.println("Unknown role: " + role);
                 yield "redirect:/login";
@@ -186,7 +186,7 @@ public class LoginController {
             supplierRepository.save(supplier);
         }
 
-        if (role.equals("manager")) {
+        if (role.equals("system_manager") || role.equals("manager")) {
             // Manager is automatically approved
         }
 

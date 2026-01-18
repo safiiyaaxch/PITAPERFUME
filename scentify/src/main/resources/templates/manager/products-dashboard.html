@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Approvals - Manager Dashboard</title>
+    <style>
+            * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #fdfcfa, #f5ede6);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    /* Layout */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+        background: #fff;
+        padding: 20px 25px;
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .header h1 {
+        color: #5a4a42;
+        font-size: 26px;
+        font-family: 'Playfair Display', serif;
+    }
+
+    .logout-btn {
+        background: #a8796a;
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background 0.2s ease;
+    }
+
+    .logout-btn:hover {
+        background: #956253;
+    }
+
+    /* Alerts */
+    .alerts {
+        margin-bottom: 20px;
+    }
+
+    .alert {
+        padding: 14px 18px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        font-weight: 500;
+    }
+
+    .alert-success {
+        background: #d8ebd8;
+        color: #5a7a5a;
+    }
+
+    .alert-warning {
+        background: #f0e8d8;
+        color: #8b7355;
+    }
+
+    .alert-error {
+        background: #e8d0cc;
+        color: #8b5a52;
+    }
+
+    /* Sections */
+    .section {
+        background: #fff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+
+    .section h2 {
+        color: #5a4a42;
+        font-size: 22px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #c2a98d;
+        padding-bottom: 10px;
+        font-family: 'Playfair Display', serif;
+    }
+
+    /* Stats */
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .stat-box {
+        background: linear-gradient(135deg, #c2a98d, #b49374);
+        color: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .stat-box h3 {
+        font-size: 32px;
+        margin-bottom: 5px;
+    }
+
+    /* Product Cards */
+    .product-card {
+        background: #f9f9f9;
+        border-left: 5px solid #c2a98d;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .product-card.approved { border-left-color: #8b9d8b; }
+    .product-card.rejected { border-left-color: #a8796a; }
+
+    /* Product Header */
+    .product-header {
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    /* Image */
+    .product-image {
+        width: 100px;
+        height: 100px;
+        border-radius: 8px;
+        object-fit: cover;
+        background: #eee;
+        flex-shrink: 0;
+    }
+
+    /* Product Info */
+    .product-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .product-info h3 {
+        font-size: 18px;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    /* Details */
+    .product-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 8px 15px;
+        font-size: 13px;
+        color: #555;
+    }
+
+    .product-details strong {
+        color: #333;
+    }
+
+    .supplier-info {
+        color: #8b7355;
+        font-weight: 600;
+    }
+
+    .membership-discount {
+        color: #8b7355;
+        font-weight: 600;
+        background: #f0e8d8;
+        padding: 4px 8px;
+        border-radius: 4px;
+        display: inline-block;
+    }
+
+    /* Status */
+    .product-status {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .status-pending {
+        background: #f0e8d8;
+        color: #8b7355;
+    }
+
+    .status-approved {
+        background: #d8ebd8;
+        color: #5a7a5a;
+    }
+
+    .status-rejected {
+        background: #e8d0cc;
+        color: #8b5a52;
+    }
+
+    /* Actions */
+    .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+
+    .actions form {
+        margin: 0;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 10px 16px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+
+    .btn-view {
+        background: #b8a084;
+        color: #fff;
+    }
+
+    .btn-approve {
+        background: #8b9d8b;
+        color: #fff;
+    }
+
+    .btn-reject {
+        background: #a8796a;
+        color: #fff;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+        opacity: 0.95;
+    }
+
+    /* Empty */
+    .empty-message {
+        text-align: center;
+        color: #999;
+        font-style: italic;
+        padding: 30px;
+        font-size: 15px;
+    }
+
+    /* Mobile tweaks */
+    @media (max-width: 768px) {
+        .header {
+            gap: 15px;
+        }
+
+        .product-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 180px;
+        }
+    }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 Product Approval Management</h1>
+            <a href="/logout" class="logout-btn">Logout</a>
+        </div>
+
+        <!-- Alerts -->
+        <div class="alerts">
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${warning}" class="alert alert-warning" th:text="${warning}"></div>
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="section">
+            <div class="stats">
+                <div class="stat-box">
+                    <h3 th:text="${pendingProducts.size()}">0</h3>
+                    <p>Pending Approval</p>
+                </div>
+                <div class="stat-box">
+                    <h3 th:text="${approvedProducts.size()}">0</h3>
+                    <p>Approved Products</p>
+                </div>
+                <div class="stat-box">
+                    <h3 th:text="${rejectedProducts.size()}">0</h3>
+                    <p>Rejected Products</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Products -->
+        <div class="section">
+            <h2>Pending Product Approvals</h2>
+            <div th:if="${!pendingProducts.isEmpty()}">
+                <div th:each="product : ${pendingProducts}" class="product-card">
+                    <div class="product-header">
+                        <img th:if="${product.prodimage}" th:src="${product.prodimage}" alt="Product Image" class="product-image">
+                        <div th:if="!${product.prodimage}" class="product-image" style="display: flex; align-items: center; justify-content: center; color: #ccc;">No Image</div>
+                        
+                        <div class="product-info">
+                            <h3 th:text="${product.productName}"></h3>
+                            <div class="product-details">
+                                <p><strong>Product ID:</strong> <span th:text="${product.productId}"></span></p>
+                                <p><strong>Category:</strong> <span th:text="${product.categoryId}"></span></p>
+                                <p><strong>Price:</strong> RM<span th:text="${#numbers.formatDecimal(product.price, 1, 2)}"></span></p>
+                                <p><strong>Stock:</strong> <span th:text="${product.stock}"></span> units</p>
+                                <p><strong>Description:</strong> <span th:text="${product.description}"></span></p>
+                                <p><strong>Supplier:</strong> <span th:text="${product.supplierName != null ? product.supplierName : 'Unknown'}"></span></p>
+                                <p th:if="${product.membershipDiscount != null and product.membershipDiscount > 0}" class="membership-discount"><strong>💳 Member Discount:</strong> <span th:text="${product.membershipDiscount + '%'}"></span></p>
+                                <p><strong>Submitted:</strong> <span th:text="${#temporals.format(product.createdAt, 'yyyy-MM-dd HH:mm')}"></span></p>
+                            </div>
+                            <span class="product-status status-pending">PENDING</span>
+                        </div>
+                    </div>
+                    
+                    <div class="actions">
+                        <a th:href="@{/manager/products/view/{id}(id=${product.productId})}" class="btn btn-view">View Details</a>
+                        <form th:action="@{/manager/products/approve/{id}(id=${product.productId})}" method="POST">
+                            <button type="submit" class="btn btn-approve">✓ Approve</button>
+                        </form>
+                        <form th:action="@{/manager/products/reject/{id}(id=${product.productId})}" method="POST">
+                            <button type="submit" class="btn btn-reject">✗ Reject</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${pendingProducts.isEmpty()}" class="empty-message">
+                ✓ No pending product approvals
+            </div>
+        </div>
+
+        <!-- Approved Products -->
+        <div class="section">
+            <h2>✓ Approved Products</h2>
+            <div th:if="${!approvedProducts.isEmpty()}">
+                <div th:each="product : ${approvedProducts}" class="product-card approved">
+                    <div class="product-header">
+                        <img th:if="${product.prodimage}" th:src="${product.prodimage}" alt="Product Image" class="product-image">
+                        <div th:if="!${product.prodimage}" class="product-image" style="display: flex; align-items: center; justify-content: center; color: #ccc;">No Image</div>
+                        
+                        <div class="product-info">
+                            <h3 th:text="${product.productName}"></h3>
+                            <div class="product-details">
+                                <p><strong>Product ID:</strong> <span th:text="${product.productId}"></span></p>
+                                <p><strong>Category:</strong> <span th:text="${product.categoryId}"></span></p>
+                                <p><strong>Price:</strong> RM<span th:text="${#numbers.formatDecimal(product.price, 1, 2)}"></span></p>
+                                <p><strong>Stock:</strong> <span th:text="${product.stock}"></span> units</p>
+                                <p class="supplier-info"><strong>Supplier:</strong> <span th:text="${product.supplierName != null ? product.supplierName : 'Unknown'}"></span></p>
+                                <p th:if="${product.membershipDiscount != null and product.membershipDiscount > 0}" class="membership-discount"><strong>💳 Member Discount:</strong> <span th:text="${product.membershipDiscount + '%'}"></span></p>
+                                <p><strong>Approved:</strong> <span th:text="${#temporals.format(product.updatedAt, 'yyyy-MM-dd HH:mm')}"></span></p>
+                            </div>
+                            <span class="product-status status-approved">APPROVED</span>
+                        </div>
+                    </div>
+                    
+                    <div class="actions">
+                        <a th:href="@{/manager/products/view/{id}(id=${product.productId})}" class="btn btn-view">View Details</a>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${approvedProducts.isEmpty()}" class="empty-message">
+                No approved products yet
+            </div>
+        </div>
+
+        <!-- Rejected Products -->
+        <div class="section">
+            <h2>✗ Rejected Products</h2>
+            <div th:if="${!rejectedProducts.isEmpty()}">
+                <div th:each="product : ${rejectedProducts}" class="product-card rejected">
+                    <div class="product-header">
+                        <img th:if="${product.prodimage}" th:src="${product.prodimage}" alt="Product Image" class="product-image">
+                        <div th:if="!${product.prodimage}" class="product-image" style="display: flex; align-items: center; justify-content: center; color: #ccc;">No Image</div>
+                        
+                        <div class="product-info">
+                            <h3 th:text="${product.productName}"></h3>
+                            <div class="product-details">
+                                <p><strong>Product ID:</strong> <span th:text="${product.productId}"></span></p>
+                                <p><strong>Category:</strong> <span th:text="${product.categoryId}"></span></p>
+                                <p><strong>Price:</strong> RM<span th:text="${#numbers.formatDecimal(product.price, 1, 2)}"></span></p>
+                                <p><strong>Stock:</strong> <span th:text="${product.stock}"></span> units</p>
+                                <p class="supplier-info"><strong>Supplier:</strong> <span th:text="${product.supplierName != null ? product.supplierName : 'Unknown'}"></span></p>
+                                <p th:if="${product.membershipDiscount != null and product.membershipDiscount > 0}" class="membership-discount"><strong>💳 Member Discount:</strong> <span th:text="${product.membershipDiscount + '%'}"></span></p>
+                                <p><strong>Rejected:</strong> <span th:text="${#temporals.format(product.updatedAt, 'yyyy-MM-dd HH:mm')}"></span></p>
+                            </div>
+                            <span class="product-status status-rejected">REJECTED</span>
+                        </div>
+                    </div>
+                    
+                    <div class="actions">
+                        <a th:href="@{/manager/products/view/{id}(id=${product.productId})}" class="btn btn-view">View Details</a>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${rejectedProducts.isEmpty()}" class="empty-message">
+                No rejected products
+            </div>
+        </div>
+    </div>
+</body>
+</html>

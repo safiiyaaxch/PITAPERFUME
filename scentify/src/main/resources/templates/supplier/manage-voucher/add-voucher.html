@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${voucher.voucherId != null ? 'Edit Voucher' : 'Create Voucher'} + ' - Scentify'"></title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fdfcfa;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            color: #5a4a42;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, #c2a98d, #b49374) !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            color: white !important;
+            font-size: 1.3rem;
+        }
+
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            background: #8b5a52;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #6d4640;
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Page Title */
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Form Card */
+        .form-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        /* Form Section */
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #5a4a42;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #e8dfd0;
+        }
+
+        /* Form Labels */
+        .form-label {
+            color: #5a4a42;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Form Controls */
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #d4c4b0;
+            padding: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #c2a98d;
+            box-shadow: 0 0 0 0.2rem rgba(194, 169, 141, 0.15);
+        }
+
+        .form-text {
+            color: #8b7355;
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+        }
+
+        /* Radio/Checkbox */
+        .form-check {
+            margin-bottom: 1rem;
+        }
+
+        .form-check-input {
+            border-color: #d4c4b0;
+            cursor: pointer;
+        }
+
+        .form-check-input:checked {
+            background-color: #c2a98d;
+            border-color: #c2a98d;
+        }
+
+        .form-check-label {
+            cursor: pointer;
+            color: #5a4a42;
+            margin-left: 0.5rem;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #f0e8d8;
+            border-left: 4px solid #c2a98d;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            color: #8b7355;
+        }
+
+        .info-box-title {
+            font-weight: 600;
+            color: #5a4a42;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Button Group */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        /* Buttons */
+        .btn-submit {
+            background: linear-gradient(135deg, #c2a98d, #b49374);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background: #9d8970;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(194, 169, 141, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-cancel {
+            background: white;
+            color: #5a4a42;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #d4c4b0;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-cancel:hover {
+            background: #f5f5f5;
+            color: #5a4a42;
+            text-decoration: none;
+        }
+
+        /* Discount Type Toggle */
+        .discount-type-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .discount-type-option {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #d4c4b0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .discount-type-option input {
+            display: none;
+        }
+
+        .discount-type-option input:checked + label {
+            color: white;
+        }
+
+        .discount-type-option input:checked ~ .discount-type-option {
+            border-color: #c2a98d;
+            background: #c2a98d;
+            color: white;
+        }
+
+        .discount-type-option:has(input:checked) {
+            border-color: #c2a98d;
+            background: #c2a98d;
+            color: white;
+        }
+
+        .discount-type-option label {
+            cursor: pointer;
+            font-weight: 600;
+            margin: 0;
+            color: #5a4a42;
+        }
+
+        /* Two Column Layout */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+
+        /* Alerts */
+        .alert {
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 2rem;
+        }
+
+        .alert-danger {
+            background: #e8d0cc;
+            color: #8b5a52;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/supplier/vouchers">
+                <i class="fas fa-tag"></i> Scentify Vouchers
+            </a>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <a class="nav-link" href="/supplier/vouchers">Back to Vouchers</a>
+                <a href="/logout" class="logout-btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Title -->
+        <h1 class="page-title">
+            <i class="fas fa-ticket-alt"></i> 
+            <span th:text="${voucher.voucherId != null ? 'Edit Voucher' : 'Create New Voucher'}">Create New Voucher</span>
+        </h1>
+
+        <!-- Form -->
+        <form th:action="${voucher.voucherId != null ? '/supplier/vouchers/' + voucher.voucherId + '/edit' : '/supplier/vouchers/add'}" 
+              th:object="${voucher}" 
+              method="post" 
+              class="form-card">
+
+            <!-- Error Alert -->
+            <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-circle"></i> Please fix the errors below
+            </div>
+
+            <!-- Basic Information Section -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-info-circle"></i> Basic Information
+                </h3>
+
+                <div class="mb-3">
+                    <label class="form-label">Voucher Code <span style="color: red;">*</span></label>
+                    <input type="text" class="form-control" th:field="*{voucherCode}" 
+                           placeholder="e.g., SUMMER20" required maxlength="50"
+                           th:errorclass="is-invalid">
+                    <div class="form-text">Unique code customers will use to redeem</div>
+                    <small th:if="${#fields.hasErrors('voucherCode')}" class="text-danger" th:errors="*{voucherCode}"></small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" th:field="*{description}" 
+                              placeholder="e.g., Summer collection discount"
+                              rows="3" maxlength="255"></textarea>
+                    <div class="form-text">Optional description for internal use</div>
+                </div>
+            </div>
+
+            <!-- Discount Section -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-tag"></i> Discount Details
+                </h3>
+
+                <div class="mb-3">
+                    <label class="form-label">Discount Type <span style="color: red;">*</span></label>
+                    <div class="discount-type-group">
+                        <label class="discount-type-option">
+                            <input type="radio" name="discountType" value="PERCENTAGE" 
+                                   th:checked="${voucher.discountType == 'PERCENTAGE'}" required>
+                            <span>Percentage (%)</span>
+                        </label>
+                        <label class="discount-type-option">
+                            <input type="radio" name="discountType" value="FIXED_AMOUNT"
+                                   th:checked="${voucher.discountType == 'FIXED_AMOUNT'}" required>
+                            <span>Fixed Amount (RM)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" id="discountValueLabel">Discount Value <span style="color: red;">*</span></label>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <input type="number" class="form-control" th:field="*{discountValue}" 
+                               placeholder="Enter discount value" step="0.01" min="0" required
+                               th:errorclass="is-invalid">
+                        <span id="discountUnit" style="font-weight: 600; color: #5a4a42; min-width: 50px;">%</span>
+                    </div>
+                    <small th:if="${#fields.hasErrors('discountValue')}" class="text-danger" th:errors="*{discountValue}"></small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Minimum Purchase Amount (Optional)</label>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <span style="color: #5a4a42; font-weight: 600;">RM</span>
+                        <input type="number" class="form-control" th:field="*{minPurchaseAmount}" 
+                               placeholder="No minimum" step="0.01" min="0">
+                    </div>
+                    <div class="form-text">Customer must spend at least this amount to use voucher</div>
+                </div>
+            </div>
+
+            <!-- Validity Period Section -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-calendar"></i> Validity Period
+                </h3>
+
+                <div class="two-col">
+                    <div class="mb-3">
+                        <label class="form-label">Start Date</label>
+                        <input type="datetime-local" class="form-control" th:field="*{startDate}">
+                        <div class="form-text">Leave empty for immediate validity</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">End Date</label>
+                        <input type="datetime-local" class="form-control" th:field="*{endDate}">
+                        <div class="form-text">Leave empty for no expiration</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usage Limits Section -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-chart-bar"></i> Usage Limits
+                </h3>
+
+                <div class="mb-3">
+                    <label class="form-label">Maximum Redemptions</label>
+                    <input type="number" class="form-control" th:field="*{maxUsage}" 
+                           placeholder="Leave empty for unlimited" min="1">
+                    <div class="form-text">How many times this voucher can be used</div>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="isActive" 
+                           th:field="*{isActive}" th:checked="${voucher.isActive == null ? true : voucher.isActive}">
+                    <label class="form-check-label" for="isActive">
+                        <i class="fas fa-toggle-on"></i> Voucher is Active
+                    </label>
+                    <div class="form-text">Inactive vouchers cannot be redeemed by customers</div>
+                </div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="info-box">
+                <div class="info-box-title">
+                    <i class="fas fa-lightbulb"></i> Tip
+                </div>
+                <p style="margin: 0;">After creating the voucher, you'll be able to select which products it applies to.</p>
+            </div>
+
+            <!-- Button Group -->
+            <div class="button-group">
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-save"></i>
+                    <span th:text="${voucher.voucherId != null ? 'Update Voucher' : 'Create Voucher'}">Create Voucher</span>
+                </button>
+                <a href="/supplier/vouchers" class="btn-cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
+    <script>
+        // Update discount unit label
+        const discountTypeInputs = document.querySelectorAll('input[name="discountType"]');
+        const discountUnit = document.getElementById('discountUnit');
+
+        function updateDiscountUnit() {
+            const selectedType = document.querySelector('input[name="discountType"]:checked').value;
+            discountUnit.textContent = selectedType === 'PERCENTAGE' ? '%' : 'RM';
+        }
+
+        discountTypeInputs.forEach(input => {
+            input.addEventListener('change', updateDiscountUnit);
+        });
+
+        // Initialize
+        updateDiscountUnit();
+    </script>
+</body>
+</html>

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voucher Management - Supplier Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fdfcfa;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            color: #5a4a42;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, #c2a98d, #b49374) !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            color: white !important;
+            font-size: 1.3rem;
+        }
+
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+            margin: 0 10px;
+        }
+
+        .logout-btn {
+            background: #8b5a52;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #6d4640;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header Section */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 0;
+        }
+
+        .add-voucher-btn {
+            background: linear-gradient(135deg, #c2a98d, #b49374);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-voucher-btn:hover {
+            background: #9d8970;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(194, 169, 141, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Alerts */
+        .alert {
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 2rem;
+        }
+
+        .alert-success {
+            background: #d8ebd8;
+            color: #5a7a5a;
+            font-weight: 500;
+        }
+
+        .alert-danger {
+            background: #e8d0cc;
+            color: #8b5a52;
+            font-weight: 500;
+        }
+
+        .alert-info {
+            background: #e8dfd0;
+            color: #5a4a42;
+            font-weight: 500;
+        }
+
+        /* Voucher Cards */
+        .vouchers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .voucher-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 5px solid #c2a98d;
+            transition: all 0.3s ease;
+        }
+
+        .voucher-card:hover {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+
+        .voucher-code {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #5a4a42;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 0.5rem;
+        }
+
+        .voucher-discount {
+            font-size: 1.1rem;
+            color: #c2a98d;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .voucher-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #8b7355;
+        }
+
+        .voucher-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .voucher-info-label {
+            font-weight: 600;
+            color: #5a4a42;
+        }
+
+        .voucher-status {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .status-active {
+            background: #d8ebd8;
+            color: #5a7a5a;
+        }
+
+        .status-inactive {
+            background: #f0e8d8;
+            color: #8b7355;
+        }
+
+        .status-expired {
+            background: #e8d0cc;
+            color: #8b5a52;
+        }
+
+        /* Card Actions */
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .btn-edit {
+            background: #b8a084;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-edit:hover {
+            background: #9d8970;
+            text-decoration: none;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #a8796a;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-delete:hover {
+            background: #956253;
+        }
+
+        .btn-products {
+            background: #d4a574;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-products:hover {
+            background: #c2945f;
+            text-decoration: none;
+            color: white;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: white;
+            border-radius: 12px;
+            border: 2px dashed #d4c4b0;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            color: #c2a98d;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state-text {
+            color: #8b7355;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-top: 3px solid #c2a98d;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #c2a98d;
+        }
+
+        .stat-label {
+            color: #8b7355;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Modal Confirmation */
+        .delete-confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .delete-confirm-modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .vouchers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/supplier/dashboard">
+                <i class="fas fa-tag"></i> Scentify Vouchers
+            </a>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <a class="nav-link" href="/supplier/dashboard">Back to Dashboard</a>
+                <a href="/logout" class="logout-btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-ticket-alt"></i> Create Vouchers
+            </h1>
+            <a href="/supplier/vouchers/add" class="add-voucher-btn">
+                <i class="fas fa-plus"></i> Create New Voucher
+            </a>
+        </div>
+
+        <!-- Alerts -->
+        <div th:if="${success}" class="alert alert-success" role="alert">
+            <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="alert alert-danger" role="alert">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-value" th:text="${totalVouchers}">0</div>
+                <div class="stat-label">Total Vouchers</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" th:text="${activeVouchers}">0</div>
+                <div class="stat-label">Active Vouchers</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" th:text="${totalRedemptions}">0</div>
+                <div class="stat-label">Total Redemptions</div>
+            </div>
+        </div>
+
+        <!-- Vouchers List -->
+        <div th:if="${!vouchers.isEmpty()}">
+            <div class="vouchers-grid">
+                <div th:each="voucher : ${vouchers}" class="voucher-card">
+                    <!-- Status Badge -->
+                    <div>
+                        <span th:if="${voucher.isActive() and !voucher.isExpired()}" class="voucher-status status-active">
+                            <i class="fas fa-check"></i> Active
+                        </span>
+                        <span th:if="${!voucher.isActive()}" class="voucher-status status-inactive">
+                            <i class="fas fa-pause"></i> Inactive
+                        </span>
+                        <span th:if="${voucher.isExpired()}" class="voucher-status status-expired">
+                            <i class="fas fa-times"></i> Expired
+                        </span>
+                    </div>
+
+                    <!-- Voucher Code -->
+                    <div class="voucher-code" th:text="${voucher.voucherCode}">CODE123</div>
+
+                    <!-- Discount -->
+                    <div class="voucher-discount">
+                        <span th:if="${voucher.discountType == 'PERCENTAGE'}">
+                            <i class="fas fa-percentage"></i> <span th:text="${voucher.discountValue}">20</span>% OFF
+                        </span>
+                        <span th:if="${voucher.discountType == 'FIXED_AMOUNT'}">
+                            <i class="fas fa-money-bill"></i> RM<span th:text="${voucher.discountValue}">50</span> OFF
+                        </span>
+                    </div>
+
+                    <!-- Info -->
+                    <div class="voucher-info">
+                        <div class="voucher-info-item">
+                            <span class="voucher-info-label">Used:</span>
+                            <span><span th:text="${voucher.currentUsage}">0</span>/<span th:text="${voucher.maxUsage ?: 'Unlimited'}">100</span></span>
+                        </div>
+                        <div class="voucher-info-item">
+                            <span class="voucher-info-label">Valid:</span>
+                            <span th:if="${voucher.startDate}">
+                                <span th:text="${#temporals.format(voucher.startDate, 'dd MMM')}">01 Jan</span>
+                                <span th:if="${voucher.endDate}">
+                                    - <span th:text="${#temporals.format(voucher.endDate, 'dd MMM')}">31 Dec</span>
+                                </span>
+                            </span>
+                            <span th:unless="${voucher.startDate}">No date limit</span>
+                        </div>
+                        <div class="voucher-info-item">
+                            <span class="voucher-info-label">Min Purchase:</span>
+                            <span th:text="${voucher.minPurchaseAmount != null ? 'RM' + voucher.minPurchaseAmount : 'None'}">None</span>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="card-actions">
+                        <a th:href="@{/supplier/vouchers/{id}/products(id=${voucher.voucherId})}" class="btn-sm btn-products">
+                            <i class="fas fa-box"></i> Products
+                        </a>
+                        <a th:href="@{/supplier/vouchers/{id}/edit(id=${voucher.voucherId})}" class="btn-sm btn-edit">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <button class="btn-sm btn-delete" 
+                                th:data-voucher-id="${voucher.voucherId}" 
+                                th:data-voucher-code="${voucher.voucherCode}" 
+                                onclick="confirmDelete(this.dataset.voucherId, this.dataset.voucherCode)" 
+                                type="button">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${vouchers.isEmpty()}" class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-ticket-alt"></i>
+            </div>
+            <p class="empty-state-text">No vouchers created yet</p>
+            <a href="/supplier/vouchers/add" class="add-voucher-btn">
+                <i class="fas fa-plus"></i> Create Your First Voucher
+            </a>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="delete-confirm-modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Delete Voucher?</h3>
+            <p style="color: #8b7355;">Are you sure you want to delete voucher <strong id="deleteCode">CODE123</strong>?</p>
+            <p style="color: #a8796a; font-size: 0.85rem;">This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button onclick="closeDeleteModal()" style="flex: 1; padding: 0.6rem; border: 1px solid #d4c4b0; background: white; border-radius: 6px; cursor: pointer; font-weight: 600; color: #5a4a42;">Cancel</button>
+                <form id="deleteForm" method="POST" style="flex: 1;">
+                    <button type="submit" style="width: 100%; padding: 0.6rem; background: #a8796a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
+    <script>
+        function confirmDelete(voucherId, voucherCode) {
+            document.getElementById('deleteCode').textContent = voucherCode;
+            document.getElementById('deleteForm').action = `/supplier/vouchers/${voucherId}/delete`;
+            document.getElementById('deleteModal').classList.add('show');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDeleteModal();
+            }
+        });
+    </script>
+</body>
+</html>

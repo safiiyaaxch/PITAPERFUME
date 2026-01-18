@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Scentify</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f1ed;
+            color: #5a4a47;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+            border-bottom: 2px solid #d4c5bd;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #6b5b58;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .back-btn {
+            background-color: #8b7355;
+            color: #f5f1ed;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background-color: #6b5b48;
+        }
+
+        .checkout-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .checkout-form {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #d4c5bd;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h2 {
+            font-size: 20px;
+            color: #6b5b58;
+            margin-bottom: 20px;
+            font-weight: 600;
+            border-bottom: 2px solid #d4c5bd;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #6b5b58;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d4c5bd;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: #faf8f6;
+            color: #5a4a47;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #8b7355;
+            background-color: white;
+        }
+
+        .voucher-selector {
+            background-color: #f5f1ed;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #d4c5bd;
+        }
+
+        .voucher-options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .voucher-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: white;
+            border: 2px solid #d4c5bd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .voucher-option:hover {
+            border-color: #8b7355;
+            background-color: #faf8f6;
+        }
+
+        .voucher-option input[type="radio"] {
+            width: auto;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        .voucher-info {
+            flex: 1;
+        }
+
+        .voucher-code {
+            font-weight: 600;
+            color: #6b5b58;
+            font-size: 14px;
+        }
+
+        .voucher-discount {
+            color: #8b7355;
+            font-size: 13px;
+        }
+
+        .payment-options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: white;
+            border: 2px solid #d4c5bd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-option:hover {
+            border-color: #8b7355;
+        }
+
+        .payment-option input[type="radio"] {
+            width: auto;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        .payment-info {
+            flex: 1;
+        }
+
+        .payment-name {
+            font-weight: 600;
+            color: #6b5b58;
+            font-size: 14px;
+        }
+
+        .payment-desc {
+            color: #8b7355;
+            font-size: 13px;
+        }
+
+        .order-summary {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #d4c5bd;
+            position: sticky;
+            top: 20px;
+        }
+
+        .order-summary h2 {
+            font-size: 20px;
+            color: #6b5b58;
+            margin-bottom: 20px;
+            font-weight: 600;
+            border-bottom: 2px solid #d4c5bd;
+            padding-bottom: 10px;
+        }
+
+        .product-card {
+            background-color: #f5f1ed;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background-color: #e8ddd4;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: #6b5b58;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .product-details {
+            font-size: 13px;
+            color: #8b7355;
+            margin-bottom: 8px;
+        }
+
+        .price-section {
+            border-top: 1px solid #d4c5bd;
+            padding-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .price-row.total {
+            font-weight: 700;
+            font-size: 18px;
+            color: #6b5b58;
+            border-top: 1px solid #d4c5bd;
+            padding-top: 10px;
+        }
+
+        .price-label {
+            color: #8b7355;
+        }
+
+        .price-value {
+            color: #6b5b58;
+            font-weight: 600;
+        }
+
+        .price-value.discount {
+            color: #d4847a;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .quantity-btn {
+            background-color: #d4c5bd;
+            color: #6b5b58;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .quantity-btn:hover {
+            background-color: #8b7355;
+            color: #f5f1ed;
+        }
+
+        .quantity-input {
+            width: 50px;
+            text-align: center;
+            padding: 6px;
+            border: 1px solid #d4c5bd;
+            border-radius: 4px;
+        }
+
+        .pay-btn {
+            width: 100%;
+            background-color: #8b7355;
+            color: #f5f1ed;
+            border: none;
+            padding: 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .pay-btn:hover {
+            background-color: #6b5b48;
+        }
+
+        .pay-btn:disabled {
+            background-color: #c9a98d;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+
+            .order-summary {
+                position: static;
+            }
+        }
+
+        .no-voucher-message {
+            background-color: #e8ddd4;
+            padding: 15px;
+            border-radius: 4px;
+            color: #8b7355;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .non-member-message {
+            background-color: #f4e4dd;
+            border: 1px solid #d4847a;
+            border-radius: 4px;
+            padding: 15px;
+            color: #8b5a52;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Checkout</h1>
+            <a href="/customer/dashboard" class="back-btn">Back to Dashboard</a>
+        </div>
+
+        <!-- Checkout Container -->
+        <div class="checkout-container">
+            <!-- Left: Contact & Payment Info -->
+            <div class="checkout-form">
+                <form id="checkoutForm">
+                    <!-- Contact Information -->
+                    <div class="form-section">
+                        <h2>Contact Information</h2>
+                        
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" th:value="${customer.fullname}" placeholder="Full Name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address1">Address</label>
+                            <input type="text" id="address1" name="address1" th:value="${customer.address}" placeholder="Street Address" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" id="city" name="city" th:value="${customer.city}" placeholder="City">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" th:value="${customer.phone}" placeholder="Phone Number" required>
+                        </div>
+                    </div>
+
+                    <!-- Voucher Selection (Only for Members) -->
+                    <div class="form-section" th:if="${customer.isMember}">
+                        <h2>Select Voucher (Optional)</h2>
+                        
+                        <div th:if="${availableVouchers.isEmpty()}" class="no-voucher-message">
+                            No vouchers available for this product
+                        </div>
+
+                        <div th:unless="${availableVouchers.isEmpty()}" class="voucher-selector">
+                            <div class="voucher-options">
+                                <label class="voucher-option">
+                                    <input type="radio" name="voucherId" value="" checked onchange="calculateTotal()">
+                                    <div class="voucher-info">
+                                        <div class="voucher-code">No Voucher</div>
+                                    </div>
+                                </label>
+
+                                <label class="voucher-option" th:each="voucher : ${availableVouchers}">
+                                    <input type="radio" name="voucherId" th:value="${voucher.voucherId}" onchange="calculateTotal()">
+                                    <div class="voucher-info">
+                                        <div class="voucher-code" th:text="${voucher.voucherCode}"></div>
+                                        <div class="voucher-discount" th:text="${voucher.discountValue} + (${voucher.discountType == 'PERCENTAGE'} ? '% OFF' : '$ OFF')"></div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Non-Member Notice -->
+                    <div class="form-section" th:unless="${customer.isMember}">
+                        <div class="non-member-message">
+                            💳 <strong>Become a member</strong> to unlock exclusive vouchers and discounts!
+                        </div>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div class="form-section">
+                        <h2>Payment Method</h2>
+                        
+                        <div class="payment-options">
+                                <input type="radio" name="paymentMethod" value="online_banking">
+                                <div class="payment-info">
+                                    <div class="payment-name">Online Banking (ToyyibPay)</div>
+                                    <div class="payment-desc">Secure payment gateway</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right: Order Summary -->
+            <div class="order-summary">
+                <h2>Order Summary</h2>
+
+                <!-- Product Card -->
+                <div class="product-card">
+                    <div class="product-image">
+                        <img th:src="${product.prodimage}" 
+                             th:alt="${product.productName}"
+                             onerror="this.src='https://via.placeholder.com/220x240?text=No+Image'">
+                    </div>
+                    <div class="product-name" th:text="${product.productName}"></div>
+                    <div class="product-details" th:text="${product.description}"></div>
+                    
+                    <div class="quantity-selector">
+                        <button type="button" class="quantity-btn" onclick="decreaseQuantity()">−</button>
+                        <input type="number" id="quantity" class="quantity-input" value="1" min="1" th:max="${product.stock}" onchange="calculateTotal()">
+                        <button type="button" class="quantity-btn" onclick="increaseQuantity()">+</button>
+                    </div>
+                </div>
+
+                <!-- Pricing -->
+                <div class="price-section">
+                    <div class="price-row">
+                        <span class="price-label">Subtotal</span>
+                        <span class="price-value" id="subtotal" th:text="'RM' + ${#numbers.formatDecimal(product.price, 1, 2)}"></span>
+                    </div>
+
+                    <div class="price-row">
+                        <span class="price-label">Delivery Cost</span>
+                        <span class="price-value" id="delivery">RM4.90</span>
+                    </div>
+
+                    <div class="price-row">
+                        <span class="price-label">Discount</span>
+                        <span class="price-value discount" id="discount">RM0.00</span>
+                    </div>
+
+                    <div class="price-row total">
+                        <span class="price-label">Total</span>
+                        <span class="price-value" id="total">RM0.00</span>
+                    </div>
+                </div>
+
+                <!-- Pay Button -->
+                <button class="pay-btn" onclick="processCheckout()">Pay Now</button>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const productPrice = /*[[${product.price}]]*/0;
+        const deliveryCost = 4.90;
+        const availableVouchers = {
+            /*[+ 
+            [#list availableVouchers]
+                "${voucher.voucherId}": {
+                    code: "${voucher.voucherCode}",
+                    discountValue: ${voucher.discountValue},
+                    discountType: "${voucher.discountType}"
+                }[#sep],[/sep]
+            [/list]
+            +]*/
+        };
+
+        function calculateTotal() {
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            const voucherId = document.querySelector('input[name="voucherId"]:checked')?.value;
+            
+            let subtotal = productPrice * quantity;
+            let discount = 0;
+
+            if (voucherId && availableVouchers[voucherId]) {
+                const voucher = availableVouchers[voucherId];
+                if (voucher.discountType === 'PERCENTAGE') {
+                    discount = (subtotal * voucher.discountValue) / 100;
+                } else {
+                    discount = voucher.discountValue;
+                }
+            }
+
+            const total = subtotal + deliveryCost - discount;
+
+            document.getElementById('subtotal').textContent = 'RM' + subtotal.toFixed(2);
+            document.getElementById('discount').textContent = 'RM' + discount.toFixed(2);
+            document.getElementById('total').textContent = 'RM' + total.toFixed(2);
+        }
+
+        function increaseQuantity() {
+            const input = document.getElementById('quantity');
+            const max = parseInt(input.max) || 999;
+            const current = parseInt(input.value) || 1;
+            if (current < max) {
+                input.value = current + 1;
+                calculateTotal();
+            }
+        }
+
+        function decreaseQuantity() {
+            const input = document.getElementById('quantity');
+            const current = parseInt(input.value) || 1;
+            if (current > 1) {
+                input.value = current - 1;
+                calculateTotal();
+            }
+        }
+
+        function processCheckout() {
+            const form = document.getElementById('checkoutForm');
+            if (!form.checkValidity()) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const formData = {
+                name: document.getElementById('name').value,
+                address1: document.getElementById('address1').value,
+                address2: document.getElementById('address2').value,
+                phone: document.getElementById('phone').value,
+                voucherId: document.querySelector('input[name="voucherId"]:checked')?.value || null,
+                paymentMethod: document.querySelector('input[name="paymentMethod"]:checked')?.value,
+                quantity: parseInt(document.getElementById('quantity').value),
+                productId: /*[[${product.productId}]]*/'unknown'
+            };
+
+            console.log('Order Data:', formData);
+            alert('Order placed successfully! (Feature coming soon)');
+            // TODO: Send to backend
+        }
+
+        // Initialize on page load
+        calculateTotal();
+    </script>
+</body>
+</html>

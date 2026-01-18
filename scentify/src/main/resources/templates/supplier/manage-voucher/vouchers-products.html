@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Products - Scentify</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fdfcfa;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            color: #5a4a42;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(135deg, #c2a98d, #b49374) !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            color: white !important;
+            font-size: 1.3rem;
+        }
+
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            background: #8b5a52;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: #8b7355;
+            font-size: 1rem;
+        }
+
+        /* Voucher Info Card */
+        .voucher-info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 5px solid #c2a98d;
+        }
+
+        .voucher-code-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #5a4a42;
+            margin-bottom: 0.5rem;
+        }
+
+        .voucher-discount-display {
+            color: #c2a98d;
+            font-weight: 600;
+        }
+
+        /* Products Grid */
+        .products-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e8dfd0;
+        }
+
+        .products-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #5a4a42;
+        }
+
+        .select-all-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-item {
+            border: 2px solid #e8dfd0;
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .product-item:hover {
+            border-color: #c2a98d;
+            box-shadow: 0 4px 12px rgba(194, 169, 141, 0.15);
+        }
+
+        .product-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin-right: 0.75rem;
+        }
+
+        .product-item label {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: #5a4a42;
+            margin-bottom: 0.25rem;
+        }
+
+        .product-details {
+            font-size: 0.85rem;
+            color: #8b7355;
+        }
+
+        .product-item input[type="checkbox"]:checked ~ .product-info {
+            color: #c2a98d;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #8b7355;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            color: #c2a98d;
+            margin-bottom: 1rem;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e8dfd0;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #c2a98d, #b49374);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save:hover {
+            background: #9d8970;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(194, 169, 141, 0.3);
+            color: white;
+        }
+
+        .btn-back {
+            background: white;
+            color: #5a4a42;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #d4c4b0;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background: #f5f5f5;
+            text-decoration: none;
+            color: #5a4a42;
+        }
+
+        /* Alert */
+        .alert {
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-success {
+            background: #d8ebd8;
+            color: #5a7a5a;
+        }
+
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/supplier/vouchers">
+                <i class="fas fa-tag"></i> Scentify Vouchers
+            </a>
+            <div class="ms-auto">
+                <a href="/logout" class="logout-btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-box"></i> Assign Products to Voucher
+            </h1>
+            <p class="page-subtitle">Select which products this voucher can be applied to</p>
+        </div>
+
+        <!-- Alert -->
+        <div th:if="${success}" class="alert alert-success" role="alert">
+            <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+        </div>
+
+        <!-- Voucher Info -->
+        <div class="voucher-info-card">
+            <div class="voucher-code-display" th:text="${voucher.voucherCode}">CODE123</div>
+            <div class="voucher-discount-display">
+                <span th:if="${voucher.discountType == 'PERCENTAGE'}">
+                    <i class="fas fa-percentage"></i> <span th:text="${voucher.discountValue}">20</span>% OFF
+                </span>
+                <span th:if="${voucher.discountType == 'FIXED_AMOUNT'}">
+                    <i class="fas fa-money-bill"></i> RM<span th:text="${voucher.discountValue}">50</span> OFF
+                </span>
+            </div>
+        </div>
+
+        <!-- Products Form -->
+        <form th:action="@{/supplier/vouchers/{id}/products/save(id=${voucher.voucherId})}" method="post">
+            <div class="products-container">
+                <!-- Header -->
+                <div class="products-header">
+                    <span class="products-title">
+                        <i class="fas fa-cubes"></i> Your Products (<span th:text="${products.size()}">0</span>)
+                    </span>
+                    <div class="select-all-checkbox">
+                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                        <label for="selectAll" style="margin: 0; cursor: pointer; color: #8b7355;">Select All</label>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div th:if="${!products.isEmpty()}">
+                    <div class="products-grid">
+                        <div th:each="product : ${products}" class="product-item">
+                            <label>
+                                <input type="checkbox" 
+                                       name="productIds" 
+                                       th:value="${product.productId}"
+                                       th:checked="${assignedProductIds != null and assignedProductIds.contains(product.productId)}"
+                                       class="product-checkbox"
+                                       onchange="updateSelectAllCheckbox()">
+                                <div class="product-info">
+                                    <div class="product-name" th:text="${product.productName}">Product Name</div>
+                                    <div class="product-details">
+                                        <div>ID: <span th:text="${product.productId}">P001</span></div>
+                                        <div>Price: RM<span th:text="${#numbers.formatDecimal(product.price, 1, 2)}">99.99</span></div>
+                                        <div th:if="${product.stock > 0}">Stock: <span th:text="${product.stock}">10</span> units</div>
+                                        <div th:if="${product.stock <= 0}" style="color: #a8796a;">
+                                            <i class="fas fa-times"></i> Out of Stock
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div th:if="${products.isEmpty()}" class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-boxes"></i>
+                    </div>
+                    <p>No products available. <a href="/supplier/products/add" style="color: #c2a98d; font-weight: 600;">Create a product</a> first.</p>
+                </div>
+
+                <!-- Buttons -->
+                <div class="button-group">
+                    <button type="submit" class="btn-save" th:disabled="${products.isEmpty()}">
+                        <i class="fas fa-save"></i> Save Assignments
+                    </button>
+                    <a href="/supplier/vouchers" class="btn-back">
+                        <i class="fas fa-arrow-left"></i> Back to Vouchers
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
+    <script>
+        function toggleSelectAll() {
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const productCheckboxes = document.querySelectorAll('.product-checkbox');
+            
+            productCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        }
+
+        function updateSelectAllCheckbox() {
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const productCheckboxes = document.querySelectorAll('.product-checkbox');
+            const checkedCount = document.querySelectorAll('.product-checkbox:checked').length;
+            
+            selectAllCheckbox.checked = checkedCount === productCheckboxes.length;
+        }
+
+        // Initialize
+        updateSelectAllCheckbox();
+    </script>
+</body>
+</html>

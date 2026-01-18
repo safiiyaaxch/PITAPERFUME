@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - Scentify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #C4A484;      /* beige */
+            --secondary-color: #E6D3C1;    /* soft nude */
+            --accent-color: #FAF7F4;       /* cream */
+            --text-dark: #3E3A36;
+            --text-muted: #8A7F75;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #FFFFFF;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            color: var(--text-dark);
+        }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 1rem 0;
+        }
+
+        .navbar .container-fluid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .navbar-brand {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-dark) !important;
+        }
+
+        .nav-link {
+            color: var(--text-dark) !important;
+            font-weight: 500;
+            margin: 0 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .logout-btn {
+            background: #2C2C2C;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 4px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        /* ================= HERO SECTION ================= */
+        .hero-section {
+            background: linear-gradient(135deg, #D4C4B8, #E8D8CC);
+            padding: 5rem 2rem;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .quiz-btn {
+            background: white;
+            color: var(--text-dark);
+            padding: 0.7rem 2rem;
+            border-radius: 4px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .quiz-btn:hover {
+            background: #f5f5f5;
+        }
+
+        /* ================= MAIN CONTAINER ================= */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* ================= SIDEBAR ================= */
+        .sidebar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #f0f0f0;
+            height: fit-content;
+        }
+
+        .sidebar-title {
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .badge-filter {
+            display: inline-block;
+            background: var(--secondary-color);
+            color: var(--text-dark);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .badge-filter .close {
+            cursor: pointer;
+            margin-left: 0.4rem;
+        }
+
+        .checkbox-item {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .checkbox-item input {
+            margin-right: 0.5rem;
+        }
+
+        /* Price Range */
+        .price-range {
+            margin: 1.5rem 0;
+        }
+
+        .price-label {
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .price-slider {
+            width: 100%;
+        }
+
+        /* ================= CONTENT ================= */
+        .content-area {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+
+        .filter-toggle {
+            background: var(--text-dark);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-toggle:hover {
+            background: #5a5a5a;
+        }
+
+        /* ================= PRODUCTS GRID ================= */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 240px;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .view-details-btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.6rem 1rem;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .view-details-btn:hover {
+            background: #B89673;
+            color: white;
+            text-decoration: none;
+        }
+
+        /* ================= MEMBERSHIP SECTION ================= */
+        .membership-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #c2a98d, #b49374);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .join-membership-btn {
+            background: linear-gradient(135deg, #c2a98d, #b49374);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 4px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .join-membership-btn:hover {
+            background: #9d8970;
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(194, 169, 141, 0.3);
+        }
+
+        .member-discount-badge {
+            display: inline-block;
+            background: #f0e8d8;
+            color: #8b7355;
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+        .no-products {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        /* ================= RESPONSIVE ================= */
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .search-bar {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <span class="navbar-brand">
+                <i class="fas fa-user-circle"></i> Scentify
+            </span>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <a class="nav-link" href="/customer/dashboard">Home</a>
+                <a class="nav-link" href="#">Order History</a>
+                <a class="nav-link" href="#">About Us</a>
+                <a th:if="${customer.isMember == false}" 
+                   href="/customer/membership" 
+                   class="join-membership-btn">
+                    <i class="fas fa-crown"></i> Join Membership
+                </a>
+                <span th:if="${customer.isMember == true}" class="membership-badge">
+                    <i class="fas fa-crown"></i> Premium Member
+                </span>
+                <a href="/logout" class="logout-btn">Log Out</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1 class="hero-title">Welcome to Scentify</h1>
+        <p class="hero-subtitle">Your personalized fragrance website</p>
+        <button class="quiz-btn">Take Quiz</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Sidebar Filters -->
+        <aside class="sidebar">
+            <div class="sidebar-title">Category</div>
+
+            <!-- Active Filters -->
+            <div class="filter-group">
+                <div>
+                    <span class="badge-filter">
+                        Woody <span class="close" onclick="this.parentElement.remove()">×</span>
+                    </span>
+                    <span class="badge-filter">
+                        Floral <span class="close" onclick="this.parentElement.remove()">×</span>
+                    </span>
+                    <span class="badge-filter">
+                        Fresh <span class="close" onclick="this.parentElement.remove()">×</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Filter Checkboxes -->
+            <div class="filter-group">
+                <label class="checkbox-item">
+                    <input type="checkbox" checked> Label<br><span style="font-size: 0.8rem; color: var(--text-muted);">Description</span>
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" checked> Label<br><span style="font-size: 0.8rem; color: var(--text-muted);">Description</span>
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" checked> Label<br><span style="font-size: 0.8rem; color: var(--text-muted);">Description</span>
+                </label>
+            </div>
+
+            <!-- Price Range -->
+            <div class="price-range">
+                <label class="price-label">Price</label>
+                <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
+                    <span>RM0</span>
+                    <input type="range" class="price-slider" min="0" max="500" value="250">
+                    <span>-100</span>
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div class="filter-group">
+                <div class="sidebar-title">Notes</div>
+                <label class="checkbox-item">
+                    <input type="checkbox" checked> Label
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" checked> Label
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" checked> Label
+                </label>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Search and Filter Bar -->
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="Search">
+                <button class="filter-toggle">
+                    <i class="fas fa-sliders-h"></i> Filter
+                </button>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="products-grid">
+                <div th:if="${#lists.isEmpty(approvedProducts)}" class="no-products">
+                    <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                    <p th:if="${search != null || category != null}">No products found. Try adjusting your filters.</p>
+                    <p th:unless="${search != null || category != null}">No products available at the moment.</p>
+                </div>
+
+                <div th:each="product : ${approvedProducts}" 
+                     class="product-card">
+                    <div class="product-image">
+                        <img th:src="${product.prodimage}" 
+                             th:alt="${product.productName}"
+                             onerror="this.src='https://via.placeholder.com/220x240?text=No+Image'">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name" th:text="${product.productName}">Perfume #1</h3>
+                        <div class="product-price" th:text="'RM' + ${#numbers.formatDecimal(product.price, 1, 0)}">RM0</div>
+                        <a th:href="'/customer/product/' + ${product.productId}"
+                           class="view-details-btn">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
