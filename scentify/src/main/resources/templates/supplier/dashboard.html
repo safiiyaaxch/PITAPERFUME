@@ -116,7 +116,7 @@
                               th:classappend="${'status-' + p.approvalStatus.toLowerCase()}"
                               th:text="${#strings.capitalize(p.approvalStatus)}"></span>
                     </td>
-                    <td th:text="${p.createdAt} ? ${#dates.format(p.createdAt, 'dd MMM yyyy')} : 'N/A'"></td>
+                    <td th:text="${p.createdAt} ? ${#temporals.format(p.createdAt, 'dd MMM yyyy')} : 'N/A'"></td>
                     <td>
                         <a class="btn btn-sm btn-info text-white"
                            th:href="@{/supplier/products/view/{id}(id=${p.productId})}"
