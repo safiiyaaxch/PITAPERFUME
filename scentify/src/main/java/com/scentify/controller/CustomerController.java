@@ -220,10 +220,12 @@ public class CustomerController {
         
         // Get available vouchers if customer is member
         List<PromotionVoucher> availableVouchers = List.of();
-        if (customer.getIsMember()) {
+        if (customer.getIsMember() != null && customer.getIsMember()) {
             availableVouchers = promotionVoucherRepository.findAll().stream()
                     .filter(v -> v.getEndDate() != null && v.getEndDate().isAfter(LocalDateTime.now()))
                     .filter(v -> v.getIsActive())
+                    .filter(v -> v.getVoucherProducts() != null && v.getVoucherProducts().stream()
+                            .anyMatch(vp -> vp.getProductId().equals(productId)))
                     .toList();
         }
         

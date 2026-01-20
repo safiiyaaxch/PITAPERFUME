@@ -281,10 +281,10 @@
             </div>
 
             <div th:if="${!vouchers.isEmpty()}" class="vouchers-grid">
-                <div th:each="voucher : ${vouchers}" class="voucher-card" th:onclick="'selectVoucher(this, ' + ${voucher.voucherId} + ', \'' + ${voucher.voucherCode} + '\', \'' + ${voucher.discountValue} + (${voucher.discountType == 'PERCENTAGE'} ? '% OFF' : '$ OFF') + '\')'">
-                    <div class="voucher-header">
+                <div th:each="voucher : ${vouchers}" class="voucher-card" th:onclick="'selectVoucher(this, ' + ${voucher.voucherId} + ', \'' + ${voucher.voucherCode} + '\', \'' + ${voucher.discountValue} + (${voucher.discountType == 'PERCENTAGE'} ? '% OFF' : 'RM OFF') + '\')'">
+                    <div class="voucher-content">
                         <span class="voucher-code" th:text="${voucher.voucherCode}"></span>
-                        <span class="discount-badge" th:text="${voucher.discountValue} + (${voucher.discountType == 'PERCENTAGE'} ? '% OFF' : '$ OFF')"></span>
+                        <span class="discount-badge" th:text="${voucher.discountValue} + (${voucher.discountType == 'PERCENTAGE'} ? '% OFF' : 'RM OFF')"></span>
                     </div>
 
                     <p class="voucher-description">Get amazing discount on your favorite perfumes!</p>

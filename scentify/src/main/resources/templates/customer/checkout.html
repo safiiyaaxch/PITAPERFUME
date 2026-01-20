@@ -436,7 +436,7 @@
                                     <input type="radio" name="voucherId" th:value="${voucher.voucherId}" onchange="calculateTotal()">
                                     <div class="voucher-info">
                                         <div class="voucher-code" th:text="${voucher.voucherCode}"></div>
-                                        <div class="voucher-discount" th:text="${voucher.discountValue} + (${voucher.discountType == 'PERCENTAGE'} ? '% OFF' : '$ OFF')"></div>
+                                        <div class="voucher-discount" th:text="${voucher.discountValue} + (${voucher.discountType == 'PERCENTAGE'} ? '% OFF' : 'RM OFF')"></div>
                                     </div>
                                 </label>
                             </div>
