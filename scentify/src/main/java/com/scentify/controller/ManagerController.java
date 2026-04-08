@@ -2,14 +2,23 @@ package com.scentify.controller;
 
 import com.scentify.model.Product;
 import com.scentify.model.User;
+import com.scentify.model.Supplier;
 import com.scentify.repository.ProductRepository;
+import com.scentify.repository.SupplierRepository;
 import com.scentify.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +32,9 @@ public class ManagerController {
     
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SupplierRepository supplierRepository;
     
     // ========== SESSION VALIDATION HELPER ==========
     private boolean isManagerLoggedIn(HttpSession session) {
@@ -34,56 +46,198 @@ public class ManagerController {
         return (User) session.getAttribute("loggedInUser");
     }
     
-    // ========== DASHBOARD ==========
-    @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
-        if (!isManagerLoggedIn(session)) {
-            return "redirect:/login";
+    // ========== MAIN DASHBOARD ==========
+        @GetMapping("/dashboard")
+        public String mainDashboard(HttpSession session, Model model) {
+            if (!isManagerLoggedIn(session)) {
+                return "redirect:/login";
+            }
+            
+            // Get lists for dashboard
+            List<Supplier> pendingSuppliers = supplierRepository.findByApprovalStatus("pending");
+            List<Supplier> approvedSuppliers = supplierRepository.findByApprovalStatus("approved");
+            List<Supplier> rejectedSuppliers = supplierRepository.findByApprovalStatus("rejected");
+            List<Product> pendingProducts = productRepository.findByApprovalStatus("pending");
+            
+            model.addAttribute("pendingSuppliers", pendingSuppliers.size());
+            model.addAttribute("approvedSuppliers", approvedSuppliers.size());
+            model.addAttribute("rejectedSuppliers", rejectedSuppliers.size());
+            model.addAttribute("pendingProducts", pendingProducts.size());
+            model.addAttribute("user", getLoggedInUser(session));
+            
+            return "manager/dashboard";
         }
-        
-        // Get all pending products across all suppliers
-        List<Product> pendingProducts = productRepository.findByApprovalStatus("pending");
-        List<Product> approvedProducts = productRepository.findByApprovalStatus("approved");
-        List<Product> rejectedProducts = productRepository.findByApprovalStatus("rejected");
-        
-        // Add supplier name to each product for display
-        for (Product product : pendingProducts) {
-            Optional<User> user = userRepository.findById(product.getUserId());
-            if (user.isPresent()) {
-                product.setSupplierName(user.get().getUsername());
-            } else {
-                product.setSupplierName("Unknown");
+
+        // ========== MANAGE SUPPLIERS SECTION ==========
+        @GetMapping("/suppliers")
+        public String manageSuppliersPage(HttpSession session, Model model) {
+            if (!isManagerLoggedIn(session)) {
+                return "redirect:/login";
+            }
+            
+            List<Supplier> pendingSuppliers = supplierRepository.findByApprovalStatus("pending");
+            List<Supplier> approvedSuppliers = supplierRepository.findByApprovalStatus("approved");
+            List<Supplier> rejectedSuppliers = supplierRepository.findByApprovalStatus("rejected");
+            
+            model.addAttribute("pendingSuppliers", pendingSuppliers);
+            model.addAttribute("approvedSuppliers", approvedSuppliers);
+            model.addAttribute("rejectedSuppliers", rejectedSuppliers);
+            model.addAttribute("user", getLoggedInUser(session));
+            
+            return "manager/manage-supplier/supplier-dashboard";
+        }
+
+        // ========== VIEW SUPPLIER DETAILS FOR APPROVAL ==========
+        @GetMapping("/suppliers/{id}")
+        public String viewSupplierForApproval(@PathVariable Integer id, 
+                                            HttpSession session, 
+                                            Model model) {
+            if (!isManagerLoggedIn(session)) {
+                return "redirect:/login";
+            }
+            
+            Optional<Supplier> supplierOpt = supplierRepository.findById(id);
+            if (supplierOpt.isEmpty()) {
+                return "redirect:/manager/suppliers";
+            }
+            
+            model.addAttribute("supplier", supplierOpt.get());
+            model.addAttribute("user", getLoggedInUser(session));
+            return "manager/manage-supplier/supplier-approval";
+        }
+
+        // ========== DOWNLOAD/VIEW PDF ==========
+        @GetMapping("/suppliers/{id}/pdf")
+        public ResponseEntity<?> downloadSupplierPDF(@PathVariable Integer id, 
+                                                    HttpSession session) {
+            if (!isManagerLoggedIn(session)) {
+                return ResponseEntity.status(401).build();
+            }
+            
+            Optional<Supplier> supplierOpt = supplierRepository.findById(id);
+            if (supplierOpt.isEmpty() || supplierOpt.get().getBusinessRegistration() == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            try {
+                String fileName = supplierOpt.get().getBusinessRegistration();
+                Path filePath = Paths.get("uploads/business-docs/" + fileName);
+                byte[] fileContent = Files.readAllBytes(filePath);
+                
+                return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(fileContent);
+            } catch (Exception e) {
+                System.out.println("Error downloading PDF: " + e.getMessage());
+                return ResponseEntity.notFound().build();
             }
         }
-        
-        for (Product product : approvedProducts) {
-            Optional<User> user = userRepository.findById(product.getUserId());
-            if (user.isPresent()) {
-                product.setSupplierName(user.get().getUsername());
-            } else {
-                product.setSupplierName("Unknown");
+
+        // ========== APPROVE SUPPLIER ==========
+        @PostMapping("/suppliers/{id}/approve")
+        public String approveSupplier(@PathVariable Integer id,
+                                    @RequestParam(required = false) String approvalNotes,
+                                    HttpSession session,
+                                    RedirectAttributes redirect) {
+            if (!isManagerLoggedIn(session)) {
+                return "redirect:/login";
             }
-        }
-        
-        for (Product product : rejectedProducts) {
-            Optional<User> user = userRepository.findById(product.getUserId());
-            if (user.isPresent()) {
-                product.setSupplierName(user.get().getUsername());
-            } else {
-                product.setSupplierName("Unknown");
+            
+            Optional<Supplier> supplierOpt = supplierRepository.findById(id);
+            if (supplierOpt.isEmpty()) {
+                redirect.addFlashAttribute("error", "Supplier not found");
+                return "redirect:/manager/suppliers";
             }
+            
+            try {
+                Supplier supplier = supplierOpt.get();
+                supplier.setApprovalStatus("approved");
+                supplier.setApprovalDate(LocalDateTime.now());
+                if (approvalNotes != null && !approvalNotes.trim().isEmpty()) {
+                    supplier.setApprovalNotes(approvalNotes);
+                }
+                supplier.setUpdatedAt(LocalDateTime.now());
+                supplierRepository.save(supplier);
+                
+                redirect.addFlashAttribute("success", "✓ Supplier '" + supplier.getBrandName() + "' has been approved!");
+                System.out.println("Supplier approved: " + id + " by manager: " + getLoggedInUser(session).getUserId());
+            } catch (Exception e) {
+                System.out.println("Error approving supplier: " + e.getMessage());
+                redirect.addFlashAttribute("error", "Failed to approve supplier");
+            }
+            
+            return "redirect:/manager/suppliers";
         }
-        
-        model.addAttribute("pendingProducts", pendingProducts);
-        model.addAttribute("approvedProducts", approvedProducts);
-        model.addAttribute("rejectedProducts", rejectedProducts);
-        
-        System.out.println("Manager Dashboard - Pending: " + pendingProducts.size() + 
-                          ", Approved: " + approvedProducts.size() + 
-                          ", Rejected: " + rejectedProducts.size());
-        
-        return "manager/products-dashboard";
-    }
+
+        // ========== REJECT SUPPLIER ==========
+        @PostMapping("/suppliers/{id}/reject")
+        public String rejectSupplier(@PathVariable Integer id,
+                                    @RequestParam(required = false) String approvalNotes,
+                                    HttpSession session,
+                                    RedirectAttributes redirect) {
+            if (!isManagerLoggedIn(session)) {
+                return "redirect:/login";
+            }
+            
+            Optional<Supplier> supplierOpt = supplierRepository.findById(id);
+            if (supplierOpt.isEmpty()) {
+                redirect.addFlashAttribute("error", "Supplier not found");
+                return "redirect:/manager/suppliers";
+            }
+            
+            try {
+                Supplier supplier = supplierOpt.get();
+                supplier.setApprovalStatus("rejected");
+                supplier.setApprovalDate(LocalDateTime.now());
+                if (approvalNotes != null && !approvalNotes.trim().isEmpty()) {
+                    supplier.setApprovalNotes(approvalNotes);
+                }
+                supplier.setUpdatedAt(LocalDateTime.now());
+                supplierRepository.save(supplier);
+                
+                redirect.addFlashAttribute("warning", "✗ Supplier '" + supplier.getBrandName() + "' has been rejected!");
+                System.out.println("Supplier rejected: " + id + " by manager: " + getLoggedInUser(session).getUserId());
+            } catch (Exception e) {
+                System.out.println("Error rejecting supplier: " + e.getMessage());
+                redirect.addFlashAttribute("error", "Failed to reject supplier");
+            }
+            
+            return "redirect:/manager/suppliers";
+        }
+
+        // ========== MANAGE PRODUCTS SECTION ==========
+        @GetMapping("/products")
+        public String manageProductsPage(HttpSession session, Model model) {
+            if (!isManagerLoggedIn(session)) {
+                return "redirect:/login";
+            }
+            
+            List<Product> pendingProducts = productRepository.findByApprovalStatus("pending");
+            List<Product> approvedProducts = productRepository.findByApprovalStatus("approved");
+            List<Product> rejectedProducts = productRepository.findByApprovalStatus("rejected");
+            
+            // Add supplier name to each product
+            for (Product product : pendingProducts) {
+                Optional<User> user = userRepository.findById(product.getUserId());
+                product.setSupplierName(user.isPresent() ? user.get().getUsername() : "Unknown");
+            }
+            for (Product product : approvedProducts) {
+                Optional<User> user = userRepository.findById(product.getUserId());
+                product.setSupplierName(user.isPresent() ? user.get().getUsername() : "Unknown");
+            }
+            for (Product product : rejectedProducts) {
+                Optional<User> user = userRepository.findById(product.getUserId());
+                product.setSupplierName(user.isPresent() ? user.get().getUsername() : "Unknown");
+            }
+            
+            model.addAttribute("pendingProducts", pendingProducts);
+            model.addAttribute("approvedProducts", approvedProducts);
+            model.addAttribute("rejectedProducts", rejectedProducts);
+            model.addAttribute("user", getLoggedInUser(session));
+            
+            return "manager/products-dashboard";
+        }
     
     // ========== APPROVE PRODUCT ==========
     @PostMapping("/products/approve/{id}")

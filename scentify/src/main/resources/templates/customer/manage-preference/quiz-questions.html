@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfume Quiz - Scentify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .quiz-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .quiz-header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .quiz-form {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .question-item {
+            margin-bottom: 50px;
+            animation: slideUp 0.5s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .question-item:nth-child(1) { animation-delay: 0s; }
+        .question-item:nth-child(2) { animation-delay: 0.1s; }
+        .question-item:nth-child(3) { animation-delay: 0.2s; }
+        .question-item:nth-child(4) { animation-delay: 0.3s; }
+        .question-item:nth-child(5) { animation-delay: 0.4s; }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .question-text {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .form-check {
+            margin-bottom: 15px;
+        }
+        
+        .form-check-input {
+            width: 20px;
+            height: 20px;
+            margin-top: 3px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+        
+        .form-check-label {
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 1.05em;
+            color: #555;
+            transition: all 0.3s ease;
+        }
+        
+        .form-check-input:checked ~ .form-check-label {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .form-check:hover .form-check-label {
+            color: #667eea;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 15px 50px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .back-link {
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+            font-size: 1.1em;
+        }
+        
+        .back-link:hover {
+            color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-header">
+        <a href="/customer/quiz/start" class="back-link">← Back</a>
+        <h1>✨ Fragrance Preference Quiz</h1>
+        <p>Answer these questions to find your perfect match!</p>
+    </div>
+    
+    <div class="progress-bar-container">
+        <span id="progressText">Loading questions...</span><br>
+        <div class="progress" style="height: 8px; margin-top: 10px; border-radius: 10px;">
+            <div class="progress-bar" id="progressBar" role="progressbar" style="width: 0%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); border-radius: 10px;"></div>
+        </div>
+    </div>
+    
+    <form class="quiz-form" id="quizForm" method="POST" action="/customer/quiz/submit">
+        <div id="questionsContainer">
+            <!-- Questions will load here -->
+            <div class="text-center" style="padding: 40px;">
+                <div class="spinner-border" style="color: #667eea;"></div>
+                <p style="margin-top: 20px; color: #667eea;">Loading questions...</p>
+            </div>
+        </div>
+        
+        <button type="submit" class="btn-submit" id="submitBtn">
+            Get My Recommendations 🎁
+        </button>
+    </form>
+    
+    <script>
+        // Load questions dynamically
+        document.addEventListener('DOMContentLoaded', function() {
+            loadQuestions();
+            setupFormTracking();
+        });
+        
+        function loadQuestions() {
+            const questions = [
+                {
+                    order: 1,
+                    text: "🌸 What vibes do you get from flowers and plants?",
+                    fieldName: "q1",
+                    options: ["Floral", "Fresh", "Woody", "Spicy", "Fruity"]
+                },
+                {
+                    order: 2,
+                    text: "🌊 What's your comfort zone with fragrance strength?",
+                    fieldName: "q2",
+                    options: ["Light", "Moderate", "Strong", "Very Strong"]
+                },
+                {
+                    order: 3,
+                    text: "📍 When do you usually wear fragrance?",
+                    fieldName: "q3",
+                    options: ["Daily", "Professional", "Evening", "Active", "Versatile"]
+                },
+                {
+                    order: 4,
+                    text: "What feels most comfortable on you?",
+                    fieldName: "q4",
+                    options: [
+                        { label: "Fresh and airy, like morning breeze", value: "spring" },
+                        { label: "Bright and citrusy, super refreshing", value: "summer" },
+                        { label: "Soft warmth, cozy but not heavy", value: "fall" },
+                        { label: "Deep, rich and intense", value: "winter" },
+                        { label: "Something that works anytime", value: "year_round" }
+                    ]
+                },
+                {
+                    order: 5,
+                    text: "👥 What fragrance style speaks to you?",
+                    fieldName: "q5",
+                    options: ["Feminine", "Masculine", "Unisex"]
+                },
+                {
+                    order: 6,
+                    text: "💥 First impression matters - what catches your nose?",
+                    fieldName: "q6",
+                    options: ["Citrus", "Herbal", "Fruity", "Spicy", "Floral"]
+                },
+                {
+                    order: 7,
+                    text: "🎯 As the day goes on, what stays with you?",
+                    fieldName: "q7",
+                    options: ["Musk", "Vanilla", "Woody", "Patchouli", "Clean"]
+                },
+                {
+                    order: 8,
+                    text: "🔥❄️ Temperature check - warm or cool?",
+                    fieldName: "q8",
+                    options: ["Cool", "Warm", "Balanced"]
+                },
+                {
+                    order: 9,
+                    text: "🍰 How do you feel about sweet smells?",
+                    fieldName: "q9",
+                    options: ["Not sweet", "Slightly sweet", "Moderately sweet", "Very sweet", "Gourmand"]
+                },
+                {
+                    order: 10,
+                    text: "🌿 Real vs Fancy - which do you prefer?",
+                    fieldName: "q10",
+                    options: ["Natural", "Slightly abstract", "Creative", "No preference"]
+                }
+            ];
+            
+            const totalQuestions = questions.length;
+            let html = '';
+            
+            questions.forEach((question, index) => {
+                html += `
+                    <div class="question-item">
+                        <div class="question-text">${question.text}</div>
+                        <div>
+                `;
+                
+                question.options.forEach(option => {
+                    const inputId = `${question.fieldName}_${option.replace(/\s+/g, '_')}`;
+                    html += `
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="${question.fieldName}" id="${inputId}" value="${option}" required>
+                            <label class="form-check-label" for="${inputId}">
+                                ${option}
+                            </label>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('questionsContainer').innerHTML = html;
+            updateProgress();
+            
+            // Track changes for progress
+            document.querySelectorAll('input[type="radio"]').forEach(input => {
+                input.addEventListener('change', updateProgress);
+            });
+        }
+        
+        function updateProgress() {
+            const total = document.querySelectorAll('input[type="radio"]').length / 4; // Assuming 4 options per Q on average
+            const answered = document.querySelectorAll('input[type="radio"]:checked').length;
+            
+            const percentage = Math.round((answered / 10) * 100);
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = `Progress: ${answered}/10 questions answered`;
+            
+            // Enable submit button only when all questions are answered
+            const submitBtn = document.getElementById('submitBtn');
+            if (answered === 10) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Get My Recommendations 🎁';
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `Answer all questions (${answered}/10)`;
+            }
+        }
+        
+        function setupFormTracking() {
+            document.getElementById('quizForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+                submitBtn.disabled = true;
+                this.submit();
+            });
+        }
+    </script>
+</body>
+</html>

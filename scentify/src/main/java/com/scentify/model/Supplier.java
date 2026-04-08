@@ -40,6 +40,9 @@ public class Supplier {
     @Column(name = "updated_date")
     private LocalDateTime updatedAt;
 
+    @Column(name = "approvalNotes", columnDefinition = "TEXT")
+    private String approvalNotes;
+
     @PrePersist
     protected void onCreate() {
         this.createdDate = LocalDateTime.now();

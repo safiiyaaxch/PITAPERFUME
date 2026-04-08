@@ -29,7 +29,7 @@ public class LoginController {
 
     @GetMapping("/")
     public String home() {
-        return "index";
+        return "redirect:/login";
     }
 
     // ================= LOGIN =================
@@ -68,6 +68,15 @@ public class LoginController {
             return "redirect:/login";
         }
 
+        // Check if supplier is approved
+        if ("supplier".equalsIgnoreCase(user.getRole())) {
+            Supplier supplier = supplierRepository.findByUser(user).orElse(null);
+            if (supplier == null || !"approved".equalsIgnoreCase(supplier.getApprovalStatus())) {
+                redirect.addFlashAttribute("error", "Your account is pending approval from our team. Please come back in 2-3 business days to check your status.");
+                return "redirect:/login";
+            }
+        }
+
         session.setAttribute("loggedInUser", user);
 
         String role = user.getRole().toLowerCase();
@@ -101,6 +110,8 @@ public class LoginController {
             model.addAttribute("error", switch (error) {
                 case "password-mismatch" -> "Passwords do not match";
                 case "password-short" -> "Password must be at least 6 characters";
+                case "password-uppercase" -> "Password must contain at least one uppercase letter";
+                case "password-number" -> "Password must contain at least one number";
                 case "username-taken" -> "Username already exists";
                 case "email-taken" -> "Email already registered";
                 case "invalid-role" -> "Invalid role selected";
@@ -131,12 +142,18 @@ public class LoginController {
 
         role = role.trim().toLowerCase();
 
-        // 🔒 validations
+        // validations
         if (!password.equals(confirmPassword))
             return "redirect:/signup?error=password-mismatch";
 
         if (password.length() < 6)
             return "redirect:/signup?error=password-short";
+
+        if (!password.matches(".*[A-Z].*"))
+            return "redirect:/signup?error=password-uppercase";
+
+        if (!password.matches(".*\\d.*"))
+            return "redirect:/signup?error=password-number";
 
         if (userRepository.existsByUsername(username))
             return "redirect:/signup?error=username-taken";
@@ -191,6 +208,15 @@ public class LoginController {
         }
 
         return "redirect:/signup?success=true";
+    }
+
+    // ================= CHECK USERNAME AVAILABILITY =================
+
+    @GetMapping("/api/check-username")
+    @ResponseBody
+    public java.util.Map<String, Boolean> checkUsername(@RequestParam String username) {
+        boolean exists = userRepository.existsByUsername(username);
+        return java.util.Map.of("exists", exists);
     }
 
     // ================= FILE SAVE =================

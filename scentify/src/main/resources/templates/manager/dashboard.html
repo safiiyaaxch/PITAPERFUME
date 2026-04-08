@@ -2,334 +2,372 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manager Dashboard - Scentify</title>
+    <title>Manager Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #fdfcfa 0%, #f5ede6 100%);
+        min-height: 100vh;
+    }
+
+    /* Navbar */
+    .navbar {
+        background: linear-gradient(135deg, #667eea, #764ba2) !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .navbar-brand {
+        font-family: 'Playfair Display', serif;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+
+    /* Main Container */
+    .main-container {
+        min-height: calc(100vh - 100px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+    }
+
+    /* Dashboard Cards */
+    .dashboard-card {
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        border: none;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 80px rgba(0,0,0,0.15);
+    }
+
+    .card-body {
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        height: 100%;
+    }
+
+    .card-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+        margin-top: 10px;
+    }
+
+    .manage-supplier .card-icon {
+        color: #667eea;
+    }
+
+    .manage-products .card-icon {
+        color: #c2a98d;
+    }
+
+    .manage-membership .card-icon {
+        color: #48c6a6;
+    }
+
+    .card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 32px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #5a4a42;
+    }
+
+    .card-description {
+        font-size: 16px;
+        color: #8b7355;
+        margin-bottom: 30px;
+        line-height: 1.6;
+    }
+
+    .card-link {
+        text-decoration: none;
+        display: block;
+        height: 100%;
+        padding: 0;
+    }
+
+    .card-link:hover {
+        text-decoration: none;
+    }
+
+    /* Action Button */
+    .action-btn {
+        padding: 14px 40px;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        border: none;
+        color: white;
+    }
+
+    .btn-manage-supplier {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .btn-manage-supplier:hover {
+        background: linear-gradient(135deg, #764ba2, #6a4ba3);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-manage-products {
+        background: linear-gradient(135deg, #c2a98d, #b49374);
+    }
+
+    .btn-manage-products:hover {
+        background: linear-gradient(135deg, #b49374, #9d7d62);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-manage-membership {
+        background: linear-gradient(135deg, #48c6a6, #3ab89a);
+    }
+
+    .btn-manage-membership:hover {
+        background: linear-gradient(135deg, #3ab89a, #2eac88);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Badge */
+    .badge-pending {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #ff6b6b;
+        color: white;
+        padding: 8px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    /* Stats Section */
+    .stats-row {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 2px solid rgba(0,0,0,0.05);
+    }
+
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .stat-number {
+        font-family: 'Playfair Display', serif;
+        font-size: 28px;
+        font-weight: 600;
+        color: #5a4a42;
+    }
+
+    .stat-label {
+        font-size: 12px;
+        color: #8b7355;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Header */
+    .header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 48px;
+        font-weight: 600;
+        color: #5a4a42;
+        margin-bottom: 10px;
+    }
+
+    .header p {
+        font-size: 18px;
+        color: #8b7355;
+    }
+
+    .logout-btn {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        background: white;
+        color: #667eea;
+        padding: 10px 18px;
+        border-radius: 14px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        border: none;
+    }
+
+    .logout-btn:hover {
+        opacity: 0.9;
+        color: #667eea;
+    }
+
+    .card-wrapper {
+        position: relative;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .main-container {
+            padding: 30px 20px;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #fdfcfa;
-            min-height: 100vh;
+        .card-body {
             padding: 30px;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+        .card-title {
+            font-size: 24px;
         }
 
-        /* HEADER */
-        .header {
-            background: white;
-            padding: 20px 25px;
-            border-radius: 18px;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.08);
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .card-icon {
+            font-size: 48px;
         }
 
         .header h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 26px;
-            color: #5c4a3f;
+            font-size: 36px;
+        }
+
+        .header p {
+            font-size: 16px;
         }
 
         .logout-btn {
-            background: linear-gradient(135deg, #c2a98d, #b49374);
-            color: white;
-            padding: 10px 18px;
-            border-radius: 14px;
-            text-decoration: none;
-            font-size: 14px;
-            border: none;
-        }
-
-        .logout-btn:hover {
-            opacity: 0.9;
-        }
-
-        /* ALERTS */
-        .alerts {
-            margin-bottom: 25px;
-        }
-
-        .alert {
-            padding: 14px 18px;
-            border-radius: 14px;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-        }
-
-        .alert-success {
-            background: #eef6f1;
-            color: #2f6b47;
-        }
-
-        .alert-warning {
-            background: #fdf3e6;
-            color: #8a6a2f;
-        }
-
-        .alert-error {
-            background: #f8ecec;
-            color: #8b2f2f;
-        }
-
-        /* SECTION CARD */
-        .section {
-            background: white;
-            padding: 25px;
-            border-radius: 18px;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.08);
-            margin-bottom: 30px;
-        }
-
-        .section h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 22px;
-            color: #5c4a3f;
+            position: static;
             margin-bottom: 20px;
-            border-bottom: 2px solid #e8ddd2;
-            padding-bottom: 10px;
         }
-
-        /* STATS */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .stat-box {
-            background: #f7f2ef;
-            padding: 22px;
-            border-radius: 18px;
-            text-align: center;
-        }
-
-        .stat-box h3 {
-            font-size: 32px;
-            color: #b49374;
-            margin-bottom: 5px;
-        }
-
-        .stat-box p {
-            font-size: 14px;
-            color: #6b5c52;
-        }
-
-        /* SUPPLIER CARD */
-        .supplier-card {
-            background: #faf7f5;
-            padding: 18px;
-            margin-bottom: 15px;
-            border-radius: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 5px solid #c2a98d;
-        }
-
-        .supplier-card.approved {
-            border-left-color: #7aa38d;
-        }
-
-        .supplier-card.rejected {
-            border-left-color: #c26a6a;
-        }
-
-        .supplier-info h3 {
-            font-size: 18px;
-            color: #4a3b32;
-            margin-bottom: 5px;
-        }
-
-        .supplier-info p {
-            font-size: 13px;
-            color: #6b5c52;
-            margin: 2px 0;
-        }
-
-        /* STATUS BADGES */
-        .supplier-status {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 999px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-top: 6px;
-        }
-
-        .status-pending {
-            background: #fdf3e6;
-            color: #8a6a2f;
-        }
-
-        .status-approved {
-            background: #eef6f1;
-            color: #2f6b47;
-        }
-
-        .status-rejected {
-            background: #f8ecec;
-            color: #8b2f2f;
-        }
-
-        /* ACTION BUTTONS */
-        .actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn {
-            padding: 8px 14px;
-            border-radius: 14px;
-            font-size: 13px;
-            font-weight: 500;
-            border: none;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .btn-view {
-            background: #b49374;
-            color: white;
-        }
-
-        .btn-approve {
-            background: #7aa38d;
-            color: white;
-        }
-
-        .btn-reject {
-            background: #c26a6a;
-            color: white;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-        }
-
-        /* EMPTY STATE */
-        .empty-message {
-            text-align: center;
-            padding: 25px;
-            color: #9a8f86;
-            font-style: italic;
-        }
+    }
     </style>
-
 </head>
 <body>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <span class="navbar-brand">Scentify Manager</span>
+        <div class="ms-auto">
+            <span class="text-light me-3" th:text="'Welcome, ' + ${user?.username}"></span>
+            <a class="btn btn-sm btn-outline-light" href="/logout">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="main-container">
     <div class="container">
         <div class="header">
-            <h1>🏢 Manager Dashboard</h1>
-            <a href="/logout" class="logout-btn">Logout</a>
+            <h1>Manager Dashboard</h1>
+            <p>Select what you'd like to manage</p>
         </div>
 
-        <!-- Alerts -->
-        <div class="alerts">
-            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-            <div th:if="${warning}" class="alert alert-warning" th:text="${warning}"></div>
-            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
-        </div>
+        <div class="row g-4">
+            <!-- Manage Suppliers Card -->
+            <div class="col-md-4">
+                <div class="card-wrapper">
+                    <a href="/manager/suppliers" class="card-link">
+                        <div class="card dashboard-card manage-supplier">
+                            <div th:if="${pendingSuppliers > 0}" class="badge-pending" th:text="${pendingSuppliers} + ' Pending'"></div>
+                            <div class="card-body">
+                                <div class="card-icon">
+                                    <i class="fas fa-store"></i>
+                                </div>
+                                <h2 class="card-title">Manage Suppliers</h2>
+                                <p class="card-description">
+                                    Review and approve supplier registrations. Verify business documentation and manage supplier status.
+                                </p>
+                                <div class="stats-row">
+                                    <div class="stat-item">
+                                        <div class="stat-number" th:text="${pendingSuppliers}"></div>
+                                        <div class="stat-label">Pending Approval</div>
+                                    </div>
+                                </div>
+                                <button class="action-btn btn-manage-supplier mt-4">
+                                    <i class="fas fa-arrow-right me-2"></i> Review Suppliers
+                                </button>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
 
-        <!-- Statistics -->
-        <div class="section">
-            <div class="stats">
-                <div class="stat-box">
-                    <h3 th:text="${pendingSuppliers.size()}">0</h3>
-                    <p>Pending Approval</p>
-                </div>
-                <div class="stat-box">
-                    <h3 th:text="${approvedSuppliers.size()}">0</h3>
-                    <p>Approved Suppliers</p>
-                </div>
-                <div class="stat-box">
-                    <h3 th:text="${rejectedSuppliers.size()}">0</h3>
-                    <p>Rejected Suppliers</p>
+            <!-- Manage Products Card -->
+            <div class="col-md-4">
+                <div class="card-wrapper">
+                    <a href="/manager/products" class="card-link">
+                        <div class="card dashboard-card manage-products">
+                            <div th:if="${pendingProducts > 0}" class="badge-pending" th:text="${pendingProducts} + ' Pending'"></div>
+                            <div class="card-body">
+                                <div class="card-icon">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <h2 class="card-title">Approve Products</h2>
+                                <p class="card-description">
+                                    Review product submissions from suppliers. Approve or reject products for the catalog.
+                                </p>
+                                <div class="stats-row">
+                                    <div class="stat-item">
+                                        <div class="stat-number" th:text="${pendingProducts}"></div>
+                                        <div class="stat-label">Pending Approval</div>
+                                    </div>
+                                </div>
+                                <button class="action-btn btn-manage-products mt-4">
+                                    <i class="fas fa-arrow-right me-2"></i> Review Products
+                                </button>
+                            </div>
+                        </div>
+                    </a>
                 </div>
             </div>
-        </div>
 
-        <!-- Pending Suppliers -->
-        <div class="section">
-            <h2>⏳ Pending Supplier Approvals</h2>
-            <div th:if="${!pendingSuppliers.isEmpty()}" th:each="supplier : ${pendingSuppliers}">
-                <div class="supplier-card">
-                    <div class="supplier-info">
-                        <h3 th:text="${supplier.brandName}"></h3>
-                        <p><strong>User:</strong> <span th:text="${supplier.user.username}"></span></p>
-                        <p><strong>Email:</strong> <span th:text="${supplier.user.email}"></span></p>
-                        <p><strong>Applied:</strong> <span th:text="${#temporals.format(supplier.createdDate, 'yyyy-MM-dd HH:mm')}"></span></p>
-                        <span class="supplier-status status-pending">PENDING</span>
-                    </div>
-                    <div class="actions">
-                        <a th:href="@{/manager/supplier/{id}(id=${supplier.supplierId})}" class="btn btn-view">View Details</a>
-                        <form th:action="@{/manager/approve/{id}(id=${supplier.supplierId})}" method="POST" style="display: inline;">
-                            <button type="submit" class="btn btn-approve">Approve</button>
-                        </form>
-                        <form th:action="@{/manager/reject/{id}(id=${supplier.supplierId})}" method="POST" style="display: inline;">
-                            <button type="submit" class="btn btn-reject">Reject</button>
-                        </form>
-                    </div>
+            <!-- Manage Membership Card -->
+            <div class="col-md-4">
+                <div class="card-wrapper">
+                    <a href="/manager/membership" class="card-link">
+                        <div class="card dashboard-card manage-membership">
+                            <div class="card-body">
+                                <div class="card-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <h2 class="card-title">Manage Membership</h2>
+                                <p class="card-description">
+                                    Monitor customer membership, loyalty points, and subscription management.
+                                </p>
+                                <div class="stats-row">
+                                    <div class="stat-item">
+                                        <div class="stat-number">0</div>
+                                        <div class="stat-label">Active Members</div>
+                                    </div>
+                                </div>
+                                <button class="action-btn btn-manage-membership mt-4">
+                                    <i class="fas fa-arrow-right me-2"></i> Manage Members
+                                </button>
+                            </div>
+                        </div>
+                    </a>
                 </div>
-            </div>
-            <div th:if="${pendingSuppliers.isEmpty()}" class="empty-message">
-                No pending supplier approvals
-            </div>
-        </div>
-
-        <!-- Approved Suppliers -->
-        <div class="section">
-            <h2>Approved Suppliers</h2>
-            <div th:if="${!approvedSuppliers.isEmpty()}" th:each="supplier : ${approvedSuppliers}">
-                <div class="supplier-card approved">
-                    <div class="supplier-info">
-                        <h3 th:text="${supplier.brandName}"></h3>
-                        <p><strong>User:</strong> <span th:text="${supplier.user.username}"></span></p>
-                        <p><strong>Email:</strong> <span th:text="${supplier.user.email}"></span></p>
-                        <p><strong>Approved:</strong> <span th:text="${#temporals.format(supplier.approvalDate, 'yyyy-MM-dd HH:mm')}"></span></p>
-                        <span class="supplier-status status-approved">APPROVED</span>
-                    </div>
-                    <div class="actions">
-                        <a th:href="@{/manager/supplier/{id}(id=${supplier.supplierId})}" class="btn btn-view">View Details</a>
-                    </div>
-                </div>
-            </div>
-            <div th:if="${approvedSuppliers.isEmpty()}" class="empty-message">
-                No approved suppliers yet
-            </div>
-        </div>
-
-        <!-- Rejected Suppliers -->
-        <div class="section">
-            <h2>Rejected Suppliers</h2>
-            <div th:if="${!rejectedSuppliers.isEmpty()}" th:each="supplier : ${rejectedSuppliers}">
-                <div class="supplier-card rejected">
-                    <div class="supplier-info">
-                        <h3 th:text="${supplier.brandName}"></h3>
-                        <p><strong>User:</strong> <span th:text="${supplier.user.username}"></span></p>
-                        <p><strong>Email:</strong> <span th:text="${supplier.user.email}"></span></p>
-                        <span class="supplier-status status-rejected">REJECTED</span>
-                    </div>
-                    <div class="actions">
-                        <a th:href="@{/manager/supplier/{id}(id=${supplier.supplierId})}" class="btn btn-view">View Details</a>
-                    </div>
-                </div>
-            </div>
-            <div th:if="${rejectedSuppliers.isEmpty()}" class="empty-message">
-                No rejected suppliers
             </div>
         </div>
     </div>
+</div>
+
+<script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

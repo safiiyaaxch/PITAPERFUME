@@ -50,6 +50,42 @@ public class Product {
     @Column(name = "updatedAt")
     private LocalDateTime updatedAt;
     
+    @Column(length = 50)
+    private String fragranceFamily; // Floral, Woody, Fresh, Spicy, Fruity, Gourmand
+
+    @Column(length = 50)
+    private String topNotes; // Citrus, Herbal, Fruity, Spicy, Floral
+
+    @Column(length = 50)
+    private String middleNotes; // Floral, Fruity, Spicy
+
+    @Column(length = 50)
+    private String baseNotes; // Musk, Vanilla, Woody, Patchouli, Clean
+
+    @Column(length = 50)
+    private String sillage; // Skin scent, Personal, Room, Powerful
+
+    @Column(length = 50)
+    private String longevity; // Short, Medium, Long, Very Long
+
+    @Column(length = 50)
+    private String intensity; // Light, Moderate, Strong, Very Strong
+
+    @Column(length = 50)
+    private String season; // Spring, Summer, Fall, Winter, Year-round
+
+    @Column(length = 50)
+    private String occasion; // Daily, Professional, Evening, Active, Versatile
+
+    @Column(length = 50)
+    private String genderExpression; // Feminine, Masculine, Unisex
+
+    @Column(length = 50)
+    private Integer sweetness; // 1-5
+
+    @Column(length = 50)
+    private String naturalness; // Natural, Synthetic, Abstract
+
     // Pre-persist callback to set timestamps
     @PrePersist
     protected void onCreate() {

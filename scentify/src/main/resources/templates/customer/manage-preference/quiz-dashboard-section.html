@@ -1,0 +1,42 @@
+<!-- ADD THIS SECTION TO YOUR CUSTOMER DASHBOARD HTML -->
+
+<!-- Manage Preference / Quiz Section -->
+<div class="card shadow-lg" style="margin-bottom: 30px; border-radius: 15px; overflow: hidden; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border: 2px solid #667eea30;">
+    <div class="card-body p-5">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h3 class="card-title" style="color: #667eea; font-weight: 700; margin-bottom: 10px;">
+                    ✨ Find Your Perfect Fragrance
+                </h3>
+                <p class="card-text text-muted" style="font-size: 1.05em; line-height: 1.6;">
+                    Discover perfumes tailored to your unique taste! Our intelligent quiz analyzes your preferences 
+                    and recommends the 3 most suitable fragrances from our collection. It only takes 2-3 minutes!
+                </p>
+                <div style="margin-top: 15px;">
+                    <div class="badge bg-success me-2">✓ Fun & Interactive</div>
+                    <div class="badge bg-info me-2">✓ AI-Powered</div>
+                    <div class="badge bg-warning">✓ Personalized</div>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div style="font-size: 4em; margin-bottom: 15px;">🌸</div>
+                <a href="/customer/quiz/start" class="btn btn-primary btn-lg" 
+                   style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; padding: 12px 30px; font-weight: 600; border-radius: 10px; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);">
+                    Start Quiz Now 🚀
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Recommendations (if available) -->
+<div th:if="${hasRecommendations}" class="card shadow-sm" style="margin-bottom: 30px; border-radius: 15px;">
+    <div class="card-header bg-light" style="border-radius: 15px 15px 0 0; padding: 20px;">
+        <h5 class="mb-0" style="color: #333; font-weight: 600;">📦 Your Recent Recommendations</h5>
+    </div>
+    <div class="card-body p-4">
+        <a href="/customer/quiz/history" class="btn btn-outline-primary btn-sm">
+            View Your Recommendation History
+        </a>
+    </div>
+</div>

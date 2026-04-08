@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfume Preference Quiz - Scentify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .quiz-container {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            text-align: center;
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .quiz-title {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .quiz-subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        
+        .emoji-large {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        
+        .quiz-description {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            color: #555;
+        }
+        
+        .btn-start-quiz {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        
+        .btn-start-quiz:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .features {
+            text-align: left;
+            margin-top: 30px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            color: #555;
+        }
+        
+        .feature-icon {
+            color: #667eea;
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+        
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 1.1em;
+        }
+        
+        .back-link:hover {
+            color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <a href="/customer/dashboard" class="back-link">← Back to Dashboard</a>
+    
+    <div class="quiz-container">
+        <div class="emoji-large">✨</div>
+        
+        <h1 class="quiz-title">Discover Your Perfect Fragrance</h1>
+        
+        <p class="quiz-subtitle">
+            Take our fun and interactive quiz to find perfumes that match your unique taste and preferences!
+        </p>
+        
+        <div class="quiz-description">
+            <strong>How it works:</strong><br>
+            Answer 10 simple questions about your scent preferences, and our intelligent system will recommend
+            the 3 most suitable perfumes just for you! 🎯
+        </div>
+        
+        <div class="features">
+            <div class="feature-item">
+                <span class="feature-icon">⏱️</span>
+                <span><strong>Takes only 2-3 minutes</strong></span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">🎯</span>
+                <span><strong>Personalized recommendations</strong> based on your answers</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">💡</span>
+                <span><strong>AI-powered matching</strong> with our entire perfume catalog</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">🛍️</span>
+                <span><strong>Easy checkout</strong> for your favorite recommendations</span>
+            </div>
+        </div>
+        
+        <a href="/customer/quiz/questions" class="btn btn-start-quiz btn-lg">
+            Start the Quiz Now 🚀
+        </a>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

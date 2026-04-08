@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # MySQL Database Container
+  mysql:
+    image: mysql:8.0
+    container_name: scentify_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: scentify_db
+      MYSQL_USER: scentify_user
+      MYSQL_PASSWORD: scentify_password
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - scentify_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Your Spring Boot App Container
+  app:
+    build:
+      context: ./scentify
+      dockerfile: Dockerfile
+    container_name: scentify_app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/scentify_db
+      SPRING_DATASOURCE_USERNAME: scentify_user
+      SPRING_DATASOURCE_PASSWORD: scentify_password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8080:8080"
+    networks:
+      - scentify_network
+
+volumes:
+  mysql_data:
+
+networks:
+  scentify_network:
+    driver: bridge

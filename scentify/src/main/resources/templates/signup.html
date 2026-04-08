@@ -49,7 +49,19 @@
 
                         <h3 class="text-center mb-3">Create Account</h3>
 
-                        <form th:action="@{/signup}" method="post" enctype="multipart/form-data">
+                        <!-- Backend Error Alert -->
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <!-- Backend Success Alert -->
+                        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <form th:action="@{/signup}" method="post" enctype="multipart/form-data" id="signupForm">
 
                             <!-- ROLE -->
                             <input type="hidden" id="roleInput" name="role" value="customer">
@@ -62,20 +74,37 @@
                             <!-- CUSTOMER -->
                             <div id="customerForm" class="form-section active">
                                 <input class="form-control mb-2" name="fullname" placeholder="Full name">
-                                <input class="form-control mb-2" name="username" placeholder="Username">
+                                <input class="form-control mb-2" id="customerUsername" name="username" placeholder="Username">
+                                <small id="customerUsernameError" class="text-danger d-none">This username is already taken</small>
                                 <input class="form-control mb-2" type="email" name="email" placeholder="Email">
-                                <input class="form-control mb-2" type="password" name="password" placeholder="Password">
-                                <input class="form-control mb-2" type="password" name="confirmPassword" placeholder="Confirm password">
+                                <input class="form-control mb-2" type="password" name="password" 
+                                    id="customerPassword" placeholder="Password (min 6 chars, 1 uppercase, 1 number)"
+                                    minlength="6" required>
+                                <small id="customerPasswordError" class="text-danger d-none">
+                                    Password must be at least 6 characters with 1 uppercase letter and 1 number
+                                </small>
+                                
+                                <input class="form-control mb-2" type="password" name="confirmPassword" 
+                                    id="customerConfirm" placeholder="Confirm password" required>
+                                <small id="confirmError" class="text-danger d-none">Passwords do not match</small>
                             </div>
 
                             <!-- SUPPLIER -->
                             <div id="supplierForm" class="form-section">
                                 <input class="form-control mb-2" name="fullname" placeholder="Brand name">
-                                <input class="form-control mb-2" name="username" placeholder="Username">
+                                <input class="form-control mb-2" id="supplierUsername" name="username" placeholder="Username">
+                                <small id="supplierUsernameError" class="text-danger d-none">This username is already taken</small>
                                 <input class="form-control mb-2" type="email" name="email" placeholder="Email">
-                                <input class="form-control mb-2" type="password" name="password" placeholder="Password">
-                                <input class="form-control mb-2" type="password" name="confirmPassword" placeholder="Confirm password">
+                               
+                                <input class="form-control mb-2" type="password" name="password" 
+                                    id="supplierPassword" placeholder="Password (min 6 chars, 1 uppercase, 1 number)"
+                                    minlength="6" required>
+                                <input class="form-control mb-2" type="password" name="confirmPassword" id="supplierConfirm" placeholder="Confirm password" required>
 
+                                <small id="supplierPasswordError" class="text-danger d-none">
+                                    Password must be at least 6 characters with 1 uppercase letter and 1 number
+                                </small>
+                                <small id="supplierConfirmError" class="text-danger d-none">Passwords do not match</small>
                                 <div class="upload-area mt-3" id="uploadArea">
                                     📄 Upload business proof (PDF)
                                     <input type="file" id="businessProof" name="businessProof" hidden accept=".pdf">
@@ -83,9 +112,15 @@
                                 <small id="fileName"></small>
                             </div>
 
-                            <button type="submit" id="submitBtn" class="btn btn-scentify w-100 text-white mt-3">
+            <button type="submit" id="submitBtn" class="btn btn-scentify w-100 text-white mt-3">
                                 Create Account
                             </button>
+
+                            <!-- ERROR ALERT -->
+                            <div id="errorAlert" class="alert alert-danger mt-3 d-none" role="alert">
+                                <strong>Please fix the following errors:</strong>
+                                <ul id="errorList" class="mb-0 mt-2"></ul>
+                            </div>
 
                         </form>
 
@@ -143,9 +178,160 @@
         submitBtn.textContent = 'Submit Application';
     }
 
-    // INITIAL STATE — IMPORTANT
+    // PASSWORD VALIDATION
+    function validatePassword(passwordInput, errorElement, minLength = 6) {
+        const password = passwordInput.value;
+        const hasUppercase = /[A-Z]/.test(password);
+        const hasNumber = /\d/.test(password);
+        const isLongEnough = password.length >= minLength;
+
+        if (!password) return true; // empty is handled by 'required'
+        
+        if (!isLongEnough || !hasUppercase || !hasNumber) {
+            errorElement.classList.remove('d-none');
+            return false;
+        } else {
+            errorElement.classList.add('d-none');
+            return true;
+        }
+    }
+
+    // CONFIRM PASSWORD MATCH
+    function validateConfirmPassword(passwordInput, confirmInput, errorElement) {
+        if (passwordInput.value && confirmInput.value && passwordInput.value !== confirmInput.value) {
+            errorElement.classList.remove('d-none');
+            return false;
+        } else {
+            errorElement.classList.add('d-none');
+            return true;
+        }
+    }
+
+    // USERNAME UNIQUENESS CHECK
+    function checkUsernameAvailability(usernameInput, errorElement) {
+        const username = usernameInput.value.trim();
+        
+        if (!username) {
+            errorElement.classList.add('d-none');
+            return;
+        }
+
+        fetch('/api/check-username?username=' + encodeURIComponent(username))
+            .then(response => response.json())
+            .then(data => {
+                if (data.exists) {
+                    errorElement.classList.remove('d-none');
+                } else {
+                    errorElement.classList.add('d-none');
+                }
+            })
+            .catch(error => console.error('Error checking username:', error));
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
-        activateCustomer();
+        const customerPassword = document.getElementById('customerPassword');
+        const customerConfirm = document.getElementById('customerConfirm');
+        const customerUsername = document.getElementById('customerUsername');
+        const supplierPassword = document.getElementById('supplierPassword');
+        const supplierConfirm = document.getElementById('supplierConfirm');
+        const supplierUsername = document.getElementById('supplierUsername');
+        const signupForm = document.getElementById('signupForm');
+        const errorAlert = document.getElementById('errorAlert');
+        const errorList = document.getElementById('errorList');
+
+        // Customer username validation
+        customerUsername.addEventListener('blur', () => {
+            checkUsernameAvailability(customerUsername, document.getElementById('customerUsernameError'));
+        });
+
+        // Customer password validation
+        customerPassword.addEventListener('blur', () => {
+            validatePassword(customerPassword, document.getElementById('customerPasswordError'));
+        });
+        customerPassword.addEventListener('input', () => {
+            validatePassword(customerPassword, document.getElementById('customerPasswordError'));
+            validateConfirmPassword(customerPassword, customerConfirm, document.getElementById('confirmError'));
+        });
+
+        customerConfirm.addEventListener('blur', () => {
+            validateConfirmPassword(customerPassword, customerConfirm, document.getElementById('confirmError'));
+        });
+        customerConfirm.addEventListener('input', () => {
+            validateConfirmPassword(customerPassword, customerConfirm, document.getElementById('confirmError'));
+        });
+
+        // Supplier username validation
+        supplierUsername.addEventListener('blur', () => {
+            checkUsernameAvailability(supplierUsername, document.getElementById('supplierUsernameError'));
+        });
+
+        // Supplier password validation
+        supplierPassword.addEventListener('blur', () => {
+            validatePassword(supplierPassword, document.getElementById('supplierPasswordError'));
+        });
+        supplierPassword.addEventListener('input', () => {
+            validatePassword(supplierPassword, document.getElementById('supplierPasswordError'));
+            validateConfirmPassword(supplierPassword, supplierConfirm, document.getElementById('supplierConfirmError'));
+        });
+
+        supplierConfirm.addEventListener('blur', () => {
+            validateConfirmPassword(supplierPassword, supplierConfirm, document.getElementById('supplierConfirmError'));
+        });
+        supplierConfirm.addEventListener('input', () => {
+            validateConfirmPassword(supplierPassword, supplierConfirm, document.getElementById('supplierConfirmError'));
+        });
+
+        // FORM SUBMISSION VALIDATION
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            errorList.innerHTML = '';
+            errorAlert.classList.add('d-none');
+
+            const currentRole = roleInput.value;
+            const passwordInput = currentRole === 'customer' ? customerPassword : supplierPassword;
+            const confirmInput = currentRole === 'customer' ? customerConfirm : supplierConfirm;
+            const usernameInput = currentRole === 'customer' ? customerUsername : supplierUsername;
+
+            let errors = [];
+
+            // Check password requirements
+            const password = passwordInput.value;
+            if (!password) {
+                errors.push('Password is required');
+            } else {
+                if (password.length < 6) {
+                    errors.push('Password must be at least 6 characters');
+                }
+                if (!/[A-Z]/.test(password)) {
+                    errors.push('Password must contain at least one uppercase letter');
+                }
+                if (!/\d/.test(password)) {
+                    errors.push('Password must contain at least one number');
+                }
+            }
+
+            // Check confirm password
+            if (!confirmInput.value) {
+                errors.push('Please confirm your password');
+            } else if (password !== confirmInput.value) {
+                errors.push('Passwords do not match');
+            }
+
+            // Show errors if any
+            if (errors.length > 0) {
+                errors.forEach(error => {
+                    const li = document.createElement('li');
+                    li.textContent = error;
+                    errorList.appendChild(li);
+                });
+                errorAlert.classList.remove('d-none');
+            } else {
+                // All validations passed, submit the form
+                signupForm.submit();
+            }
+        });
+
+        activateCustomer(); 
     });
 
     // ROLE CLICK HANDLERS

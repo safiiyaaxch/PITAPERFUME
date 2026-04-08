@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Review Supplier - Scentify</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #fdfcfa 0%, #f5ede6 100%);
+        min-height: 100vh;
+        padding: 30px 20px;
+    }
+
+    .navbar {
+        background: linear-gradient(135deg, #667eea, #764ba2) !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+
+    .page-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 32px;
+        color: #5a4a42;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .page-title i {
+        color: #667eea;
+    }
+
+    .details-container {
+        background: white;
+        border-radius: 18px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+        padding: 40px;
+        margin-bottom: 30px;
+    }
+
+    .supplier-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 40px;
+        padding-bottom: 30px;
+        border-bottom: 2px solid #e8ddd2;
+    }
+
+    .supplier-info h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 24px;
+        color: #5a4a42;
+        margin-bottom: 20px;
+    }
+
+    .info-row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #5a4a42;
+        min-width: 150px;
+    }
+
+    .info-value {
+        color: #666;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-approved {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-rejected {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    /* PDF Viewer Section */
+    .pdf-section {
+        margin: 40px 0;
+        padding: 30px;
+        background: #f8f7f5;
+        border-radius: 14px;
+        border: 2px dashed #ddd;
+    }
+
+    .pdf-section h4 {
+        font-family: 'Playfair Display', serif;
+        font-size: 18px;
+        color: #5a4a42;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .pdf-viewer {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        overflow: hidden;
+        height: 600px;
+        margin-bottom: 15px;
+    }
+
+    .pdf-viewer iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .pdf-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .pdf-buttons a {
+        flex: 1;
+        padding: 12px;
+        border-radius: 10px;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-view-pdf {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-view-pdf:hover {
+        background: #764ba2;
+        color: white;
+    }
+
+    .btn-download-pdf {
+        background: #48c6a6;
+        color: white;
+    }
+
+    .btn-download-pdf:hover {
+        background: #3ab89a;
+        color: white;
+    }
+
+    /* Approval Form */
+    .approval-form {
+        background: white;
+        border-radius: 14px;
+        padding: 30px;
+        border: 2px solid #667eea;
+    }
+
+    .approval-form h4 {
+        font-family: 'Playfair Display', serif;
+        font-size: 18px;
+        color: #5a4a42;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #5a4a42;
+        margin-bottom: 8px;
+    }
+
+    .form-textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .form-textarea:focus {
+        border-color: #667eea;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .action-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 25px;
+    }
+
+    .btn-approve {
+        background: linear-gradient(135deg, #27ae60, #229954);
+        color: white;
+        padding: 14px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 16px;
+    }
+
+    .btn-approve:hover {
+        background: linear-gradient(135deg, #229954, #1e8449);
+        transform: translateY(-2px);
+    }
+
+    .btn-reject {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        padding: 14px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 16px;
+    }
+
+    .btn-reject:hover {
+        background: linear-gradient(135deg, #c0392b, #a93226);
+        transform: translateY(-2px);
+    }
+
+    .btn-back {
+        background: #667eea;
+        color: white;
+        padding: 14px 30px;
+        border: none;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 30px;
+    }
+
+    .btn-back:hover {
+        background: #764ba2;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .supplier-header {
+            grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+            grid-template-columns: 1fr;
+        }
+
+        .pdf-viewer {
+            height: 400px;
+        }
+    }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <span class="navbar-brand">Scentify Manager</span>
+        <div class="ms-auto">
+            <a href="/manager/suppliers" class="btn btn-sm btn-outline-light">Back to Suppliers</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <a href="/manager/suppliers" class="btn-back">
+        <i class="fas fa-arrow-left me-2"></i> Back to Suppliers
+    </a>
+
+    <h1 class="page-title">
+        <i class="fas fa-store"></i>
+        Review Supplier Application
+    </h1>
+
+    <!-- Supplier Details -->
+    <div class="details-container">
+        <div class="supplier-header">
+            <div class="supplier-info">
+                <h3 th:text="${supplier.brandName}"></h3>
+                <div class="info-row">
+                    <span class="info-label">Status:</span>
+                    <span th:class="'status-badge status-' + ${supplier.approvalStatus.toLowerCase()}" 
+                          th:text="${supplier.approvalStatus.toUpperCase()}"></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Username:</span>
+                    <span class="info-value" th:text="${supplier.user.username}"></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value" th:text="${supplier.user.email}"></span>
+                </div>
+            </div>
+
+            <div class="supplier-info">
+                <h3>Application Details</h3>
+                <div class="info-row">
+                    <span class="info-label">Applied Date:</span>
+                    <span class="info-value" th:text="${#temporals.format(supplier.createdDate, 'MMM dd, yyyy HH:mm')}"></span>
+                </div>
+                <div class="info-row" th:if="${supplier.approvalDate != null}">
+                    <span class="info-label">Review Date:</span>
+                    <span class="info-value" th:text="${#temporals.format(supplier.approvalDate, 'MMM dd, yyyy HH:mm')}"></span>
+                </div>
+                <div class="info-row" th:if="${supplier.approvalNotes != null}">
+                    <span class="info-label">Notes:</span>
+                    <span class="info-value" th:text="${supplier.approvalNotes}"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PDF Section -->
+        <div class="pdf-section">
+            <h4>
+                <i class="fas fa-file-pdf" style="color: #e74c3c;"></i>
+                Business Documentation
+            </h4>
+            
+            <div th:if="${supplier.businessRegistration != null}">
+                <!-- PDF Viewer -->
+                <div class="pdf-viewer">
+                    <iframe th:src="@{/manager/suppliers/{id}/pdf(id=${supplier.supplierId})}" style="border: none;"></iframe>
+                </div>
+
+                <!-- PDF Buttons -->
+                <div class="pdf-buttons">
+                    <a th:href="@{/manager/suppliers/{id}/pdf(id=${supplier.supplierId})}" 
+                       class="pdf-buttons a btn-view-pdf" target="_blank">
+                        <i class="fas fa-eye me-2"></i> View in Browser
+                    </a>
+                    <form th:action="@{/manager/suppliers/{id}/pdf(id=${supplier.supplierId})}" method="get" style="flex: 1;">
+                        <button type="submit" class="btn-download-pdf" style="width: 100%; border: none; padding: 12px;">
+                            <i class="fas fa-download me-2"></i> Download PDF
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div th:if="${supplier.businessRegistration == null}" style="padding: 20px; text-align: center; color: #999;">
+                <i class="fas fa-info-circle me-2"></i> No business documentation provided
+            </div>
+        </div>
+    </div>
+
+    <!-- Approval Form -->
+    <div th:if="${supplier.approvalStatus.toLowerCase() == 'pending'}" class="approval-form">
+        <h4>Make a Decision</h4>
+        
+        <div class="form-group">
+            <label class="form-label">Review Notes (Optional)</label>
+            <textarea class="form-textarea" id="approvalNotes" placeholder="Add any notes about this application..."></textarea>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn-approve" onclick="approveSupplier()">
+                <i class="fas fa-check me-2"></i> Approve Supplier
+            </button>
+            <button class="btn-reject" onclick="rejectSupplier()">
+                <i class="fas fa-times me-2"></i> Reject Supplier
+            </button>
+        </div>
+    </div>
+
+    <div th:if="${supplier.approvalStatus.toLowerCase() != 'pending'}" style="text-align: center; padding: 30px; color: #999;">
+        <i class="fas fa-check-circle" style="font-size: 48px; color: #27ae60; margin-bottom: 15px; display: block;"></i>
+        This supplier has already been <span th:text="${supplier.approvalStatus.toLowerCase()}"></span>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    function approveSupplier() {
+        const supplierId = /*[[${supplier.supplierId}]]*/ 0;
+        const notes = document.getElementById('approvalNotes').value;
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/manager/suppliers/' + supplierId + '/approve';
+        
+        const notesInput = document.createElement('input');
+        notesInput.type = 'hidden';
+        notesInput.name = 'approvalNotes';
+        notesInput.value = notes;
+        
+        form.appendChild(notesInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    function rejectSupplier() {
+        if (confirm('Are you sure you want to reject this supplier?')) {
+            const supplierId = /*[[${supplier.supplierId}]]*/ 0;
+            const notes = document.getElementById('approvalNotes').value;
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/manager/suppliers/' + supplierId + '/reject';
+            
+            const notesInput = document.createElement('input');
+            notesInput.type = 'hidden';
+            notesInput.name = 'approvalNotes';
+            notesInput.value = notes;
+            
+            form.appendChild(notesInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+</script>
+
+<script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

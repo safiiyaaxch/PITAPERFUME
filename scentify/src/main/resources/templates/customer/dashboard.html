@@ -8,9 +8,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #C4A484;      /* beige */
-            --secondary-color: #E6D3C1;    /* soft nude */
-            --accent-color: #FAF7F4;       /* cream */
+            --primary-color: #C4A484;    
+            --secondary-color: #E6D3C1;     
+            --accent-color: #FAF7F4;     
             --text-dark: #3E3A36;
             --text-muted: #8A7F75;
         }
@@ -347,6 +347,131 @@
             font-weight: 600;
             margin-left: 0.5rem;
         }
+
+        /* ================= QUIZ CARD SECTION ================= */
+        .quiz-card-container {
+            background: linear-gradient(135deg, #E8D5C4 0%, #D4B8A3 100%);
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            margin-left: 2rem;
+            margin-right: 2rem;
+            margin-top: -1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 2rem;
+            align-items: center;
+            transition: all 0.3s ease;
+            max-width: 1400px;
+        }
+
+        .quiz-card-container:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .quiz-content h2 {
+            color: var(--text-dark);
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .quiz-content p {
+            color: var(--text-dark);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-features {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .quiz-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .quiz-feature-icon {
+            font-size: 1.3rem;
+        }
+
+        .quiz-start-btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 6px;
+            border: none;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .quiz-start-btn:hover {
+            background: #9d8970;
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(194, 169, 141, 0.4);
+        }
+
+        .quiz-emoji-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .quiz-emoji-large {
+            font-size: 4rem;
+        }
+
+        .quiz-subtitle-small {
+            color: var(--text-dark);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .quiz-card-container {
+                grid-template-columns: 1fr;
+                padding: 1.5rem;
+                text-align: center;
+                margin-left: 1rem;
+                margin-right: 1rem;
+            }
+
+            .quiz-features {
+                justify-content: center;
+            }
+
+            .quiz-emoji-large {
+                font-size: 3rem;
+            }
+
+            .quiz-start-btn {
+                width: 100%;
+                padding: 0.9rem 1.5rem;
+            }
+
+            .quiz-content h2 {
+                font-size: 1.5rem;
+            }
+        }
+
         .no-products {
             grid-column: 1 / -1;
             text-align: center;
@@ -407,7 +532,38 @@
     <div class="hero-section">
         <h1 class="hero-title">Welcome to Scentify</h1>
         <p class="hero-subtitle">Your personalized fragrance website</p>
-        <button class="quiz-btn">Take Quiz</button>
+        <a href="/customer/quiz/start" class="quiz-btn" style="text-decoration: none; color: inherit; cursor: pointer;">Take Quiz</a>
+    </div>
+
+    <!-- Quiz Card Section -->
+    <div class="quiz-card-container">
+        <div class="quiz-content">
+            <h2>✨ Discover Your Perfect Fragrance</h2>
+            <p>Take our fun and interactive quiz to find the 3 perfumes that match your unique taste and preferences!</p>
+            <div class="quiz-features">
+                <div class="quiz-feature">
+                    <span class="quiz-feature-icon">⏱️</span>
+                    <span>2-3 minutes</span>
+                </div>
+                <div class="quiz-feature">
+                    <span class="quiz-feature-icon">🎯</span>
+                    <span>Personalized</span>
+                </div>
+                <div class="quiz-feature">
+                    <span class="quiz-feature-icon">💡</span>
+                    <span>AI-Powered</span>
+                </div>
+                <div class="quiz-feature">
+                    <span class="quiz-feature-icon">🛍️</span>
+                    <span>Easy Checkout</span>
+                </div>
+            </div>
+            <a href="/customer/quiz/start" class="quiz-start-btn">Start the Quiz Now →</a>
+        </div>
+        <div class="quiz-emoji-container">
+            <div class="quiz-emoji-large">🌸</div>
+            <p class="quiz-subtitle-small">Let us help you find your signature scent</p>
+        </div>
     </div>
 
     <!-- Main Content -->
