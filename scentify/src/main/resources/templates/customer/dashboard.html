@@ -513,6 +513,9 @@
             </span>
             <div class="ms-auto d-flex align-items-center gap-3">
                 <a class="nav-link" href="/customer/dashboard">Home</a>
+                <a class="nav-link" href="/customer/cart">
+                    <i class="fas fa-shopping-cart"></i> Cart
+                </a>
                 <a class="nav-link" href="#">Order History</a>
                 <a class="nav-link" href="#">About Us</a>
                 <a th:if="${customer.isMember == false}" 
@@ -535,36 +538,6 @@
         <a href="/customer/quiz/start" class="quiz-btn" style="text-decoration: none; color: inherit; cursor: pointer;">Take Quiz</a>
     </div>
 
-    <!-- Quiz Card Section -->
-    <div class="quiz-card-container">
-        <div class="quiz-content">
-            <h2>✨ Discover Your Perfect Fragrance</h2>
-            <p>Take our fun and interactive quiz to find the 3 perfumes that match your unique taste and preferences!</p>
-            <div class="quiz-features">
-                <div class="quiz-feature">
-                    <span class="quiz-feature-icon">⏱️</span>
-                    <span>2-3 minutes</span>
-                </div>
-                <div class="quiz-feature">
-                    <span class="quiz-feature-icon">🎯</span>
-                    <span>Personalized</span>
-                </div>
-                <div class="quiz-feature">
-                    <span class="quiz-feature-icon">💡</span>
-                    <span>AI-Powered</span>
-                </div>
-                <div class="quiz-feature">
-                    <span class="quiz-feature-icon">🛍️</span>
-                    <span>Easy Checkout</span>
-                </div>
-            </div>
-            <a href="/customer/quiz/start" class="quiz-start-btn">Start the Quiz Now →</a>
-        </div>
-        <div class="quiz-emoji-container">
-            <div class="quiz-emoji-large">🌸</div>
-            <p class="quiz-subtitle-small">Let us help you find your signature scent</p>
-        </div>
-    </div>
 
     <!-- Main Content -->
     <div class="main-container">

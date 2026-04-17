@@ -378,6 +378,11 @@
                         <a class="nav-link" href="/customer/dashboard">Home</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="/customer/cart">
+                            <i class="fas fa-shopping-cart"></i> Cart
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="#">Order History</a>
                     </li>
                     <li class="nav-item">
@@ -415,18 +420,33 @@
                 <div class="product-price">
                     <span class="currency">RM</span><span th:text="${#numbers.formatDecimal(product.price, 1, 0)}">290</span>
                 </div>
-                    
-                <a th:if="${product.stock > 0}"
-                   th:href="'/customer/checkout?productId=' + ${product.productId}"
-                   class="buy-now-btn"
-                   style="text-decoration: none; display: inline-block;">
-                    Buy Now
-                </a>
                 
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 1rem; margin-bottom: 2rem; width: 100%;">
+                    <!-- Add to Cart Button -->
+                    <form th:if="${product.stock > 0}" method="post" th:action="'/customer/cart/add'" style="flex: 1; width: 100%; margin: 0;">
+                        <input type="hidden" name="productId" th:value="${product.productId}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="buy-now-btn" style="background-color: #E6D3C1; color: #6b5b58; width: 100%; margin-bottom: 0;">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                    </form>
+
+                    <!-- Buy Now Button -->
+                    <a th:if="${product.stock > 0}"
+                       th:href="'/customer/checkout-product?productId=' + ${product.productId}"
+                       class="buy-now-btn"
+                       style="text-decoration: none; display: flex; align-items: center; justify-content: center; flex: 1; margin-bottom: 0; background: var(--primary-color); color: white;">
+                        <i class="fas fa-creditcard" style="margin-right: 0.5rem;"></i> Buy Now
+                    </a>
+                </div>
+                
+                <!-- Out of Stock Button -->
                 <button 
                     class="buy-now-btn"
                     disabled
-                    th:if="${product.stock <= 0}">
+                    th:if="${product.stock <= 0}"
+                    style="margin-bottom: 2rem;">
                     Out of Stock
                 </button>
 

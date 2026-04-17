@@ -4,15 +4,20 @@ import com.scentify.model.Customer;
 import com.scentify.model.Product;
 import com.scentify.model.PromotionVoucher;
 import com.scentify.model.User;
+import com.scentify.model.ShoppingCart;
+import com.scentify.model.CartItem;
 import com.scentify.repository.CustomerRepository;
 import com.scentify.repository.ProductRepository;
 import com.scentify.repository.PromotionVoucherRepository;
 import com.scentify.repository.UserRepository;
+import com.scentify.repository.ShoppingCartRepository;
+import com.scentify.repository.CartItemRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +37,12 @@ public class CustomerController {
 
     @Autowired
     private PromotionVoucherRepository promotionVoucherRepository;
+
+    @Autowired
+    private ShoppingCartRepository shoppingCartRepository;
+
+    @Autowired
+    private CartItemRepository cartItemRepository;
     
     // ========== SESSION VALIDATION HELPER ==========
     private boolean isCustomerLoggedIn(HttpSession session) {
@@ -191,8 +202,8 @@ public class CustomerController {
     }
 
     // ========== CHECKOUT ==========
-    @GetMapping("/checkout")
-    public String checkout(@RequestParam String productId,
+    @GetMapping("/checkout-product")
+    public String checkoutProduct(@RequestParam String productId,
                           HttpSession session, 
                           Model model) {
         
@@ -234,7 +245,335 @@ public class CustomerController {
         model.addAttribute("user", user);
         model.addAttribute("availableVouchers", availableVouchers);
         
+        // Create a dummy cart with the product for single product checkout
+        ShoppingCart dummyCart = new ShoppingCart();
+        CartItem dummyItem = new CartItem();
+        dummyItem.setProduct(product);
+        dummyItem.setQuantity(1);
+        dummyCart.addCartItem(dummyItem);
+        model.addAttribute("cart", dummyCart);
+        
         return "customer/checkout";
+    }
+
+    // ========== SHOPPING CART ==========
+    @PostMapping("/cart/add")
+    public String addToCart(@RequestParam String productId,
+                           @RequestParam(defaultValue = "1") Integer quantity,
+                           HttpSession session,
+                           RedirectAttributes redirect) {
+        
+        if (!isCustomerLoggedIn(session)) {
+            return "redirect:/login";
+        }
+
+        try {
+            User user = getLoggedInUser(session);
+            Optional<Customer> customerOpt = customerRepository.findByUser(user);
+            
+            if (customerOpt.isEmpty()) {
+                redirect.addFlashAttribute("error", "Customer not found");
+                return "redirect:/customer/dashboard";
+            }
+
+            Customer customer = customerOpt.get();
+            
+            // Get or create shopping cart
+            Optional<ShoppingCart> cartOpt = shoppingCartRepository.findByCustomer(customer);
+            ShoppingCart cart = cartOpt.orElseGet(() -> new ShoppingCart(customer));
+
+            // Get product
+            Optional<Product> productOpt = productRepository.findById(productId);
+            if (productOpt.isEmpty()) {
+                redirect.addFlashAttribute("error", "Product not found");
+                return "redirect:/customer/dashboard";
+            }
+
+            Product product = productOpt.get();
+            
+            // Check if product already in cart
+            Optional<CartItem> existingItem = cartItemRepository
+                    .findByCart_CartIdAndProduct_ProductId(cart.getCartId(), productId);
+            
+            if (existingItem.isPresent()) {
+                // Update quantity
+                CartItem item = existingItem.get();
+                item.setQuantity(item.getQuantity() + quantity);
+                item.setUpdatedAt(LocalDateTime.now());
+                cartItemRepository.save(item);
+            } else {
+                // Add new item
+                CartItem newItem = new CartItem(cart, product, quantity);
+                cart.addCartItem(newItem);
+            }
+
+            cart.setUpdatedAt(LocalDateTime.now());
+            shoppingCartRepository.save(cart);
+            
+            redirect.addFlashAttribute("success", "Product added to cart!");
+            return "redirect:/customer/cart";
+        } catch (Exception e) {
+            System.out.println("Error adding to cart: " + e.getMessage());
+            e.printStackTrace();
+            redirect.addFlashAttribute("error", "Failed to add product to cart");
+            return "redirect:/customer/dashboard";
+        }
+    }
+
+    @GetMapping("/cart")
+    public String viewCart(HttpSession session, Model model) {
+        
+        if (!isCustomerLoggedIn(session)) {
+            return "redirect:/login";
+        }
+
+        try {
+            User user = getLoggedInUser(session);
+            Optional<Customer> customerOpt = customerRepository.findByUser(user);
+
+            if (customerOpt.isEmpty()) {
+                return "redirect:/customer/dashboard";
+            }
+
+            Customer customer = customerOpt.get();
+            Optional<ShoppingCart> cartOpt = shoppingCartRepository.findByCustomer(customer);
+
+            ShoppingCart cart = cartOpt.orElseGet(() -> new ShoppingCart(customer));
+            
+            model.addAttribute("cart", cart);
+            model.addAttribute("user", user);
+            model.addAttribute("customer", customer);
+            
+            return "customer/cart";
+        } catch (Exception e) {
+            System.out.println("Error viewing cart: " + e.getMessage());
+            e.printStackTrace();
+            return "redirect:/customer/dashboard";
+        }
+    }
+
+    @PostMapping("/cart/update")
+    public String updateCartItem(@RequestParam Long cartItemId,
+                                @RequestParam Integer quantity,
+                                HttpSession session,
+                                RedirectAttributes redirect) {
+        
+        if (!isCustomerLoggedIn(session)) {
+            return "redirect:/login";
+        }
+
+        try {
+            Optional<CartItem> itemOpt = cartItemRepository.findById(cartItemId);
+            
+            if (itemOpt.isEmpty()) {
+                redirect.addFlashAttribute("error", "Item not found");
+                return "redirect:/customer/cart";
+            }
+
+            CartItem item = itemOpt.get();
+            
+            if (quantity <= 0) {
+                cartItemRepository.delete(item);
+                redirect.addFlashAttribute("success", "Item removed from cart");
+            } else {
+                item.setQuantity(quantity);
+                item.setUpdatedAt(LocalDateTime.now());
+                cartItemRepository.save(item);
+                redirect.addFlashAttribute("success", "Item updated");
+            }
+            
+            return "redirect:/customer/cart";
+        } catch (Exception e) {
+            System.out.println("Error updating cart item: " + e.getMessage());
+            redirect.addFlashAttribute("error", "Failed to update cart item");
+            return "redirect:/customer/cart";
+        }
+    }
+
+    @PostMapping("/cart/remove/{cartItemId}")
+    public String removeFromCart(@PathVariable Long cartItemId,
+                               HttpSession session,
+                               RedirectAttributes redirect) {
+        
+        if (!isCustomerLoggedIn(session)) {
+            return "redirect:/login";
+        }
+
+        try {
+            Optional<CartItem> itemOpt = cartItemRepository.findById(cartItemId);
+            
+            if (itemOpt.isPresent()) {
+                cartItemRepository.delete(itemOpt.get());
+                redirect.addFlashAttribute("success", "Item removed from cart");
+            } else {
+                redirect.addFlashAttribute("error", "Item not found");
+            }
+            
+            return "redirect:/customer/cart";
+        } catch (Exception e) {
+            System.out.println("Error removing cart item: " + e.getMessage());
+            redirect.addFlashAttribute("error", "Failed to remove item");
+            return "redirect:/customer/cart";
+        }
+    }
+
+    @PostMapping("/cart/checkout")
+    public String checkoutFromCart(HttpSession session, RedirectAttributes redirect) {
+        
+        if (!isCustomerLoggedIn(session)) {
+            return "redirect:/login";
+        }
+
+        try {
+            User user = getLoggedInUser(session);
+            Optional<Customer> customerOpt = customerRepository.findByUser(user);
+
+            if (customerOpt.isEmpty()) {
+                redirect.addFlashAttribute("error", "Customer not found");
+                return "redirect:/customer/dashboard";
+            }
+
+            Customer customer = customerOpt.get();
+            Optional<ShoppingCart> cartOpt = shoppingCartRepository.findByCustomer(customer);
+
+            if (cartOpt.isEmpty() || cartOpt.get().getCartItems().isEmpty()) {
+                redirect.addFlashAttribute("error", "Your cart is empty");
+                return "redirect:/customer/cart";
+            }
+
+            // Store cart ID in session for checkout process
+            session.setAttribute("cartCheckout", cartOpt.get().getCartId());
+            
+            return "redirect:/customer/checkout";
+        } catch (Exception e) {
+            System.out.println("Error during cart checkout: " + e.getMessage());
+            redirect.addFlashAttribute("error", "Failed to proceed to checkout");
+            return "redirect:/customer/cart";
+        }
+    }
+
+    @GetMapping("/checkout")
+    public String checkout(HttpSession session, Model model) {
+        
+        if (!isCustomerLoggedIn(session)) {
+            return "redirect:/login";
+        }
+
+        try {
+            User user = getLoggedInUser(session);
+            Optional<Customer> customerOpt = customerRepository.findByUser(user);
+
+            if (customerOpt.isEmpty()) {
+                return "redirect:/customer/dashboard";
+            }
+
+            Customer customer = customerOpt.get();
+            Optional<ShoppingCart> cartOpt = shoppingCartRepository.findByCustomer(customer);
+
+            if (cartOpt.isEmpty() || cartOpt.get().getCartItems().isEmpty()) {
+                return "redirect:/customer/cart?error=Cart is empty";
+            }
+
+            ShoppingCart cart = cartOpt.get();
+            
+            // Get available vouchers for cart items
+            List<PromotionVoucher> availableVouchers = List.of();
+            if (customer.getIsMember() != null && customer.getIsMember()) {
+                availableVouchers = promotionVoucherRepository.findAll().stream()
+                        .filter(v -> v.getEndDate() != null && v.getEndDate().isAfter(LocalDateTime.now()))
+                        .filter(v -> v.getIsActive())
+                        .toList();
+            }
+            
+            model.addAttribute("cart", cart);
+            model.addAttribute("customer", customer);
+            model.addAttribute("user", user);
+            model.addAttribute("availableVouchers", availableVouchers);
+            
+            return "customer/checkout";
+        } catch (Exception e) {
+            System.out.println("Error in cart checkout: " + e.getMessage());
+            e.printStackTrace();
+            return "redirect:/customer/dashboard";
+        }
+    }
+
+    @PostMapping("/checkout-confirm")
+    public String checkoutConfirm(@RequestParam(required = false) String recipientName,
+                                 @RequestParam(required = false) String phoneNumber,
+                                 @RequestParam(required = false) String shippingAddress,
+                                 @RequestParam(required = false) String city,
+                                 @RequestParam(required = false) String country,
+                                 @RequestParam(required = false) String voucherId,
+                                 @RequestParam(required = false) Long cartId,
+                                 HttpSession session,
+                                 RedirectAttributes redirect) {
+        
+        if (!isCustomerLoggedIn(session)) {
+            return "redirect:/login";
+        }
+
+        try {
+            User user = getLoggedInUser(session);
+            Optional<Customer> customerOpt = customerRepository.findByUser(user);
+
+            if (customerOpt.isEmpty()) {
+                redirect.addFlashAttribute("error", "Customer not found");
+                return "redirect:/customer/dashboard";
+            }
+
+            Customer customer = customerOpt.get();
+            Optional<ShoppingCart> cartOpt = shoppingCartRepository.findByCustomer(customer);
+
+            if (cartOpt.isEmpty() || cartOpt.get().getCartItems().isEmpty()) {
+                redirect.addFlashAttribute("error", "Your cart is empty");
+                return "redirect:/customer/cart";
+            }
+
+            ShoppingCart cart = cartOpt.get();
+
+            // Process stock reduction for each cart item
+            for (CartItem item : cart.getCartItems()) {
+                Optional<Product> productOpt = productRepository.findById(item.getProduct().getProductId());
+                if (productOpt.isPresent()) {
+                    Product product = productOpt.get();
+                    
+                    // Check if sufficient stock available
+                    if (product.getStock() < item.getQuantity()) {
+                        redirect.addFlashAttribute("error", 
+                            "Insufficient stock for " + product.getProductName() + 
+                            ". Available: " + product.getStock() + ", Requested: " + item.getQuantity());
+                        return "redirect:/customer/cart";
+                    }
+
+                    // Reduce stock
+                    product.setStock(product.getStock() - item.getQuantity());
+                    product.setUpdatedAt(LocalDateTime.now());
+                    productRepository.save(product);
+                    
+                    System.out.println("Stock reduced for product " + product.getProductId() + 
+                            " by " + item.getQuantity() + " units. New stock: " + product.getStock());
+                }
+            }
+
+            // Clear the shopping cart after successful checkout
+            cartItemRepository.deleteAll(cart.getCartItems());
+            cart.setUpdatedAt(LocalDateTime.now());
+            shoppingCartRepository.save(cart);
+
+            redirect.addFlashAttribute("success", 
+                "Order placed successfully! Thank you for your purchase.");
+            
+            System.out.println("Checkout completed for customer " + customer.getCustomerId() + 
+                    ". Cart cleared.");
+            
+            return "redirect:/customer/dashboard";
+        } catch (Exception e) {
+            System.out.println("Error during checkout confirmation: " + e.getMessage());
+            e.printStackTrace();
+            redirect.addFlashAttribute("error", "Failed to process checkout");
+            return "redirect:/customer/cart";
+        }
     }
 }
 
