@@ -4,9 +4,11 @@ import com.scentify.model.Product;
 import com.scentify.model.User;
 import com.scentify.model.PromotionVoucher;
 import com.scentify.model.VoucherProduct;
+import com.scentify.model.Review;
 import com.scentify.repository.ProductRepository;
 import com.scentify.repository.PromotionVoucherRepository;
 import com.scentify.repository.VoucherProductRepository;
+import com.scentify.repository.ReviewRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +40,9 @@ public class SupplierController {
     @Autowired
     private VoucherProductRepository voucherProductRepository;
     
+    @Autowired
+    private ReviewRepository reviewRepository;
+    
     // ========== SESSION VALIDATION HELPER ==========
     private boolean isSupplierLoggedIn(HttpSession session) {
         User user = (User) session.getAttribute("loggedInUser");
@@ -65,9 +70,17 @@ public class SupplierController {
         List<PromotionVoucher> allVouchers = promotionVoucherRepository.findBySupplierIdAndIsActive(loggedInUser.getUserId(), true);
         int totalVouchers = allVouchers.size();
         
+        // Get total reviews count
+        int totalReviews = 0;
+        for (Product product : allProducts) {
+            List<Review> reviews = reviewRepository.findByProduct_ProductId(product.getProductId());
+            totalReviews += reviews.size();
+        }
+        
         model.addAttribute("user", loggedInUser);
         model.addAttribute("totalProducts", totalProducts);
         model.addAttribute("totalVouchers", totalVouchers);
+        model.addAttribute("totalReviews", totalReviews);
         
         return "supplier/main-dashboard";
     }

@@ -2,7 +2,6 @@ package com.scentify.controller;
 
 import com.scentify.model.User;
 import com.scentify.model.Product;
-import com.scentify.repository.ProductRepository;
 import com.scentify.service.QuizService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +18,6 @@ public class QuizController {
     
     @Autowired
     private QuizService quizService;
-    
-    @Autowired
-    private ProductRepository productRepository;
     
     // ========== SESSION VALIDATION ==========
     private boolean isCustomerLoggedIn(HttpSession session) {
@@ -61,11 +57,11 @@ public class QuizController {
             model.addAttribute("totalQuestions", quizData.size());
             model.addAttribute("user", user);
             
-            System.out.println("📝 Loaded " + quizData.size() + " quiz questions");
+            System.out.println("Loaded " + quizData.size() + " quiz questions");
             
             return "customer/manage-preference/quiz-questions";
         } catch (Exception e) {
-            System.out.println("❌ Error loading quiz questions: " + e.getMessage());
+            System.out.println("Error loading quiz questions: " + e.getMessage());
             model.addAttribute("error", "Failed to load quiz questions");
             return "customer/manage-preference/quiz-start";
         }
@@ -83,8 +79,8 @@ public class QuizController {
         User user = getLoggedInUser(session);
         
         try {
-            System.out.println("📊 Processing quiz answers from customer: " + user.getUserId());
-            System.out.println("📝 Total answers received: " + answers.size());
+            System.out.println("Processing quiz answers from customer: " + user.getUserId());
+            System.out.println("Total answers received: " + answers.size());
             
             // Get recommendations from ML service
             List<Product> recommendations = quizService.getRecommendations(answers);
@@ -94,7 +90,7 @@ public class QuizController {
                     .limit(3)
                     .toList();
             
-            System.out.println("✅ Generated " + topRecommendations.size() + " recommendations");
+            System.out.println("Generated " + topRecommendations.size() + " recommendations");
             
             // Save quiz response to database for future ML training
             quizService.saveQuizResponse(String.valueOf(user.getUserId()), answers, topRecommendations);
@@ -106,7 +102,7 @@ public class QuizController {
             return "customer/manage-preference/quiz-results";
             
         } catch (Exception e) {
-            System.out.println("❌ Error processing quiz: " + e.getMessage());
+            System.out.println("Error processing quiz: " + e.getMessage());
             e.printStackTrace();
             model.addAttribute("error", "Failed to process your quiz. Please try again.");
             return "customer/manage-preference/quiz-start";
@@ -130,7 +126,7 @@ public class QuizController {
             
             return "customer/manage-preference/recommendation-history";
         } catch (Exception e) {
-            System.out.println("❌ Error loading history: " + e.getMessage());
+            System.out.println("Error loading history: " + e.getMessage());
             model.addAttribute("error", "Failed to load recommendation history");
             return "customer/manage-preference/quiz-start";
         }

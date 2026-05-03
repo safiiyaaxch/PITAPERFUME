@@ -29,6 +29,9 @@ public class Review {
     
     private Integer helpfulCount; // Number of people who found it helpful
     
+    @OneToOne(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ReviewReply reply;
+    
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
     
@@ -118,6 +121,14 @@ public class Review {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public ReviewReply getReply() {
+        return reply;
+    }
+
+    public void setReply(ReviewReply reply) {
+        this.reply = reply;
     }
 
     @Override

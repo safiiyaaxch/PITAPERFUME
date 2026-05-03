@@ -340,20 +340,21 @@
             <!-- Manage Membership Card -->
             <div class="col-md-4">
                 <div class="card-wrapper">
-                    <a href="/manager/membership" class="card-link">
+                    <a href="/manager/membership-applications" class="card-link">
                         <div class="card dashboard-card manage-membership">
+                            <div th:if="${pendingMemberships > 0}" class="badge-pending" th:text="${pendingMemberships} + ' Pending'"></div>
                             <div class="card-body">
                                 <div class="card-icon">
                                     <i class="fas fa-users"></i>
                                 </div>
                                 <h2 class="card-title">Manage Membership</h2>
                                 <p class="card-description">
-                                    Monitor customer membership, loyalty points, and subscription management.
+                                    Review and approve customer membership applications. Manage membership status and approvals.
                                 </p>
                                 <div class="stats-row">
                                     <div class="stat-item">
-                                        <div class="stat-number">0</div>
-                                        <div class="stat-label">Active Members</div>
+                                        <div class="stat-number" th:text="${pendingMemberships}"></div>
+                                        <div class="stat-label">Pending Approval</div>
                                     </div>
                                 </div>
                                 <button class="action-btn btn-manage-membership mt-4">

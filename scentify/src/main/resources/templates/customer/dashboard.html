@@ -518,13 +518,25 @@
                 </a>
                 <a class="nav-link" href="#">Order History</a>
                 <a class="nav-link" href="#">About Us</a>
-                <a th:if="${customer.isMember == false}" 
-                   href="/customer/membership" 
+                <a th:if="${customer.isMember == false && membershipApplication == null}" 
+                   href="/customer/apply-membership" 
                    class="join-membership-btn">
                     <i class="fas fa-crown"></i> Join Membership
                 </a>
                 <span th:if="${customer.isMember == true}" class="membership-badge">
                     <i class="fas fa-crown"></i> Premium Member
+                </span>
+                <span th:if="${membershipApplication != null && membershipApplication.status == 'PENDING'}" 
+                      style="background: #fff3cd; color: #856404; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; font-weight: 600;">
+                    <i class="fas fa-hourglass-half"></i> Application Pending
+                </span>
+                <span th:if="${membershipApplication != null && membershipApplication.status == 'APPROVED'}" 
+                      style="background: #d4edda; color: #155724; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; font-weight: 600;">
+                    <i class="fas fa-check-circle"></i> Approved!
+                </span>
+                <span th:if="${membershipApplication != null && membershipApplication.status == 'REJECTED'}" 
+                      style="background: #f8d7da; color: #721c24; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; font-weight: 600;">
+                    <i class="fas fa-times-circle"></i> Application Rejected
                 </span>
                 <a href="/logout" class="logout-btn">Log Out</a>
             </div>

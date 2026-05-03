@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply for Membership - Scentify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #8b7355;
+            --secondary-color: #d4c4b0;
+            --accent-color: #f5f1ed;
+            --text-dark: #5a4a42;
+            --text-muted: #8b7355;
+            --success-color: #4caf50;
+            --error-color: #f44336;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f1ed 0%, #e8ddd4 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .benefits-section {
+            margin-bottom: 2rem;
+        }
+
+        .benefits-section h3 {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .benefits-list {
+            list-style: none;
+        }
+
+        .benefits-list li {
+            padding: 0.7rem 0;
+            color: var(--text-dark);
+            display: flex;
+            gap: 0.8rem;
+            align-items: flex-start;
+        }
+
+        .benefits-list i {
+            color: var(--secondary-color);
+            min-width: 20px;
+            margin-top: 0.2rem;
+        }
+
+        .terms-section {
+            background: #fafaf9;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .terms-section h3 {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .terms-box {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+
+        .terms-box h4 {
+            color: var(--primary-color);
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .terms-box h4:first-child {
+            margin-top: 0;
+        }
+
+        .terms-box p {
+            margin-bottom: 0.8rem;
+        }
+
+        .terms-box ol, .terms-box ul {
+            margin-left: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .terms-box li {
+            margin-bottom: 0.4rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #f0ebe5;
+            border-radius: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+            flex-shrink: 0;
+        }
+
+        .checkbox-label {
+            color: var(--text-dark);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-submit {
+            background: var(--primary-color);
+            color: white;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            background: #6b5b48;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-cancel {
+            background: #e0e0e0;
+            color: var(--text-dark);
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-cancel:hover {
+            background: #d0d0d0;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .info-badge {
+            display: inline-block;
+            background: var(--secondary-color);
+            color: var(--text-dark);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 1.5rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        .scroll-indicator {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-crown"></i> Become a Scentify Member</h1>
+            <p>Unlock exclusive benefits and enjoy premium perks</p>
+        </div>
+
+        <!-- Alerts -->
+        <div th:if="${success}" class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i>
+            <span th:text="${error}"></span>
+        </div>
+        <div th:if="${existingApplication}" class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <div>
+                <strong>Application Status:</strong> 
+                <span th:text="${existingApplication.status == 'PENDING' ? 'Your application is pending review' : (existingApplication.status == 'APPROVED' ? 'Congratulations! Your membership has been approved' : 'Application rejected')}"></span>
+            </div>
+        </div>
+
+        <!-- Benefits Section -->
+        <div class="card">
+            <div class="info-badge">
+                <i class="fas fa-star"></i> MEMBERSHIP BENEFITS
+            </div>
+
+            <div class="benefits-section">
+                <h3><i class="fas fa-gift"></i> What You Get</h3>
+                <ul class="benefits-list">
+                    <li>
+                        <i class="fas fa-check"></i>
+                        <div>
+                            <strong>Exclusive Discounts</strong> - Up to 20% off on all products
+                        </div>
+                    </li>
+                    <li>
+                        <i class="fas fa-check"></i>
+                        <div>
+                            <strong>Loyalty Points</strong> - Earn points on every purchase and redeem for rewards
+                        </div>
+                    </li>
+                    <li>
+                        <i class="fas fa-check"></i>
+                        <div>
+                            <strong>Member-Only Vouchers</strong> - Special promotional vouchers available exclusively to members
+                        </div>
+                    </li>
+                    <li>
+                        <i class="fas fa-check"></i>
+                        <div>
+                            <strong>Early Access</strong> - Be the first to access new fragrance collections and limited editions
+                        </div>
+                    </li>
+                    <li>
+                        <i class="fas fa-check"></i>
+                        <div>
+                            <strong>Free Delivery</strong> - Free shipping on orders above RM 150
+                        </div>
+                    </li>
+                    <li>
+                        <i class="fas fa-check"></i>
+                        <div>
+                            <strong>Priority Support</strong> - Dedicated customer service line for members
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Terms & Conditions -->
+        <form method="post" action="/customer/apply-membership" id="membershipForm">
+            <div class="card">
+                <div class="terms-section">
+                    <h3><i class="fas fa-file-contract"></i> Terms & Conditions</h3>
+                    
+                    <div class="terms-box">
+                        <h4>1. Membership Agreement</h4>
+                        <p>By becoming a Scentify member, you agree to abide by all terms and conditions outlined in this agreement. Membership is valid from the date of approval and continues indefinitely unless terminated.</p>
+
+                        <h4>2. Eligibility</h4>
+                        <p>Membership is open to all customers aged 18 and above with a valid Scentify account. One membership per customer is allowed.</p>
+
+                        <h4>3. Membership Benefits</h4>
+                        <ol>
+                            <li>Members receive exclusive discounts on all products available on our platform</li>
+                            <li>Members earn loyalty points on purchases, redeemable for future transactions</li>
+                            <li>Members have access to exclusive member-only vouchers and promotional offers</li>
+                            <li>Members receive priority access to new product launches and limited-edition fragrances</li>
+                            <li>Members enjoy free shipping on orders exceeding RM 150 (within Malaysia)</li>
+                            <li>Members benefit from enhanced customer support with dedicated assistance</li>
+                        </ol>
+
+                        <h4>4. Membership Fees</h4>
+                        <p>Scentify membership is <strong>absolutely FREE</strong>. There are no hidden charges or annual fees associated with your membership.</p>
+
+                        <h4>5. Code of Conduct</h4>
+                        <p>Members agree to use their membership responsibly and in good faith. The following activities are strictly prohibited:</p>
+                        <ul>
+                            <li>Sharing membership benefits with non-member accounts</li>
+                            <li>Using multiple accounts to exploit membership benefits</li>
+                            <li>Reselling products purchased with member discounts</li>
+                            <li>Fraudulent or abusive use of promotional vouchers</li>
+                            <li>Any unlawful or unethical activity</li>
+                        </ul>
+
+                        <h4>6. Termination</h4>
+                        <p>Scentify reserves the right to terminate membership without notice if a member engages in prohibited conduct or violates these terms. Terminated members forfeit all loyalty points and active vouchers.</p>
+
+                        <h4>7. Loyalty Points Policy</h4>
+                        <p>Members earn 1 loyalty point for every RM 1 spent (before discounts). Points do not expire but may be reset if membership is terminated. Unused points cannot be converted to cash.</p>
+
+                        <h4>8. Voucher Terms</h4>
+                        <p>Vouchers are valid only during the specified promotion period. Vouchers cannot be combined unless explicitly stated. Expired vouchers cannot be redeemed.</p>
+
+                        <h4>9. Changes to Terms</h4>
+                        <p>Scentify reserves the right to modify these terms and conditions at any time. Members will be notified of significant changes via email.</p>
+
+                        <h4>10. Privacy & Data Protection</h4>
+                        <p>Your personal information will be protected according to our Privacy Policy. We will never share your data with third parties without your explicit consent.</p>
+
+                        <h4>11. Limitation of Liability</h4>
+                        <p>Scentify is not liable for any indirect, incidental, or consequential damages arising from membership use. All disputes shall be resolved according to Malaysian law.</p>
+
+                        <h4>12. Contact Information</h4>
+                        <p>For questions or concerns regarding membership, please contact us at <strong>support@scentify.com</strong> or call our customer service team.</p>
+                    </div>
+
+                    <div class="scroll-indicator">
+                        ↓ Please scroll to read all terms ↓
+                    </div>
+                </div>
+
+                <!-- Checkbox for Terms Acceptance -->
+                <div class="checkbox-group">
+                    <input type="checkbox" id="termsCheckbox" name="termsAccepted" value="true" required>
+                    <label for="termsCheckbox" class="checkbox-label">
+                        I have read and agree to the Scentify Membership Terms & Conditions
+                    </label>
+                </div>
+
+                <!-- Buttons -->
+                <div class="button-group">
+                    <a href="/customer/dashboard" class="btn btn-cancel">
+                        <i class="fas fa-arrow-left"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-submit" id="submitBtn" disabled>
+                        <i class="fas fa-check"></i> Apply for Membership
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Enable/disable submit button based on checkbox
+        const termsCheckbox = document.getElementById('termsCheckbox');
+        const submitBtn = document.getElementById('submitBtn');
+
+        termsCheckbox.addEventListener('change', function() {
+            submitBtn.disabled = !this.checked;
+        });
+
+        // Form submission
+        document.getElementById('membershipForm').addEventListener('submit', function(e) {
+            if (!termsCheckbox.checked) {
+                e.preventDefault();
+                alert('Please accept the terms and conditions to proceed');
+            }
+        });
+    </script>
+</body>
+</html>

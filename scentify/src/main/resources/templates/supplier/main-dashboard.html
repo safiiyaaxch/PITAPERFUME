@@ -74,6 +74,10 @@
         color: #8b9d8b;
     }
 
+    .manage-reviews .card-icon {
+        color: #d4a574;
+    }
+
     .card-title {
         font-family: 'Playfair Display', serif;
         font-size: 32px;
@@ -128,6 +132,17 @@
 
     .btn-manage-voucher:hover {
         background: linear-gradient(135deg, #7a8c7a, #6a7c6a);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-manage-reviews {
+        background: linear-gradient(135deg, #d4a574, #c2936b);
+        color: white;
+    }
+
+    .btn-manage-reviews:hover {
+        background: linear-gradient(135deg, #c2936b, #b08362);
         color: white;
         transform: translateY(-2px);
     }
@@ -272,6 +287,34 @@
                             </div>
                             <button class="action-btn btn-manage-voucher mt-4">
                                 <i class="fas fa-arrow-right me-2"></i> Go to Vouchers
+                            </button>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Manage Reviews Card -->
+        <div class="row g-4 mt-2">
+            <div class="col-md-6">
+                <a href="/review/supplier/my-reviews" class="card-link">
+                    <div class="card dashboard-card manage-reviews">
+                        <div class="card-body">
+                            <div class="card-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <h2 class="card-title">Customer Reviews</h2>
+                            <p class="card-description">
+                                View customer reviews for your products and respond to feedback. Build trust with your customers.
+                            </p>
+                            <div class="stats-row">
+                                <div class="stat-item">
+                                    <div class="stat-number" th:text="${totalReviews != null ? totalReviews : 0}"></div>
+                                    <div class="stat-label">Total Reviews</div>
+                                </div>
+                            </div>
+                            <button class="action-btn btn-manage-reviews mt-4">
+                                <i class="fas fa-arrow-right me-2"></i> View Reviews
                             </button>
                         </div>
                     </div>

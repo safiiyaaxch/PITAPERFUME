@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Reviews - Scentify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #C4A484;
+            --secondary-color: #E6D3C1;
+            --accent-color: #FAF7F4;
+            --text-dark: #3E3A36;
+            --text-muted: #8A7F75;
+        }
+
+        body {
+            background-color: #FFFFFF;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            color: var(--text-dark);
+        }
+
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark) !important;
+        }
+
+        .nav-link {
+            color: var(--text-dark) !important;
+            font-weight: 500;
+            margin: 0 1rem;
+        }
+
+        .logout-btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 4px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #B89673;
+            color: white;
+            text-decoration: none;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 2rem;
+        }
+
+        .review-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background: var(--accent-color);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .review-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.1);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .review-rating {
+            color: #DAA520;
+            font-size: 1rem;
+        }
+
+        .product-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .review-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .reviewer-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .reviewer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        .reviewer-date {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .reply-section {
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .reply-header {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .reply-text {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .reply-date {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .reply-form {
+            margin-top: 1rem;
+        }
+
+        .reply-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .reply-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .btn-reply {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .btn-reply:hover {
+            background: #B89673;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-cancel {
+            background: #e0e0e0;
+            color: var(--text-dark);
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-cancel:hover {
+            background: #d0d0d0;
+            color: var(--text-dark);
+        }
+
+        .no-reviews {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .no-reviews i {
+            font-size: 3rem;
+            color: #e0e0e0;
+            margin-bottom: 1rem;
+        }
+
+        .alert {
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--secondary-color);
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .review-header {
+                flex-direction: column;
+            }
+
+            .reply-buttons {
+                flex-direction: column;
+            }
+
+            .btn-reply, .btn-cancel {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container-fluid" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+            <a class="navbar-brand" href="/">Scentify</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/supplier/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/supplier/manage-product">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/review/supplier/my-reviews">Reviews</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/supplier/manage-voucher">Vouchers</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a href="/logout" class="logout-btn">Log Out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <h1 class="page-title">Customer Reviews</h1>
+
+        <!-- Success/Error Messages -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> <span th:text="${success}">Success message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}">Error message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <button class="filter-btn active" onclick="filterReviews('all')">All Reviews</button>
+            <button class="filter-btn" onclick="filterReviews('replied')">Replied</button>
+            <button class="filter-btn" onclick="filterReviews('pending')">Pending Reply</button>
+        </div>
+
+        <!-- Reviews List -->
+        <div th:if="${reviews != null && !reviews.isEmpty()}">
+            <div th:each="review : ${reviews}" class="review-card" th:data-filter="${review.reply != null ? 'replied' : 'pending'}">
+                <!-- Review Header -->
+                <div class="review-header">
+                    <div>
+                        <div class="product-name" th:text="${review.product.productName}">Product Name</div>
+                        <div class="review-rating">
+                            <span th:each="i : ${#numbers.sequence(1, review.rating)}" style="color: #DAA520;">★</span>
+                            <span th:each="i : ${#numbers.sequence(review.rating + 1, 5)}" style="color: #ddd;">★</span>
+                        </div>
+                    </div>
+                    <div>
+                        <span th:if="${review.reply == null}" class="badge bg-warning" style="color: #333;">No Reply</span>
+                        <span th:if="${review.reply != null}" class="badge bg-success">Replied</span>
+                    </div>
+                </div>
+
+                <!-- Review Text -->
+                <p class="review-text" th:text="${review.reviewText}">Review text here</p>
+
+                <!-- Reviewer Info -->
+                <div class="reviewer-info">
+                    <div class="reviewer-avatar">
+                        <i class="fas fa-user" style="color: #999;"></i>
+                    </div>
+                    <div>
+                        <div class="reviewer-name" th:text="${review.customer.user.username}">Customer Name</div>
+                        <div class="reviewer-date" th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy')}">Date</div>
+                    </div>
+                </div>
+
+                <!-- Existing Reply or Reply Form -->
+                <div th:if="${review.reply != null}" class="reply-section">
+                    <div class="reply-header">
+                        <i class="fas fa-reply"></i> Your Response
+                    </div>
+                    <p class="reply-text" th:text="${review.reply.replyText}">Reply text here</p>
+                    <div class="reply-date">Replied on <span th:text="${#temporals.format(review.reply.createdAt, 'dd MMM yyyy')}">date</span></div>
+                    <button class="btn-cancel mt-2" onclick="toggleReplyForm(this)" style="background: var(--secondary-color); width: auto;">Edit Reply</button>
+                    <form method="post" th:action="'/review/reply'" class="reply-form" style="display: none;">
+                        <input type="hidden" name="reviewId" th:value="${review.reviewId}">
+                        <textarea name="replyText" class="reply-textarea" placeholder="Edit your reply..." required>[[${review.reply.replyText}]]</textarea>
+                        <div class="reply-buttons">
+                            <button type="submit" class="btn-reply">Update Reply</button>
+                            <button type="button" class="btn-cancel" onclick="toggleReplyForm(this)">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div th:if="${review.reply == null}" class="reply-section">
+                    <div class="reply-header">
+                        <i class="fas fa-pen"></i> Write a Reply
+                    </div>
+                    <form method="post" th:action="'/review/reply'" class="reply-form">
+                        <input type="hidden" name="reviewId" th:value="${review.reviewId}">
+                        <textarea name="replyText" class="reply-textarea" placeholder="Share your response to this review..." required></textarea>
+                        <div class="reply-buttons">
+                            <button type="submit" class="btn-reply">Post Reply</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Reviews Message -->
+        <div th:if="${reviews == null || reviews.isEmpty()}" class="no-reviews">
+            <i class="fas fa-comments"></i>
+            <p><strong>No reviews yet</strong></p>
+            <p>Customer reviews on your products will appear here</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleReplyForm(btn) {
+            const form = btn.parentElement.querySelector('.reply-form');
+            if (form) {
+                form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        function filterReviews(filter) {
+            const cards = document.querySelectorAll('.review-card');
+            const buttons = document.querySelectorAll('.filter-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            cards.forEach(card => {
+                if (filter === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = card.dataset.filter === filter ? 'block' : 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

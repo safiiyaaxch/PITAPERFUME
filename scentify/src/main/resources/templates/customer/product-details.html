@@ -465,57 +465,144 @@
 
         <!-- Reviews Section -->
         <div class="reviews-section">
-            <h2 class="reviews-title">Reviews</h2>
-            <div class="reviews-grid">
-                <!-- Review 1 -->
-                <div class="review-card">
-                    <div class="review-rating">★ ★ ★ ★ ★</div>
-                    <h3 class="review-title">Review #1</h3>
-                    <p class="review-body">Amazing fragrance! The scent is long-lasting and absolutely divine. Perfect for evening wear. Highly recommended for anyone who loves luxury perfumes.</p>
+            <h2 class="reviews-title">Customer Reviews</h2>
+            
+            <!-- Add Review Section -->
+            <div style="margin-bottom: 2rem;">
+                <div th:if="${canWriteReview}">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addReviewModal" 
+                            style="background-color: var(--primary-color); border: none; color: white; padding: 0.8rem 1.5rem; border-radius: 4px; font-weight: 600;">
+                        <i class="fas fa-star"></i> Add Your Review
+                    </button>
+                </div>
+                <div th:if="${!canWriteReview}" style="background: #fff3cd; border: 1px solid #ffc107; padding: 1rem; border-radius: 4px; color: #856404;">
+                    <i class="fas fa-info-circle"></i>
+                    <span th:text="${reviewBlockReason}">You cannot write reviews</span>
+                    <span th:if="${reviewBlockReason.contains('membership')}">
+                        - <a href="/customer/membership" style="color: var(--primary-color); font-weight: 600; text-decoration: underline;">Upgrade Membership</a>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Reviews Grid -->
+            <div class="reviews-grid" th:if="${reviews != null && !reviews.isEmpty()}">
+                <div th:each="review : ${reviews}" class="review-card">
+                    <!-- Rating Stars -->
+                    <div class="review-rating">
+                        <span th:each="i : ${#numbers.sequence(1, review.rating)}" style="color: #DAA520;">★</span>
+                        <span th:each="i : ${#numbers.sequence(review.rating + 1, 5)}" style="color: #ddd;">★</span>
+                    </div>
+                    
+                    <!-- Review Text -->
+                    <p class="review-body" th:text="${review.reviewText}">Review text here</p>
+                    
+                    <!-- Reviewer Info -->
                     <div class="review-footer">
                         <div class="reviewer-avatar">
                             <i class="fas fa-user" style="color: #999;"></i>
                         </div>
                         <div class="reviewer-info">
-                            <div class="reviewer-name">Reviewer name</div>
-                            <div class="reviewer-date">Date</div>
+                            <div class="reviewer-name" th:text="${review.customer.user.username}">Customer Name</div>
+                            <div class="reviewer-date" th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy')}">Date</div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Review 2 -->
-                <div class="review-card">
-                    <div class="review-rating">★ ★ ★ ★ ★</div>
-                    <h3 class="review-title">Review #2</h3>
-                    <p class="review-body">Exceeded my expectations! The bottle design is elegant and the fragrance is sophisticated. Definitely worth the investment. I've received many compliments while wearing it.</p>
-                    <div class="review-footer">
-                        <div class="reviewer-avatar">
-                            <i class="fas fa-user" style="color: #999;"></i>
+                    <!-- Supplier Reply Section -->
+                    <div th:if="${review.reply != null}" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e0e0e0; background: #f9f9f9; padding: 1rem; border-radius: 4px;">
+                        <div style="font-weight: 600; color: var(--primary-color); margin-bottom: 0.5rem; font-size: 0.9rem;">
+                            <i class="fas fa-reply"></i> Supplier Response
                         </div>
-                        <div class="reviewer-info">
-                            <div class="reviewer-name">Reviewer name</div>
-                            <div class="reviewer-date">Date</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Review 3 -->
-                <div class="review-card">
-                    <div class="review-rating">★ ★ ★ ★ ★</div>
-                    <h3 class="review-title">Review #3</h3>
-                    <p class="review-body">Love it! The scent profile is perfect for my preference. Great customer service and fast delivery. Will definitely order again from this supplier.</p>
-                    <div class="review-footer">
-                        <div class="reviewer-avatar">
-                            <i class="fas fa-user" style="color: #999;"></i>
-                        </div>
-                        <div class="reviewer-info">
-                            <div class="reviewer-name">Reviewer name</div>
-                            <div class="reviewer-date">Date</div>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0; line-height: 1.5;">
+                            <span style="font-weight: 600; color: var(--text-dark);" th:text="${review.reply.supplier.brandName}">Supplier Name</span>
+                            <br>
+                            <span th:text="${review.reply.replyText}">Reply text here</span>
+                        </p>
+                        <div style="font-size: 0.8rem; color: #999; margin-top: 0.5rem;">
+                            <span th:text="${#temporals.format(review.reply.createdAt, 'dd MMM yyyy')}">Date</span>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- No Reviews Message -->
+            <div th:if="${reviews == null || reviews.isEmpty()}" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                <p><i class="fas fa-comment-slash" style="font-size: 2rem; margin-bottom: 1rem;"></i></p>
+                <p>No reviews yet. Be the first to review this product!</p>
+            </div>
         </div>
+
+        <!-- Add Review Modal -->
+        <div th:if="${canWriteReview}" class="modal fade" id="addReviewModal" tabindex="-1" aria-labelledby="addReviewLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" style="border-bottom: 1px solid #e0e0e0;">
+                        <h5 class="modal-title" id="addReviewLabel" style="color: var(--text-dark); font-weight: 700;">Write a Review</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form method="post" th:action="'/review/submit'">
+                        <div class="modal-body" style="padding: 1.5rem;">
+                            <!-- Product Info -->
+                            <div style="background: var(--accent-color); padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem;">
+                                <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">
+                                    <strong th:text="${product.productName}">Product Name</strong>
+                                </p>
+                            </div>
+
+                            <!-- Hidden Product ID -->
+                            <input type="hidden" name="productId" th:value="${product.productId}">
+
+                            <!-- Rating Selection -->
+                            <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <label style="color: var(--text-dark); font-weight: 600; margin-bottom: 0.5rem; display: block;">
+                                    Rating <span style="color: #e74c3c;">*</span>
+                                </label>
+                                <div style="display: flex; gap: 0.5rem; font-size: 1.5rem;">
+                                    <input type="radio" name="rating" value="1" id="star1" style="display: none;">
+                                    <label for="star1" style="cursor: pointer; color: #ddd; transition: color 0.2s;">★</label>
+                                    
+                                    <input type="radio" name="rating" value="2" id="star2" style="display: none;">
+                                    <label for="star2" style="cursor: pointer; color: #ddd; transition: color 0.2s;">★</label>
+                                    
+                                    <input type="radio" name="rating" value="3" id="star3" style="display: none;">
+                                    <label for="star3" style="cursor: pointer; color: #ddd; transition: color 0.2s;">★</label>
+                                    
+                                    <input type="radio" name="rating" value="4" id="star4" style="display: none;">
+                                    <label for="star4" style="cursor: pointer; color: #ddd; transition: color 0.2s;">★</label>
+                                    
+                                    <input type="radio" name="rating" value="5" id="star5" style="display: none;">
+                                    <label for="star5" style="cursor: pointer; color: #ddd; transition: color 0.2s;">★</label>
+                                </div>
+                            </div>
+
+                            <!-- Review Text -->
+                            <div class="form-group">
+                                <label for="reviewText" style="color: var(--text-dark); font-weight: 600; margin-bottom: 0.5rem; display: block;">
+                                    Your Review <span style="color: #e74c3c;">*</span>
+                                </label>
+                                <textarea name="reviewText" id="reviewText" class="form-control" rows="5" 
+                                          placeholder="Share your thoughts about this product..."
+                                          style="border: 1px solid #e0e0e0; border-radius: 4px; padding: 0.75rem; font-family: inherit;" required></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer" style="border-top: 1px solid #e0e0e0;">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background: #e0e0e0; color: var(--text-dark); border: none;">Cancel</button>
+                            <button type="submit" class="btn btn-primary" style="background: var(--primary-color); border: none; color: white; font-weight: 600;">Submit Review</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            #addReviewModal input[type="radio"]:checked + label {
+                color: #DAA520 !important;
+            }
+
+            #addReviewModal label[for^="star"]:hover,
+            #addReviewModal label[for^="star"]:hover ~ label[for^="star"] {
+                color: #DAA520;
+            }
+        </style>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>

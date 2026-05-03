@@ -43,6 +43,12 @@ public class Order {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    @Column(length = 50)
+    private String paymentStatus; // PENDING, PAID, FAILED
+
+    @Column(length = 100)
+    private String toyyibPayBillCode;
+
     // Constructors
     public Order() {}
 
@@ -140,6 +146,22 @@ public class Order {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public String getToyyibPayBillCode() {
+        return toyyibPayBillCode;
+    }
+
+    public void setToyyibPayBillCode(String toyyibPayBillCode) {
+        this.toyyibPayBillCode = toyyibPayBillCode;
     }
 
     @Override

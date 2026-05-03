@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,6 +21,7 @@ public class VoucherProduct {
     
     @ManyToOne
     @JoinColumn(name = "voucher_id", nullable = false)
+    @ToString.Exclude
     private PromotionVoucher promotionVoucher;
     
     @Column(name = "product_id", nullable = false)

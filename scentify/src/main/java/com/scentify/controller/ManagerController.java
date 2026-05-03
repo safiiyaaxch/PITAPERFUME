@@ -3,9 +3,13 @@ package com.scentify.controller;
 import com.scentify.model.Product;
 import com.scentify.model.User;
 import com.scentify.model.Supplier;
+import com.scentify.model.Customer;
+import com.scentify.model.MembershipApplication;
 import com.scentify.repository.ProductRepository;
 import com.scentify.repository.SupplierRepository;
 import com.scentify.repository.UserRepository;
+import com.scentify.repository.CustomerRepository;
+import com.scentify.repository.MembershipApplicationRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +39,12 @@ public class ManagerController {
 
     @Autowired
     private SupplierRepository supplierRepository;
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private MembershipApplicationRepository membershipApplicationRepository;
     
     // ========== SESSION VALIDATION HELPER ==========
     private boolean isManagerLoggedIn(HttpSession session) {
@@ -63,6 +73,10 @@ public class ManagerController {
             model.addAttribute("approvedSuppliers", approvedSuppliers.size());
             model.addAttribute("rejectedSuppliers", rejectedSuppliers.size());
             model.addAttribute("pendingProducts", pendingProducts.size());
+            
+            // Get pending membership applications
+            List<MembershipApplication> pendingMemberships = membershipApplicationRepository.findByStatusOrderByAppliedDateDesc("PENDING");
+            model.addAttribute("pendingMemberships", pendingMemberships.size());
             model.addAttribute("user", getLoggedInUser(session));
             
             return "manager/dashboard";
@@ -338,5 +352,166 @@ public class ManagerController {
         }
         
         return "manager/product-details";
+    }
+
+    // ========== MEMBERSHIP APPLICATION MANAGEMENT ==========
+    @GetMapping("/membership-applications")
+    public String viewMembershipApplications(HttpSession session, Model model) {
+        // Check if user is manager
+        if (!isManagerLoggedIn(session)) {
+            return "redirect:/login";
+        }
+
+        System.out.println("📋 Manager viewing membership applications");
+
+        // Get all pending applications sorted by newest first
+        List<MembershipApplication> pendingApplications = membershipApplicationRepository
+                .findByStatusOrderByAppliedDateDesc("PENDING");
+
+        // Get all approved applications for history
+        List<MembershipApplication> approvedApplications = membershipApplicationRepository
+                .findByStatusOrderByAppliedDateDesc("APPROVED");
+
+        // Get all rejected applications for history
+        List<MembershipApplication> rejectedApplications = membershipApplicationRepository
+                .findByStatusOrderByAppliedDateDesc("REJECTED");
+
+        model.addAttribute("pendingApplications", pendingApplications);
+        model.addAttribute("approvedApplications", approvedApplications);
+        model.addAttribute("rejectedApplications", rejectedApplications);
+        model.addAttribute("pendingCount", pendingApplications.size());
+        model.addAttribute("approvedCount", approvedApplications.size());
+        model.addAttribute("rejectedCount", rejectedApplications.size());
+
+        System.out.println("✅ Found " + pendingApplications.size() + " pending applications");
+        return "manager/membership-applications";
+    }
+
+    @PostMapping("/membership-applications/{applicationId}/approve")
+    public String approveMembershipApplication(
+            @PathVariable Integer applicationId,
+            @RequestParam(required = false) String notes,
+            HttpSession session,
+            RedirectAttributes redirect) {
+
+        if (!isManagerLoggedIn(session)) {
+            return "redirect:/login";
+        }
+
+        Optional<MembershipApplication> applicationOpt = membershipApplicationRepository.findById(applicationId);
+
+        if (applicationOpt.isEmpty()) {
+            redirect.addFlashAttribute("error", "Application not found");
+            return "redirect:/manager/membership-applications";
+        }
+
+        MembershipApplication application = applicationOpt.get();
+
+        // Check if application is still pending
+        if (!"PENDING".equals(application.getStatus())) {
+            redirect.addFlashAttribute("error", "This application has already been processed");
+            return "redirect:/manager/membership-applications";
+        }
+
+        try {
+            // Update application status
+            application.setStatus("APPROVED");
+            application.setApprovedDate(LocalDateTime.now());
+            if (notes != null && !notes.isBlank()) {
+                application.setNotes(notes);
+            }
+            membershipApplicationRepository.save(application);
+
+            // Update customer membership status
+            Customer customer = application.getCustomer();
+            customer.setIsMember(true);
+            customerRepository.save(customer);
+
+            System.out.println("✅ Membership application approved for customer: " + customer.getFullname());
+            redirect.addFlashAttribute("success", "Membership application approved successfully!");
+
+        } catch (Exception e) {
+            System.out.println("❌ Error approving membership application: " + e.getMessage());
+            e.printStackTrace();
+            redirect.addFlashAttribute("error", "Failed to approve application: " + e.getMessage());
+        }
+
+        return "redirect:/manager/membership-applications";
+    }
+
+    @PostMapping("/membership-applications/{applicationId}/reject")
+    public String rejectMembershipApplication(
+            @PathVariable Integer applicationId,
+            @RequestParam(required = false) String rejectionReason,
+            HttpSession session,
+            RedirectAttributes redirect) {
+
+        if (!isManagerLoggedIn(session)) {
+            return "redirect:/login";
+        }
+
+        Optional<MembershipApplication> applicationOpt = membershipApplicationRepository.findById(applicationId);
+
+        if (applicationOpt.isEmpty()) {
+            redirect.addFlashAttribute("error", "Application not found");
+            return "redirect:/manager/membership-applications";
+        }
+
+        MembershipApplication application = applicationOpt.get();
+
+        // Check if application is still pending
+        if (!"PENDING".equals(application.getStatus())) {
+            redirect.addFlashAttribute("error", "This application has already been processed");
+            return "redirect:/manager/membership-applications";
+        }
+
+        if (rejectionReason == null || rejectionReason.isBlank()) {
+            redirect.addFlashAttribute("error", "Please provide a rejection reason");
+            return "redirect:/manager/membership-applications";
+        }
+
+        try {
+            // Update application status
+            application.setStatus("REJECTED");
+            application.setApprovedDate(LocalDateTime.now());
+            application.setRejectionReason(rejectionReason);
+            membershipApplicationRepository.save(application);
+
+            Customer customer = application.getCustomer();
+            System.out.println("❌ Membership application rejected for customer: " + customer.getFullname());
+            redirect.addFlashAttribute("success", "Membership application rejected successfully!");
+
+        } catch (Exception e) {
+            System.out.println("❌ Error rejecting membership application: " + e.getMessage());
+            e.printStackTrace();
+            redirect.addFlashAttribute("error", "Failed to reject application: " + e.getMessage());
+        }
+
+        return "redirect:/manager/membership-applications";
+    }
+
+    @GetMapping("/membership-applications/{applicationId}/details")
+    public String viewApplicationDetails(
+            @PathVariable Integer applicationId,
+            HttpSession session,
+            Model model) {
+
+        if (!isManagerLoggedIn(session)) {
+            return "redirect:/login";
+        }
+
+        Optional<MembershipApplication> applicationOpt = membershipApplicationRepository.findById(applicationId);
+
+        if (applicationOpt.isEmpty()) {
+            return "redirect:/manager/membership-applications";
+        }
+
+        MembershipApplication application = applicationOpt.get();
+        Customer customer = application.getCustomer();
+
+        model.addAttribute("application", application);
+        model.addAttribute("customer", customer);
+
+        return "manager/membership-application-details";
     }
 }

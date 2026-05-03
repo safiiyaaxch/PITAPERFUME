@@ -406,8 +406,8 @@
                                 <option value="">-- Select a Voucher --</option>
                                 <option th:each="voucher : ${availableVouchers}" 
                                         th:value="${voucher.voucherId}"
-                                        th:text="${voucher.voucherName} + ' (' + ${voucher.discountPercentage} + '% off)'">
-                                    Voucher Name
+                                        th:text="${voucher.voucherCode} + ' - ' + ${voucher.discountValue} + (${voucher.discountType == 'PERCENTAGE'} ? '%' : 'RM') + ' off'">
+                                    Voucher
                                 </option>
                             </select>
                         </div>
@@ -420,11 +420,16 @@
                     </th:block>
 
                     <input type="hidden" name="cartId" th:value="${cart.cartId}">
+                    
+                    <!-- Payment Button - INSIDE FORM -->
+                    <button type="button" class="pay-btn" onclick="processCheckout()" style="width: 100%; margin-top: 1.5rem;">
+                        <i class="fas fa-credit-card"></i> Proceed to Payment
+                    </button>
+                    
+                    <div style="font-size: 0.85rem; color: #8A7F75; margin-top: 1rem; text-align: center;">
+                        <i class="fas fa-lock"></i> Secure payment via ToyyibPay (Cards • FPX • E-Wallets)
+                    </div>
                 </form>
-
-                <a href="/customer/cart" class="back-btn">
-                    <i class="fas fa-arrow-left"></i> Back to Cart
-                </a>
             </div>
 
             <!-- Right Section: Order Summary -->
@@ -484,27 +489,35 @@
                         <span class="summary-value">RM <span id="total" th:text="${#numbers.formatDecimal(cart.totalPrice + 4.90, 1, 2)}">0.00</span></span>
                     </div>
                 </div>
-
-                <button class="pay-btn" onclick="processCheckout()">
-                    <i class="fas fa-credit-card"></i> Pay Now
-                </button>
             </div>
         </div>
     </div>
 
-    <script th:inline="javascript">
+    <div style="text-align: center; margin-top: 2rem; margin-bottom: 2rem;">
+        <a href="/customer/cart" class="back-btn" style="display: inline-block;">
+            <i class="fas fa-arrow-left"></i> Back to Cart
+        </a>
+    </div>
+
+    <script>
+        // Initialize vouchers array from server
+        const vouchersData = /*[[${availableVouchers}]]*/ [];
+        
         const subtotalAmount = /*[[${cart.totalPrice}]]*/ 0;
         const deliveryCost = 4.90;
-        const availableVouchers = {
-            /*[+ 
-            [#list availableVouchers]
-                "${voucher.voucherId}": {
-                    "name": "${voucher.voucherName}",
-                    "discount": ${voucher.discountPercentage}
-                },
-            [/list]
-            +]*/
-        };
+        
+        // Populate available vouchers from server data
+        const availableVouchers = {};
+        vouchersData.forEach(function(voucher) {
+            const vid = String(voucher.voucherId); // Convert to string for consistency
+            availableVouchers[vid] = {
+                code: voucher.voucherCode,
+                discountValue: parseFloat(voucher.discountValue),
+                discountType: voucher.discountType,
+                minPurchase: parseFloat(voucher.minPurchaseAmount) || 0
+            };
+            console.log('Loaded voucher: ' + vid + ' = ' + availableVouchers[vid].code + ' (' + availableVouchers[vid].discountType + ')');
+        });
 
         // Get initial subtotal by summing all item prices
         function calculateCurrentSubtotal() {
@@ -518,29 +531,56 @@
         }
 
         function updateCheckoutTotal() {
-            const currentSubtotal = calculateCurrentSubtotal();
-            const voucherId = document.getElementById('voucherId').value;
-            let discountAmount = 0;
+            try {
+                const currentSubtotal = calculateCurrentSubtotal();
+                const voucherId = document.getElementById('voucherId');
+                const voucherIdValue = voucherId ? voucherId.value : '';
+                let discountAmount = 0;
 
-            if (voucherId && availableVouchers[voucherId]) {
-                const discountPercent = availableVouchers[voucherId].discount;
-                discountAmount = (currentSubtotal * discountPercent) / 100;
+                console.log('Update total - Selected voucher ID: ' + voucherIdValue);
+                
+                if (voucherIdValue && availableVouchers[voucherIdValue]) {
+                    const voucher = availableVouchers[voucherIdValue];
+                    console.log('Voucher found: ' + voucher.code + ', Type: ' + voucher.discountType + ', Value: ' + voucher.discountValue);
+                    
+                    if (voucher.discountType === 'PERCENTAGE') {
+                        discountAmount = (currentSubtotal * voucher.discountValue) / 100;
+                        console.log('Percentage discount: ' + voucher.discountValue + '% of RM' + currentSubtotal + ' = RM' + discountAmount);
+                    } else if (voucher.discountType === 'FIXED_AMOUNT') {
+                        discountAmount = parseFloat(voucher.discountValue);
+                        console.log('Fixed amount discount: RM' + discountAmount);
+                    }
+                } else {
+                    console.log('No voucher selected or voucher not found');
+                }
+
+                const total = currentSubtotal + deliveryCost - discountAmount;
+
+                // Update all display values - use safe selectors
+                const subtotalEl = document.getElementById('subtotal');
+                const discountEl = document.getElementById('discount');
+                const totalEl = document.getElementById('total');
+
+                if (subtotalEl) subtotalEl.textContent = currentSubtotal.toFixed(2);
+                if (discountEl) discountEl.textContent = discountAmount.toFixed(2);
+                if (totalEl) totalEl.textContent = total.toFixed(2);
+
+                console.log('Final total: RM' + total.toFixed(2));
+
+                // Update individual item prices
+                document.querySelectorAll('.order-item').forEach(item => {
+                    const price = parseFloat(item.dataset.price) || 0;
+                    const qtyInput = item.querySelector('.item-qty-input');
+                    const qty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+                    const itemTotal = price * qty;
+                    const itemPriceDisplay = item.querySelector('.item-price-display');
+                    if (itemPriceDisplay) {
+                        itemPriceDisplay.textContent = itemTotal.toFixed(2);
+                    }
+                });
+            } catch (e) {
+                console.error('Error updating checkout total: ' + e.message);
             }
-
-            const total = currentSubtotal + deliveryCost - discountAmount;
-
-            // Update all display values
-            document.getElementById('subtotal').textContent = currentSubtotal.toFixed(2);
-            document.getElementById('discount').textContent = discountAmount.toFixed(2);
-            document.getElementById('total').textContent = total.toFixed(2);
-
-            // Update individual item prices
-            document.querySelectorAll('.order-item').forEach(item => {
-                const price = parseFloat(item.dataset.price);
-                const qty = parseInt(item.querySelector('.item-qty-input').value) || 1;
-                const itemTotal = price * qty;
-                item.querySelector('.item-price-display').textContent = itemTotal.toFixed(2);
-            });
         }
 
         function increaseItemQty(btn) {
@@ -562,15 +602,88 @@
         }
 
         function processCheckout() {
-            const form = document.getElementById('checkoutForm');
+            console.log('🔄 processCheckout() called');
             
-            if (!form.checkValidity()) {
-                alert('Please fill in all required fields');
-                return;
+            const form = document.getElementById('checkoutForm');
+            console.log('📝 Form found: ' + (form ? 'YES' : 'NO'));
+            
+            if (!form) {
+                console.error('❌ ERROR: checkoutForm not found!');
+                alert('ERROR: Checkout form not found! Please refresh the page.');
+                return false;
             }
 
-            form.submit();
+            // Get all required fields
+            const requiredFields = ['recipientName', 'phoneNumber', 'shippingAddress', 'city', 'country'];
+            let isValid = true;
+            let errorMsg = '';
+
+            console.log('🔍 Validating ' + requiredFields.length + ' fields...');
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.querySelector(`[name="${fieldId}"]`);
+                const hasValue = field && field.value && field.value.trim();
+                console.log('   ' + fieldId + ': ' + (hasValue ? '✅ OK' : '❌ MISSING'));
+                
+                if (!hasValue) {
+                    isValid = false;
+                    errorMsg += fieldId + ' is required\n';
+                }
+            });
+
+            if (!isValid) {
+                console.error('❌ Validation failed:', errorMsg);
+                alert('❌ PLEASE FILL IN ALL FIELDS:\n\n' + errorMsg);
+                return false;
+            }
+
+            console.log('✅ All fields valid!');
+            console.log('📍 Form action: ' + form.action);
+            console.log('📍 Form method: ' + form.method);
+            console.log('🚀 Submitting form...');
+            
+            try {
+                // Prevent double submission
+                const submitBtn = event.target;
+                if (submitBtn) submitBtn.disabled = true;
+                
+                form.submit();
+                console.log('✅ Form submitted successfully');
+                return false; // Prevent default button behavior
+            } catch (error) {
+                console.error('❌ Error submitting form: ' + error.message);
+                alert('❌ ERROR: ' + error.message);
+                return false;
+            }
         }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ Checkout page loaded');
+            console.log('🔍 Looking for checkout form...');
+            const form = document.getElementById('checkoutForm');
+            console.log('   Checkout form found: ' + (form ? 'YES' : 'NO'));
+            
+            if (form) {
+                console.log('   Form action: ' + form.action);
+                console.log('   Form method: ' + form.method);
+            }
+            
+            console.log('🔍 Looking for payment button...');
+            const payBtn = document.querySelector('.pay-btn');
+            console.log('   Payment button found: ' + (payBtn ? 'YES' : 'NO'));
+            if (payBtn) {
+                console.log('   Button text: ' + payBtn.textContent.trim());
+                console.log('   Button onclick: ' + payBtn.getAttribute('onclick'));
+            }
+            
+            try {
+                updateCheckoutTotal();
+                console.log('✅ Initial total calculation done');
+            } catch (e) {
+                console.warn('⚠️ Warning updating total on load: ' + e.message);
+            }
+        });
     </script>
 </body>
 </html>
