@@ -255,7 +255,7 @@
                     
                     <div class="perfume-price" th:text="'$' + ${#numbers.formatDecimal(perfume.price, 1, 2)}"></div>
                     
-                    <a th:href="'/customer/products/' + ${perfume.productId}" class="btn-add-cart">
+                    <a th:href="'/customer/product/' + ${perfume.productId}" class="btn-add-cart">
                         View & Add to Cart 🛒
                     </a>
                 </div>

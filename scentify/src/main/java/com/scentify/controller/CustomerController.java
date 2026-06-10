@@ -29,6 +29,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -84,56 +85,88 @@ public class CustomerController {
     // ========== DASHBOARD ==========
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model, 
-                           @RequestParam(required = false) String search,
-                           @RequestParam(required = false) String category) {
+                        @RequestParam(required = false) String search,
+                        @RequestParam(required = false) String category,
+                        @RequestParam(required = false) Double minPrice,
+                        @RequestParam(required = false) Double maxPrice,
+                        @RequestParam(required = false) Double minRating) {
         
         System.out.println("========== CUSTOMER DASHBOARD ==========");
         User user = getLoggedInUser(session);
-        System.out.println("Session user: " + user);
         
         if (!isCustomerLoggedIn(session)) {
-            System.out.println("Customer not logged in, redirecting to login");
             return "redirect:/login";
         }
         
         // Get all approved products
         List<Product> approvedProducts = productRepository.findByApprovalStatus("approved");
-        System.out.println("Found " + approvedProducts.size() + " approved products");
         
-        // Filter by category if provided
+        // Filter by category
         if (category != null && !category.isEmpty()) {
             approvedProducts = approvedProducts.stream()
-                    .filter(p -> p.getCategoryId().equalsIgnoreCase(category))
+                    .filter(p -> p.getCategory() != null && p.getCategory().equalsIgnoreCase(category))
                     .toList();
-            System.out.println("After category filter: " + approvedProducts.size() + " products");
         }
         
-        // Filter by search term if provided
+        // Filter by price range
+        if (minPrice != null) {
+            approvedProducts = approvedProducts.stream()
+                    .filter(p -> p.getPrice() >= minPrice)
+                    .toList();
+        }
+        if (maxPrice != null) {
+            approvedProducts = approvedProducts.stream()
+                    .filter(p -> p.getPrice() <= maxPrice)
+                    .toList();
+        }
+        
+        // Filter by search term
         if (search != null && !search.isEmpty()) {
             String searchTerm = search.toLowerCase();
             approvedProducts = approvedProducts.stream()
                     .filter(p -> p.getProductName().toLowerCase().contains(searchTerm) ||
-                               p.getDescription().toLowerCase().contains(searchTerm))
+                            (p.getDescription() != null && p.getDescription().toLowerCase().contains(searchTerm)))
                     .toList();
-            System.out.println("After search filter: " + approvedProducts.size() + " products");
+        }
+        
+        // Calculate ratings and filter by minRating
+        java.util.Map<String, Double> productRatings = new java.util.HashMap<>();
+        List<Product> finalProducts = new java.util.ArrayList<>();
+        
+        for (Product product : approvedProducts) {
+            List<Review> reviews = reviewRepository.findByProduct_ProductId(product.getProductId());
+            double avgRating = 0.0;
+            if (reviews != null && !reviews.isEmpty()) {
+                avgRating = reviews.stream()
+                    .mapToDouble(Review::getRating)
+                    .average()
+                    .orElse(0.0);
+            }
+            productRatings.put(product.getProductId(), avgRating);
+            
+            // Filter by minimum rating
+            if (minRating == null || avgRating >= minRating) {
+                finalProducts.add(product);
+            }
         }
         
         // Get customer details
         Optional<Customer> customerOpt = customerRepository.findByUser(user);
         if (customerOpt.isPresent()) {
             model.addAttribute("customer", customerOpt.get());
-            
-            // Add membership application status
             Optional<MembershipApplication> membershipApp = membershipApplicationRepository.findByCustomer(customerOpt.get());
             membershipApp.ifPresent(app -> model.addAttribute("membershipApplication", app));
         }
         
         model.addAttribute("user", user);
-        model.addAttribute("approvedProducts", approvedProducts);
+        model.addAttribute("approvedProducts", finalProducts);
+        model.addAttribute("productRatings", productRatings);
         model.addAttribute("search", search);
         model.addAttribute("category", category);
+        model.addAttribute("minPrice", minPrice);
+        model.addAttribute("maxPrice", maxPrice);
+        model.addAttribute("minRating", minRating);
         
-        System.out.println("========================================");
         return "customer/dashboard";
     }
     
@@ -163,13 +196,33 @@ public class CustomerController {
         
         // Get approved reviews for this product
         List<Review> reviews = reviewRepository.findByProduct_ProductId(id);
-        reviews = reviews.stream()
-            .filter(r -> "APPROVED".equals(r.getReviewStatus()))
-            .toList();
+        // Show all reviews (no approval needed)
+        
+        // Calculate review statistics
+        if (reviews != null && !reviews.isEmpty()) {
+            // Calculate average rating
+            double averageRating = reviews.stream()
+                .mapToDouble(Review::getRating)
+                .average()
+                .orElse(0.0);
+            
+            // Calculate star distribution
+            java.util.Map<Integer, Long> starDistribution = new java.util.LinkedHashMap<>();
+            for (int i = 5; i >= 1; i--) {
+                final int stars = i;
+                long count = reviews.stream()
+                    .filter(r -> r.getRating() == stars)
+                    .count();
+                starDistribution.put(i, count);
+            }
+            
+            model.addAttribute("averageRating", averageRating);
+            model.addAttribute("starDistribution", starDistribution);
+        }
         
         // Check if current customer can write review
         User currentUser = getLoggedInUser(session);
-        Optional<Customer> currentCustomer = customerRepository.findById(currentUser.getUserId());
+        Optional<Customer> currentCustomer = customerRepository.findByUser(currentUser);
         
         boolean canWriteReview = false;
         String reviewBlockReason = null;
@@ -185,7 +238,7 @@ public class CustomerController {
                 List<Order> orders = orderRepository.findByCustomer_CustomerId((long) customer.getCustomerId());
                 boolean hasPurchased = orders.stream()
                     .anyMatch(order -> id.equals(order.getProduct().getProductId()) && 
-                                     ("DELIVERED".equals(order.getOrderStatus()) || "SHIPPED".equals(order.getOrderStatus())));
+                                     ("CONFIRMED".equals(order.getOrderStatus()) || "DELIVERED".equals(order.getOrderStatus()) || "SHIPPED".equals(order.getOrderStatus())));
                 
                 if (!hasPurchased) {
                     reviewBlockReason = "You can only review products you've purchased";
@@ -220,7 +273,7 @@ public class CustomerController {
         
         if (category != null && !category.isEmpty()) {
             products = products.stream()
-                    .filter(p -> p.getCategoryId().equalsIgnoreCase(category))
+                    .filter(p -> p.getCategory().equalsIgnoreCase(category))
                     .toList();
         }
         
@@ -332,33 +385,51 @@ public class CustomerController {
                            HttpSession session,
                            RedirectAttributes redirect) {
         
+        System.out.println("=== ADD TO CART REQUEST ===");
+        System.out.println("ProductId received: [" + productId + "]");
+        System.out.println("Quantity: " + quantity);
+        
         if (!isCustomerLoggedIn(session)) {
+            System.out.println("ERROR: Customer not logged in");
             return "redirect:/login";
         }
 
         try {
             User user = getLoggedInUser(session);
+            System.out.println("User found: " + user.getUsername());
+            
             Optional<Customer> customerOpt = customerRepository.findByUser(user);
             
             if (customerOpt.isEmpty()) {
+                System.out.println("ERROR: Customer not found for user: " + user.getUsername());
                 redirect.addFlashAttribute("error", "Customer not found");
                 return "redirect:/customer/dashboard";
             }
 
             Customer customer = customerOpt.get();
+            System.out.println("Customer found: " + customer.getFullname());
             
             // Get or create shopping cart
             Optional<ShoppingCart> cartOpt = shoppingCartRepository.findByCustomer(customer);
             ShoppingCart cart = cartOpt.orElseGet(() -> new ShoppingCart(customer));
+            System.out.println("Cart ID: " + cart.getCartId());
 
             // Get product
+            System.out.println("Looking for product with ID: [" + productId + "]");
             Optional<Product> productOpt = productRepository.findById(productId);
+            
             if (productOpt.isEmpty()) {
-                redirect.addFlashAttribute("error", "Product not found");
+                System.out.println("ERROR: Product not found with ID: " + productId);
+                System.out.println("Available products in database:");
+                productRepository.findAll().forEach(p -> {
+                    System.out.println("  - ID: [" + p.getProductId() + "], Name: " + p.getProductName());
+                });
+                redirect.addFlashAttribute("error", "Product not found with ID: " + productId);
                 return "redirect:/customer/dashboard";
             }
 
             Product product = productOpt.get();
+            System.out.println("Product found: " + product.getProductName());
             
             // Check if product already in cart
             Optional<CartItem> existingItem = cartItemRepository
@@ -367,29 +438,34 @@ public class CustomerController {
             if (existingItem.isPresent()) {
                 // Update quantity
                 CartItem item = existingItem.get();
+                System.out.println("Item already in cart, updating quantity from " + item.getQuantity() + " to " + (item.getQuantity() + quantity));
                 item.setQuantity(item.getQuantity() + quantity);
                 item.setUpdatedAt(LocalDateTime.now());
                 cartItemRepository.save(item);
             } else {
                 // Add new item
+                System.out.println("Adding new item to cart");
                 CartItem newItem = new CartItem(cart, product, quantity);
                 cart.addCartItem(newItem);
             }
 
             cart.setUpdatedAt(LocalDateTime.now());
             shoppingCartRepository.save(cart);
+            System.out.println("Cart saved successfully");
             
             redirect.addFlashAttribute("success", "Product added to cart!");
             return "redirect:/customer/cart";
         } catch (Exception e) {
-            System.out.println("Error adding to cart: " + e.getMessage());
+            System.out.println("ERROR adding to cart: " + e.getMessage());
+            System.out.println("Exception type: " + e.getClass().getName());
             e.printStackTrace();
-            redirect.addFlashAttribute("error", "Failed to add product to cart");
+            redirect.addFlashAttribute("error", "Failed to add product to cart: " + e.getMessage());
             return "redirect:/customer/dashboard";
         }
     }
 
     @GetMapping("/cart")
+    @Transactional
     public String viewCart(HttpSession session, Model model) {
         
         if (!isCustomerLoggedIn(session)) {
@@ -407,11 +483,72 @@ public class CustomerController {
             Customer customer = customerOpt.get();
             Optional<ShoppingCart> cartOpt = shoppingCartRepository.findByCustomer(customer);
 
-            ShoppingCart cart = cartOpt.orElseGet(() -> new ShoppingCart(customer));
+            ShoppingCart cart;
+            if (cartOpt.isEmpty()) {
+                cart = new ShoppingCart(customer);
+            } else {
+                cart = cartOpt.get();
+                
+                // Clean up orphaned cart items (products that no longer exist)
+                // Use a raw query to find items with missing products
+                List<CartItem> allItems = new java.util.ArrayList<>();
+                try {
+                    allItems = cartItemRepository.findByCart_CartId(cart.getCartId());
+                } catch (org.springframework.orm.jpa.JpaObjectRetrievalFailureException e) {
+                    // This exception occurs when a product doesn't exist
+                    System.out.println("Detected orphaned cart items, cleaning up...");
+                    // Delete all cart items for this cart to reset
+                    cartItemRepository.deleteByCart_CartId(cart.getCartId());
+                    allItems = new java.util.ArrayList<>();
+                }
+                
+                // Also try to remove items individually in case of partial failures
+                cart.getCartItems().clear();
+                for (CartItem item : allItems) {
+                    try {
+                        // Try to access the product - if it exists, keep the item
+                        if (item.getProduct() != null && item.getProduct().getProductId() != null) {
+                            cart.addCartItem(item);
+                        } else {
+                            System.out.println("Removing null product item: " + item.getCartItemId());
+                            cartItemRepository.delete(item);
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Removing orphaned cart item: " + item.getCartItemId() + " - " + e.getMessage());
+                        try {
+                            cartItemRepository.delete(item);
+                        } catch (Exception deleteEx) {
+                            System.out.println("Failed to delete orphaned item: " + deleteEx.getMessage());
+                        }
+                    }
+                }
+                
+                if (!cart.getCartItems().isEmpty()) {
+                    shoppingCartRepository.save(cart);
+                }
+            }
             
             model.addAttribute("cart", cart);
             model.addAttribute("user", user);
             model.addAttribute("customer", customer);
+            
+            // Calculate average ratings for all cart items
+            java.util.Map<String, Double> productRatings = new java.util.HashMap<>();
+            for (CartItem item : cart.getCartItems()) {
+                if (item.getProduct() != null) {
+                    List<Review> reviews = reviewRepository.findByProduct_ProductId(item.getProduct().getProductId());
+                    if (reviews != null && !reviews.isEmpty()) {
+                        double avgRating = reviews.stream()
+                            .mapToDouble(Review::getRating)
+                            .average()
+                            .orElse(0.0);
+                        productRatings.put(item.getProduct().getProductId(), avgRating);
+                    } else {
+                        productRatings.put(item.getProduct().getProductId(), 0.0);
+                    }
+                }
+            }
+            model.addAttribute("productRatings", productRatings);
             
             return "customer/cart";
         } catch (Exception e) {
@@ -555,6 +692,7 @@ public class CustomerController {
             }
             
             model.addAttribute("cart", cart);
+            model.addAttribute("cartId", cart.getCartId());
             model.addAttribute("customer", customer);
             model.addAttribute("user", user);
             model.addAttribute("availableVouchers", availableVouchers);
@@ -578,9 +716,12 @@ public class CustomerController {
                                  HttpSession session,
                                  RedirectAttributes redirect) {
         
+        System.out.println("\n" + "=".repeat(60));
         System.out.println("📍 === CHECKOUT CONFIRM STARTED ===");
-        System.out.println("📝 Params - Name: " + recipientName + ", Phone: " + phoneNumber + ", Address: " + shippingAddress);
-        System.out.println("📝 Params - City: " + city + ", Country: " + country + ", CartId: " + cartId);
+        System.out.println("=".repeat(60));
+        System.out.println("📝 Params - Name: " + recipientName + ", Phone: " + phoneNumber);
+        System.out.println("📝 Params - Address: " + shippingAddress + ", City: " + city + ", Country: " + country);
+        System.out.println("📝 Params - VoucherId: " + voucherId + ", CartId: " + cartId);
         
         if (!isCustomerLoggedIn(session)) {
             System.out.println("❌ Customer not logged in");
@@ -589,29 +730,45 @@ public class CustomerController {
 
         try {
             User user = getLoggedInUser(session);
-            System.out.println("👤 User logged in: " + user.getUsername());
+            System.out.println("✅ User logged in: " + user.getUsername() + " (ID: " + user.getUserId() + ")");
             
             Optional<Customer> customerOpt = customerRepository.findByUser(user);
 
             if (customerOpt.isEmpty()) {
-                System.out.println("❌ Customer not found");
+                System.out.println("❌ Customer not found for userId: " + user.getUserId());
                 redirect.addFlashAttribute("error", "Customer not found");
                 return "redirect:/customer/dashboard";
             }
 
             Customer customer = customerOpt.get();
-            System.out.println("👤 Customer found: " + customer.getFullname());
+            System.out.println("✅ Customer found: " + customer.getFullname() + " (ID: " + customer.getCustomerId() + ")");
             
-            Optional<ShoppingCart> cartOpt = shoppingCartRepository.findByCustomer(customer);
+            // Try to find cart by cartId if provided, otherwise find by customer
+            Optional<ShoppingCart> cartOpt = Optional.empty();
+            if (cartId != null && cartId > 0) {
+                System.out.println("🔍 Looking up cart by cartId: " + cartId);
+                cartOpt = shoppingCartRepository.findById(cartId);
+            }
+            if (cartOpt.isEmpty()) {
+                System.out.println("🔍 Looking up cart by customer...");
+                cartOpt = shoppingCartRepository.findByCustomer(customer);
+            }
 
-            if (cartOpt.isEmpty() || cartOpt.get().getCartItems().isEmpty()) {
-                System.out.println("❌ Cart is empty");
-                redirect.addFlashAttribute("error", "Your cart is empty");
+            if (cartOpt.isEmpty()) {
+                System.out.println("❌ Cart not found for customer ID: " + customer.getCustomerId());
+                redirect.addFlashAttribute("error", "Shopping cart not found");
                 return "redirect:/customer/cart";
             }
 
             ShoppingCart cart = cartOpt.get();
-            System.out.println("🛒 Cart found with " + cart.getCartItems().size() + " items, Total: " + cart.getTotalPrice());
+            
+            if (cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
+                System.out.println("❌ Cart is empty. No items in cart ID: " + cart.getCartId());
+                redirect.addFlashAttribute("error", "Your cart is empty");
+                return "redirect:/customer/cart";
+            }
+
+            System.out.println("✅ Cart found: ID=" + cart.getCartId() + ", Items=" + cart.getCartItems().size() + ", Total=RM" + cart.getTotalPrice());
 
             // Update customer with delivery phone
             customer.setPhone(phoneNumber);
@@ -650,10 +807,11 @@ public class CustomerController {
                         
                         // Calculate discount based on type
                         if (voucher.getDiscountType().equals(PromotionVoucher.DiscountType.PERCENTAGE)) {
+                            // Apply percentage to product prices only (not including delivery)
                             discountAmount = new BigDecimal(String.valueOf(cart.getTotalPrice()))
                                     .multiply(voucher.getDiscountValue())
                                     .divide(new BigDecimal("100"), 2, java.math.RoundingMode.HALF_UP);
-                            System.out.println("💰 Percentage discount applied: " + voucher.getDiscountValue() + "% = RM " + discountAmount);
+                            System.out.println("💰 Percentage discount applied: " + voucher.getDiscountValue() + "% of RM " + cart.getTotalPrice() + " = RM " + discountAmount);
                         } else if (voucher.getDiscountType().equals(PromotionVoucher.DiscountType.FIXED_AMOUNT)) {
                             discountAmount = voucher.getDiscountValue();
                             System.out.println("💰 Fixed discount applied: RM " + discountAmount);
@@ -690,7 +848,7 @@ public class CustomerController {
             }
             
             // Create ToyyibPay payment bill
-            String returnUrl = "http://localhost:8080/customer/payment-return?orderId=" + order.getOrderId();
+            String returnUrl = "http://localhost:8080/payment/return?orderId=" + order.getOrderId();
             System.out.println("📍 Creating payment bill with return URL: " + returnUrl);
             
             Payment payment = toyyibPayService.createPaymentBill(order, returnUrl);
@@ -716,6 +874,36 @@ public class CustomerController {
             redirect.addFlashAttribute("error", "Failed to process checkout: " + e.getMessage());
             return "redirect:/customer/cart";
         }
+    }
+    
+    // ========== ORDER HISTORY ==========
+    @GetMapping("/order-history")
+    public String orderHistory(HttpSession session, Model model) {
+        if (!isCustomerLoggedIn(session)) {
+            return "redirect:/login";
+        }
+        
+        User user = getLoggedInUser(session);
+        Optional<Customer> customerOpt = customerRepository.findByUser(user);
+        
+        if (customerOpt.isPresent()) {
+            Customer customer = customerOpt.get();
+            // Get all PAID orders for this customer
+            List<Order> allOrders = orderRepository.findByCustomer_CustomerId((long) customer.getCustomerId());
+            // Filter to only show paid and confirmed orders
+            List<Order> orders = allOrders.stream()
+                .filter(order -> "PAID".equals(order.getPaymentStatus()) && 
+                               ("CONFIRMED".equals(order.getOrderStatus()) || 
+                                "SHIPPED".equals(order.getOrderStatus()) || 
+                                "DELIVERED".equals(order.getOrderStatus())))
+                .toList();
+            model.addAttribute("orders", orders);
+            model.addAttribute("customer", customer);
+            model.addAttribute("user", user);
+            return "customer/order-history";
+        }
+        
+        return "redirect:/login";
     }
     
     // ========== MEMBERSHIP APPLICATION ==========

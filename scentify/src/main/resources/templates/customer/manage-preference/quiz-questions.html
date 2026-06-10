@@ -3,59 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfume Quiz - Scentify</title>
+    <title>Fragrance Preference Quiz - Scentify</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #D4C4B8 0%, #E8D8CC 100%);
             min-height: 100vh;
             padding: 40px 20px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         .quiz-header {
             text-align: center;
-            color: white;
-            margin-bottom: 40px;
+            color: #3E3A36;
+            margin-bottom: 30px;
         }
-        
+
         .quiz-header h1 {
-            font-size: 2.5em;
+            font-size: 2.2em;
             font-weight: 700;
             margin-bottom: 10px;
         }
-        
-        .progress-bar-container {
+
+        .quiz-header p {
+            color: #8A7F75;
+            font-size: 1.1em;
+        }
+
+        .progress-container {
             background: white;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 30px;
-            text-align: center;
-            color: #667eea;
-            font-weight: 600;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        
-        .quiz-form {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            max-width: 700px;
+
+        .progress-text {
+            color: #C4A484;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 10px;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #C4A484 0%, #9d8970 100%);
+            border-radius: 10px;
+        }
+
+        .quiz-container {
+            max-width: 900px;
             margin: 0 auto;
         }
-        
-        .question-item {
-            margin-bottom: 50px;
-            animation: slideUp 0.5s ease-out forwards;
-            opacity: 0;
+
+        .question-block {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            animation: slideUp 0.6s ease-out;
         }
-        
-        .question-item:nth-child(1) { animation-delay: 0s; }
-        .question-item:nth-child(2) { animation-delay: 0.1s; }
-        .question-item:nth-child(3) { animation-delay: 0.2s; }
-        .question-item:nth-child(4) { animation-delay: 0.3s; }
-        .question-item:nth-child(5) { animation-delay: 0.4s; }
-        
+
         @keyframes slideUp {
             from {
                 opacity: 0;
@@ -66,45 +80,72 @@
                 transform: translateY(0);
             }
         }
-        
+
         .question-text {
-            font-size: 1.3em;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 20px;
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #3E3A36;
+            margin-bottom: 10px;
         }
-        
-        .form-check {
-            margin-bottom: 15px;
+
+        .question-description {
+            color: #8A7F75;
+            font-style: italic;
+            margin-bottom: 25px;
+            font-size: 0.95em;
         }
-        
-        .form-check-input {
-            width: 20px;
-            height: 20px;
-            margin-top: 3px;
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .choice-card {
+            background: #F9F7F4;
+            border: 2px solid #E6D3C1;
+            border-radius: 10px;
+            padding: 20px;
             cursor: pointer;
-            accent-color: #667eea;
-        }
-        
-        .form-check-label {
-            margin-left: 10px;
-            cursor: pointer;
-            font-size: 1.05em;
-            color: #555;
             transition: all 0.3s ease;
+            position: relative;
+            text-align: left;
         }
-        
-        .form-check-input:checked ~ .form-check-label {
-            color: #667eea;
+
+        .choice-card:hover {
+            border-color: #C4A484;
+            background: #F5F0EA;
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.2);
+            transform: translateX(4px);
+        }
+
+        .choice-card.selected {
+            background: #E8D5C4;
+            border-color: #C4A484;
+            box-shadow: 0 6px 16px rgba(196, 164, 132, 0.3);
+        }
+
+        .choice-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .choice-text {
+            color: #3E3A36;
+            font-size: 1em;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .choice-vibe {
+            color: #C4A484;
+            font-size: 0.85em;
             font-weight: 600;
         }
-        
-        .form-check:hover .form-check-label {
-            color: #667eea;
-        }
-        
+
         .btn-submit {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #C4A484 0%, #9d8970 100%);
             border: none;
             color: white;
             padding: 15px 50px;
@@ -112,204 +153,452 @@
             border-radius: 10px;
             cursor: pointer;
             width: 100%;
-            margin-top: 30px;
+            max-width: 900px;
+            margin: 30px auto 0;
             font-weight: 600;
             transition: all 0.3s ease;
+            display: block;
         }
-        
-        .btn-submit:hover {
+
+        .btn-submit:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 25px rgba(196, 164, 132, 0.4);
             color: white;
         }
-        
+
         .btn-submit:disabled {
             opacity: 0.6;
             cursor: not-allowed;
         }
-        
+
         .back-link {
-            color: white;
+            color: #3E3A36;
             text-decoration: none;
-            margin-bottom: 20px;
             display: inline-block;
-            font-size: 1.1em;
+            margin-bottom: 20px;
+            font-size: 1em;
+            font-weight: 500;
         }
-        
+
         .back-link:hover {
-            color: #ddd;
+            color: #8A7F75;
         }
     </style>
 </head>
 <body>
+    <a href="/customer/quiz/start" class="back-link">← Back to Quiz Start</a>
+
     <div class="quiz-header">
-        <a href="/customer/quiz/start" class="back-link">← Back</a>
-        <h1>✨ Fragrance Preference Quiz</h1>
-        <p>Answer these questions to find your perfect match!</p>
+        <h1>✨ Discover Your Fragrance Persona</h1>
+        <p>Answer these 8 questions to uncover your scent profile</p>
     </div>
-    
-    <div class="progress-bar-container">
-        <span id="progressText">Loading questions...</span><br>
-        <div class="progress" style="height: 8px; margin-top: 10px; border-radius: 10px;">
-            <div class="progress-bar" id="progressBar" role="progressbar" style="width: 0%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); border-radius: 10px;"></div>
+
+    <div class="progress-container">
+        <div class="progress-text" id="progressText">Question 1 of 8</div>
+        <div class="progress">
+            <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
         </div>
     </div>
-    
-    <form class="quiz-form" id="quizForm" method="POST" action="/customer/quiz/submit">
-        <div id="questionsContainer">
-            <!-- Questions will load here -->
-            <div class="text-center" style="padding: 40px;">
-                <div class="spinner-border" style="color: #667eea;"></div>
-                <p style="margin-top: 20px; color: #667eea;">Loading questions...</p>
-            </div>
-        </div>
-        
-        <button type="submit" class="btn-submit" id="submitBtn">
-            Get My Recommendations 🎁
-        </button>
-    </form>
-    
+
+    <div class="quiz-container">
+        <form id="quizForm" method="POST" action="/customer/quiz/submit-persona">
+            <!-- Questions will be generated here -->
+            <div id="questionsContainer"></div>
+
+            <button type="submit" class="btn-submit" id="submitBtn" disabled>
+                Reveal My Persona 🌟
+            </button>
+        </form>
+    </div>
+
     <script>
-        // Load questions dynamically
+        const quizData = [
+            {
+                id: 1,
+                text: "What is your dream way to spend a slow morning?",
+                description: "Choose the atmosphere that feels most soothing to you.",
+                choices: [
+                    {
+                        id: "q1_1",
+                        text: "Opening the windows to let a crisp, cool breeze flow through the room",
+                        fragranceGroup: "fresh",
+                        vibe: "Fresh & Airy"
+                    },
+                    {
+                        id: "q1_2",
+                        text: "Sipping a warm vanilla latte tucked under an incredibly soft knit blanket",
+                        fragranceGroup: "warm_cozy",
+                        vibe: "Warm & Cozy"
+                    },
+                    {
+                        id: "q1_3",
+                        text: "Walking through a gentle garden filled with blooming, dew-kissed flowers",
+                        fragranceGroup: "floral",
+                        vibe: "Floral & Romantic"
+                    },
+                    {
+                        id: "q1_4",
+                        text: "Sitting in a quiet, wooden library corner with a book in your hands",
+                        fragranceGroup: "woody_earthy",
+                        vibe: "Woody & Earthy"
+                    },
+                    {
+                        id: "q1_5",
+                        text: "Brewing a comforting pot of rich spiced tea with cinnamon and clove",
+                        fragranceGroup: "bold_spicy",
+                        vibe: "Bold & Spicy"
+                    }
+                ]
+            },
+            {
+                id: 2,
+                text: "Which of these refreshing drinks do you order most often?",
+                description: "Your flavor preferences heavily translate to your fragrance taste.",
+                choices: [
+                    {
+                        id: "q2_1",
+                        text: "Iced cucumber water, cold green tea, or fresh sparkling lemonade",
+                        fragranceGroup: "fresh",
+                        vibe: "Crisp & Clean"
+                    },
+                    {
+                        id: "q2_2",
+                        text: "Sweet hot cocoa, creamy caramel macchiato, or vanilla tea latte",
+                        fragranceGroup: "warm_cozy",
+                        vibe: "Sweet & Indulgent"
+                    },
+                    {
+                        id: "q2_3",
+                        text: "A glass of fresh peach nectar, or a light rose-infused milk drink",
+                        fragranceGroup: "floral",
+                        vibe: "Soft & Bloom"
+                    },
+                    {
+                        id: "q2_4",
+                        text: "Strong black coffee, smoky dark tea, or a rich earthy matcha",
+                        fragranceGroup: "woody_earthy",
+                        vibe: "Rich & Grounded"
+                    },
+                    {
+                        id: "q2_5",
+                        text: "A warm spiced apple cider, mulled berry juice, or espresso with cinnamon",
+                        fragranceGroup: "bold_spicy",
+                        vibe: "Spiced & Warm"
+                    }
+                ]
+            },
+            {
+                id: 3,
+                text: "Which scent from everyday life brings you instant comfort?",
+                description: "Select the one that sparks absolute nostalgia or peace.",
+                choices: [
+                    {
+                        id: "q3_1",
+                        text: "Clean linen fresh out of the dryer or the salty spray of sea air",
+                        fragranceGroup: "fresh",
+                        vibe: "Linen & Sea Salt"
+                    },
+                    {
+                        id: "q3_2",
+                        text: "Warm sugar cookies baking or toasted caramel drizzled on ice cream",
+                        fragranceGroup: "warm_cozy",
+                        vibe: "Baking & Sugar"
+                    },
+                    {
+                        id: "q3_3",
+                        text: "A bouquet of freshly cut roses and jasmines on a sunny dining table",
+                        fragranceGroup: "floral",
+                        vibe: "Garden Bouquets"
+                    },
+                    {
+                        id: "q3_4",
+                        text: "The earthy scent of fireplace logs, cedar wood chips, or a pine forest hike",
+                        fragranceGroup: "woody_earthy",
+                        vibe: "Forests & Cedarwood"
+                    },
+                    {
+                        id: "q3_5",
+                        text: "Warm spices in a boutique kitchen, or the mysterious scent of burning incense",
+                        fragranceGroup: "bold_spicy",
+                        vibe: "Amber & Incense"
+                    }
+                ]
+            },
+            {
+                id: 4,
+                text: "Which fabric or clothing style makes you feel most like yourself?",
+                description: "Scent is the invisible clothing you wear daily.",
+                choices: [
+                    {
+                        id: "q4_1",
+                        text: "Light, airy white linen or a simple, crisp cotton t-shirt",
+                        fragranceGroup: "fresh",
+                        vibe: "Effortless & Clean"
+                    },
+                    {
+                        id: "q4_2",
+                        text: "A fluffy cashmere scarf or a warm, oversized knit sweater",
+                        fragranceGroup: "warm_cozy",
+                        vibe: "Snug & Warm"
+                    },
+                    {
+                        id: "q4_3",
+                        text: "A beautiful silk dress, delicate lace top, or romantic flowy patterns",
+                        fragranceGroup: "floral",
+                        vibe: "Graceful & Flowy"
+                    },
+                    {
+                        id: "q4_4",
+                        text: "A structured wool coat, earthy suede jacket, or classic leather boots",
+                        fragranceGroup: "woody_earthy",
+                        vibe: "Classic & Grounded"
+                    },
+                    {
+                        id: "q4_5",
+                        text: "A bold satin blazer, glamorous dark velvet, or a statement accessory",
+                        fragranceGroup: "bold_spicy",
+                        vibe: "Expressive & Bold"
+                    }
+                ]
+            },
+            {
+                id: 5,
+                text: "If you were given a free afternoon just to relax, where would you go?",
+                description: "Choose the environment that feels like the ultimate escape.",
+                choices: [
+                    {
+                        id: "q5_1",
+                        text: "A breezy coastal boardwalk with wave mist and coastal breeze",
+                        fragranceGroup: "fresh",
+                        vibe: "Coastal Breeze"
+                    },
+                    {
+                        id: "q5_2",
+                        text: "An artisan bakery filled with sweet vanilla tarts and warm butter aromas",
+                        fragranceGroup: "warm_cozy",
+                        vibe: "Sweet Bakery"
+                    },
+                    {
+                        id: "q5_3",
+                        text: "A lush, colorful glass greenhouse garden with jasmine and orchid vines",
+                        fragranceGroup: "floral",
+                        vibe: "Botanical Garden"
+                    },
+                    {
+                        id: "q5_4",
+                        text: "A cozy cabin deep in redwood territory with campfires and cedarwood trees",
+                        fragranceGroup: "woody_earthy",
+                        vibe: "Redwood Cabin"
+                    },
+                    {
+                        id: "q5_5",
+                        text: "A dimly lit, gorgeous speakeasy lounge with velvet couches and spice aromas",
+                        fragranceGroup: "bold_spicy",
+                        vibe: "Mysterious Lounge"
+                    }
+                ]
+            },
+            {
+                id: 6,
+                text: "What kind of evening sweet treat or dessert do you naturally prefer?",
+                description: "Taste buds and scent descriptors share an intimate connection.",
+                choices: [
+                    {
+                        id: "q6_1",
+                        text: "A light, refreshing lemon sorbet or coconut water ice pops",
+                        fragranceGroup: "fresh",
+                        vibe: "Citrus Sorbet"
+                    },
+                    {
+                        id: "q6_2",
+                        text: "A rich vanilla bean crème brûlée or warm chocolate chip cookies",
+                        fragranceGroup: "warm_cozy",
+                        vibe: "Vanilla & Chocolate"
+                    },
+                    {
+                        id: "q6_3",
+                        text: "A delicate lavender macaroon or a fresh strawberry tartlet",
+                        fragranceGroup: "floral",
+                        vibe: "Peachy & Berry"
+                    },
+                    {
+                        id: "q6_4",
+                        text: "A simple piece of premium dark chocolate with roasted timber hazelnuts",
+                        fragranceGroup: "woody_earthy",
+                        vibe: "Dark Earthy Woods"
+                    },
+                    {
+                        id: "q6_5",
+                        text: "A slice of spiced gingerbread with cinnamon ice cream or baked honey pears",
+                        fragranceGroup: "bold_spicy",
+                        vibe: "Gilded Spice"
+                    }
+                ]
+            },
+            {
+                id: 7,
+                text: "How would you love your ideal fragrance to make you (and others) feel?",
+                description: "Determine the subtle aura you want to project.",
+                choices: [
+                    {
+                        id: "q7_1",
+                        text: "Effortlessly fresh, revitalized, and bright—like I just emerged from a peaceful shower",
+                        fragranceGroup: "fresh",
+                        vibe: "Bright & Welcoming"
+                    },
+                    {
+                        id: "q7_2",
+                        text: "Sweet, incredibly comforting, and gentle—like an inviting, warm hug",
+                        fragranceGroup: "warm_cozy",
+                        vibe: "Soft & Inviting"
+                    },
+                    {
+                        id: "q7_3",
+                        text: "Elegant, lovely, and highly refined—like walking with a beautiful floral bouquet",
+                        fragranceGroup: "floral",
+                        vibe: "Chic & Graceful"
+                    },
+                    {
+                        id: "q7_4",
+                        text: "Calm, mysterious, and naturally grounded—like a reassuring and wise silent partner",
+                        fragranceGroup: "woody_earthy",
+                        vibe: "Intriguing & Calming"
+                    },
+                    {
+                        id: "q7_5",
+                        text: "Bold, completely captivating, and unique—making a beautiful, unforgettable statement",
+                        fragranceGroup: "bold_spicy",
+                        vibe: "Striking & Sensual"
+                    }
+                ]
+            },
+            {
+                id: 8,
+                text: "What kind of natural light or ambient environment speaks to your soul?",
+                description: "Let's capture the overall atmospheric mood of your personality.",
+                choices: [
+                    {
+                        id: "q8_1",
+                        text: "Crisp, sparkling blue morning light that fills the sky with energy",
+                        fragranceGroup: "fresh",
+                        vibe: "Morning Clarity"
+                    },
+                    {
+                        id: "q8_2",
+                        text: "Glittering golden hour light casting a rich amber glow over the room",
+                        fragranceGroup: "warm_cozy",
+                        vibe: "Warm Amber Glow"
+                    },
+                    {
+                        id: "q8_3",
+                        text: "A soft, pastel-colored sunrise with sweet shades of lavender and peach",
+                        fragranceGroup: "floral",
+                        vibe: "Soft Pastel Sunrise"
+                    },
+                    {
+                        id: "q8_4",
+                        text: "A quiet, misty fog rolling over deep mountains with giant pine shadows",
+                        fragranceGroup: "woody_earthy",
+                        vibe: "Misty Pine Forest"
+                    },
+                    {
+                        id: "q8_5",
+                        text: "A warm, candle-lit room under a deep night sky full of stars",
+                        fragranceGroup: "bold_spicy",
+                        vibe: "Candlelit Deep Star"
+                    }
+                ]
+            }
+        ];
+
+        let selectedAnswers = {};
+
         document.addEventListener('DOMContentLoaded', function() {
-            loadQuestions();
-            setupFormTracking();
+            renderQuestions();
+            setupChoiceSelectors();
         });
-        
-        function loadQuestions() {
-            const questions = [
-                {
-                    order: 1,
-                    text: "🌸 What vibes do you get from flowers and plants?",
-                    fieldName: "q1",
-                    options: ["Floral", "Fresh", "Woody", "Spicy", "Fruity"]
-                },
-                {
-                    order: 2,
-                    text: "🌊 What's your comfort zone with fragrance strength?",
-                    fieldName: "q2",
-                    options: ["Light", "Moderate", "Strong", "Very Strong"]
-                },
-                {
-                    order: 3,
-                    text: "📍 When do you usually wear fragrance?",
-                    fieldName: "q3",
-                    options: ["Daily", "Professional", "Evening", "Active", "Versatile"]
-                },
-                {
-                    order: 4,
-                    text: "What feels most comfortable on you?",
-                    fieldName: "q4",
-                    options: [
-                        { label: "Fresh and airy, like morning breeze", value: "spring" },
-                        { label: "Bright and citrusy, super refreshing", value: "summer" },
-                        { label: "Soft warmth, cozy but not heavy", value: "fall" },
-                        { label: "Deep, rich and intense", value: "winter" },
-                        { label: "Something that works anytime", value: "year_round" }
-                    ]
-                },
-                {
-                    order: 5,
-                    text: "👥 What fragrance style speaks to you?",
-                    fieldName: "q5",
-                    options: ["Feminine", "Masculine", "Unisex"]
-                },
-                {
-                    order: 6,
-                    text: "💥 First impression matters - what catches your nose?",
-                    fieldName: "q6",
-                    options: ["Citrus", "Herbal", "Fruity", "Spicy", "Floral"]
-                },
-                {
-                    order: 7,
-                    text: "🎯 As the day goes on, what stays with you?",
-                    fieldName: "q7",
-                    options: ["Musk", "Vanilla", "Woody", "Patchouli", "Clean"]
-                },
-                {
-                    order: 8,
-                    text: "🔥❄️ Temperature check - warm or cool?",
-                    fieldName: "q8",
-                    options: ["Cool", "Warm", "Balanced"]
-                },
-                {
-                    order: 9,
-                    text: "🍰 How do you feel about sweet smells?",
-                    fieldName: "q9",
-                    options: ["Not sweet", "Slightly sweet", "Moderately sweet", "Very sweet", "Gourmand"]
-                },
-                {
-                    order: 10,
-                    text: "🌿 Real vs Fancy - which do you prefer?",
-                    fieldName: "q10",
-                    options: ["Natural", "Slightly abstract", "Creative", "No preference"]
-                }
-            ];
-            
-            const totalQuestions = questions.length;
+
+        function renderQuestions() {
             let html = '';
-            
-            questions.forEach((question, index) => {
+            quizData.forEach((question, index) => {
                 html += `
-                    <div class="question-item">
+                    <div class="question-block" id="question-${question.id}">
                         <div class="question-text">${question.text}</div>
-                        <div>
+                        <div class="question-description">${question.description}</div>
+                        <div class="choices-grid">
                 `;
                 
-                question.options.forEach(option => {
-                    const inputId = `${question.fieldName}_${option.replace(/\s+/g, '_')}`;
+                question.choices.forEach(choice => {
                     html += `
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="${question.fieldName}" id="${inputId}" value="${option}" required>
-                            <label class="form-check-label" for="${inputId}">
-                                ${option}
-                            </label>
-                        </div>
+                        <label class="choice-card" data-question="${question.id}" data-choice="${choice.id}" data-group="${choice.fragranceGroup}">
+                            <input type="radio" name="q${question.id}" value="${choice.fragranceGroup}" required>
+                            <div class="choice-text">${choice.text}</div>
+                            <div class="choice-vibe">✨ ${choice.vibe}</div>
+                        </label>
                     `;
                 });
-                
+
                 html += `
                         </div>
                     </div>
                 `;
             });
-            
+
             document.getElementById('questionsContainer').innerHTML = html;
-            updateProgress();
-            
-            // Track changes for progress
+        }
+
+        function setupChoiceSelectors() {
+            document.querySelectorAll('.choice-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const questionId = this.getAttribute('data-question');
+                    const choiceId = this.getAttribute('data-choice');
+                    const fragranceGroup = this.getAttribute('data-group');
+
+                    // Deselect previous choice in this question
+                    document.querySelectorAll(`[data-question="${questionId}"]`).forEach(c => {
+                        c.classList.remove('selected');
+                    });
+
+                    // Select current choice
+                    this.classList.add('selected');
+                    this.querySelector('input').checked = true;
+                    selectedAnswers[`q${questionId}`] = fragranceGroup;
+
+                    updateProgress();
+                });
+            });
+
+            // Handle radio button click as well
             document.querySelectorAll('input[type="radio"]').forEach(input => {
-                input.addEventListener('change', updateProgress);
+                input.addEventListener('change', function() {
+                    const card = this.closest('.choice-card');
+                    const questionId = card.getAttribute('data-question');
+
+                    document.querySelectorAll(`[data-question="${questionId}"]`).forEach(c => {
+                        c.classList.remove('selected');
+                    });
+                    
+                    card.classList.add('selected');
+                    selectedAnswers[`q${questionId}`] = this.value;
+                    updateProgress();
+                });
             });
         }
-        
+
         function updateProgress() {
-            const total = document.querySelectorAll('input[type="radio"]').length / 4; // Assuming 4 options per Q on average
-            const answered = document.querySelectorAll('input[type="radio"]:checked').length;
-            
-            const percentage = Math.round((answered / 10) * 100);
+            const answered = Object.keys(selectedAnswers).length;
+            const total = quizData.length;
+            const percentage = (answered / total) * 100;
+
             document.getElementById('progressBar').style.width = percentage + '%';
-            document.getElementById('progressText').textContent = `Progress: ${answered}/10 questions answered`;
-            
-            // Enable submit button only when all questions are answered
+            document.getElementById('progressText').textContent = `Question ${answered} of ${total}`;
+
             const submitBtn = document.getElementById('submitBtn');
-            if (answered === 10) {
+            if (answered === total) {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Get My Recommendations 🎁';
             } else {
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = `Answer all questions (${answered}/10)`;
             }
-        }
-        
-        function setupFormTracking() {
-            document.getElementById('quizForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const submitBtn = document.getElementById('submitBtn');
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
-                submitBtn.disabled = true;
-                this.submit();
-            });
         }
     </script>
 </body>

@@ -9,7 +9,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     List<Product> findByUserId(Integer userId);
     
     // Find products by supplier and category
-    List<Product> findByUserIdAndCategoryId(Integer userId, String categoryId);
+    List<Product> findByUserIdAndCategory(Integer userId, String category);
     
     // Find products with pending approval for a supplier
     List<Product> findByUserIdAndApprovalStatus(Integer userId, String approvalStatus);

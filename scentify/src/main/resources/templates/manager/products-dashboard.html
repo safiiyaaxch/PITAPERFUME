@@ -336,7 +336,7 @@
                             <h3 th:text="${product.productName}"></h3>
                             <div class="product-details">
                                 <p><strong>Product ID:</strong> <span th:text="${product.productId}"></span></p>
-                                <p><strong>Category:</strong> <span th:text="${product.categoryId}"></span></p>
+                                <p><strong>Category:</strong> <span th:text="${product.category}"></span></p>
                                 <p><strong>Price:</strong> RM<span th:text="${#numbers.formatDecimal(product.price, 1, 2)}"></span></p>
                                 <p><strong>Stock:</strong> <span th:text="${product.stock}"></span> units</p>
                                 <p><strong>Description:</strong> <span th:text="${product.description}"></span></p>
@@ -376,7 +376,7 @@
                             <h3 th:text="${product.productName}"></h3>
                             <div class="product-details">
                                 <p><strong>Product ID:</strong> <span th:text="${product.productId}"></span></p>
-                                <p><strong>Category:</strong> <span th:text="${product.categoryId}"></span></p>
+                                <p><strong>Category:</strong> <span th:text="${product.category}"></span></p>
                                 <p><strong>Price:</strong> RM<span th:text="${#numbers.formatDecimal(product.price, 1, 2)}"></span></p>
                                 <p><strong>Stock:</strong> <span th:text="${product.stock}"></span> units</p>
                                 <p class="supplier-info"><strong>Supplier:</strong> <span th:text="${product.supplierName != null ? product.supplierName : 'Unknown'}"></span></p>
@@ -409,7 +409,7 @@
                             <h3 th:text="${product.productName}"></h3>
                             <div class="product-details">
                                 <p><strong>Product ID:</strong> <span th:text="${product.productId}"></span></p>
-                                <p><strong>Category:</strong> <span th:text="${product.categoryId}"></span></p>
+                                <p><strong>Category:</strong> <span th:text="${product.category}"></span></p>
                                 <p><strong>Price:</strong> RM<span th:text="${#numbers.formatDecimal(product.price, 1, 2)}"></span></p>
                                 <p><strong>Stock:</strong> <span th:text="${product.stock}"></span> units</p>
                                 <p class="supplier-info"><strong>Supplier:</strong> <span th:text="${product.supplierName != null ? product.supplierName : 'Unknown'}"></span></p>

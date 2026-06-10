@@ -3,6 +3,7 @@ package com.scentify.service;
 import com.scentify.model.Order;
 import com.scentify.model.Payment;
 import com.scentify.repository.PaymentRepository;
+import com.scentify.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -29,15 +30,31 @@ public class ToyyibPayService {
     
     @Value("${toyyibpay.category-code}")
     private String categoryCode;
+
+    @Value("${toyyibpay.sandbox-mode:false}")
+    private boolean sandboxMode;
     
     @Autowired
     private PaymentRepository paymentRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
     
     @Autowired
     private RestTemplate restTemplate;
     
-    private static final String CREATE_BILL_URL = "https://toyyibpay.com/index.php/api/createBill";
-    private static final String CHECK_BILL_URL = "https://toyyibpay.com/index.php/api/getBillTransactions";
+    private static final String PROD_CREATE_BILL_URL = "https://toyyibpay.com/index.php/api/createBill";
+    private static final String SANDBOX_CREATE_BILL_URL = "https://dev.toyyibpay.com/index.php/api/createBill";
+    private static final String PROD_CHECK_BILL_URL = "https://toyyibpay.com/index.php/api/getBillTransactions";
+    private static final String SANDBOX_CHECK_BILL_URL = "https://dev.toyyibpay.com/index.php/api/getBillTransactions";
+    
+    private String getCreateBillUrl() {
+        return sandboxMode ? SANDBOX_CREATE_BILL_URL : PROD_CREATE_BILL_URL;
+    }
+    
+    private String getCheckBillUrl() {
+        return sandboxMode ? SANDBOX_CHECK_BILL_URL : PROD_CHECK_BILL_URL;
+    }
     
     /**
      * Create a ToyyibPay bill for the order
@@ -45,7 +62,9 @@ public class ToyyibPayService {
      */
     public Payment createPaymentBill(Order order, String returnUrl) {
         try {
+            String createBillUrl = getCreateBillUrl();
             System.out.println("=== CREATING TOYYIBPAY BILL ===");
+            System.out.println("🌐 Environment: " + (sandboxMode ? "SANDBOX (Testing)" : "PRODUCTION"));
             System.out.println("API Secret Key: " + (apiSecretKey != null ? apiSecretKey.substring(0, 10) + "..." : "NULL"));
             System.out.println("Category Code: " + categoryCode);
             
@@ -75,7 +94,7 @@ public class ToyyibPayService {
             requestBody.add("billContentEmail", "Thank you for your order at Scentify!");
             
             System.out.println("Sending request to ToyyibPay...");
-            System.out.println(" URL: " + CREATE_BILL_URL);
+            System.out.println(" URL: " + createBillUrl);
             
             // Send request to ToyyibPay
             HttpHeaders headers = new HttpHeaders();
@@ -83,39 +102,55 @@ public class ToyyibPayService {
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(requestBody, headers);
             
             // Get response as String first to handle HTML error responses
-            String responseBody = restTemplate.postForObject(CREATE_BILL_URL, request, String.class);
+            String responseBody = restTemplate.postForObject(createBillUrl, request, String.class);
             
-            System.out.println("📦 Raw response (first 500 chars): " + (responseBody != null ? responseBody.substring(0, Math.min(500, responseBody.length())) : "NULL"));
+            System.out.println("📦 Raw response received (length: " + (responseBody != null ? responseBody.length() : "NULL") + ")");
+            if (responseBody != null && responseBody.length() > 0) {
+                System.out.println("📦 Response preview: " + responseBody.substring(0, Math.min(500, responseBody.length())));
+            }
             
-            if (responseBody == null || responseBody.isEmpty()) {
+            if (responseBody == null || responseBody.trim().isEmpty()) {
                 System.err.println("❌ Response body is null or empty!");
                 return null;
             }
             
             // Try to parse as JSON
             Map response = null;
+            ObjectMapper objectMapper = new ObjectMapper();
+            
             try {
-                ObjectMapper objectMapper = new ObjectMapper();
-                response = objectMapper.readValue(responseBody, new TypeReference<Map>(){});
-                System.out.println("✅ Parsed as JSON: " + response);
-            } catch (Exception jsonError) {
-                System.err.println("⚠️  Failed to parse as JSON: " + jsonError.getMessage());
-                System.err.println("📝 Response was probably HTML error page");
-                System.err.println("📝 Full response: " + responseBody);
-                
-                // If it's HTML, it's an error from ToyyibPay
-                if (responseBody.contains("<html") || responseBody.contains("<HTML")) {
-                    System.err.println("❌ ToyyibPay returned HTML (error page)");
+                // Try parsing as object first
+                response = objectMapper.readValue(responseBody, Map.class);
+                System.out.println("✅ Successfully parsed response as JSON Object");
+            } catch (Exception e1) {
+                // If it fails, try parsing as array
+                try {
+                    java.util.List<Map> responseArray = objectMapper.readValue(responseBody, java.util.List.class);
+                    System.out.println("⚠️ Response is a JSON array - extracting first element");
+                    
+                    if (responseArray != null && !responseArray.isEmpty()) {
+                        response = responseArray.get(0);
+                        System.out.println("✅ Extracted first element from array: " + response);
+                    } else {
+                        System.err.println("❌ Response array is empty!");
+                        return null;
+                    }
+                } catch (Exception e2) {
+                    System.err.println("⚠️ Failed to parse response as JSON: " + e1.getMessage());
+                    System.err.println("📝 Raw response body: " + responseBody);
                     return null;
                 }
+            }
+                
+            if (response == null) {
+                System.err.println("❌ Response is null");
                 return null;
             }
+            System.out.println("📊 Response map keys: " + response.keySet());
+            System.out.println("📊 Full response: " + response);
             
-            System.out.println("📦 Response received: " + response);
-            System.out.println("📦 Response type: " + (response != null ? response.getClass().getName() : "NULL"));
-            
-            if (response == null) {
-                System.err.println("❌ Response is null!");
+            if (response == null || response.isEmpty()) {
+                System.err.println("❌ Response map is empty!");
                 return null;
             }
             
@@ -139,22 +174,27 @@ public class ToyyibPayService {
             
             if (billCode != null && !billCode.isEmpty()) {
                 payment.setBillCode(billCode);
-                payment.setPaymentUrl("https://toyyibpay.com/" + billCode);
+                // Use correct URL based on environment
+                String paymentUrl = (sandboxMode ? "https://dev.toyyibpay.com/bill/?billCode=" : "https://toyyibpay.com/bill/?billCode=") + billCode;
+                payment.setPaymentUrl(paymentUrl);
                 payment = paymentRepository.save(payment);
                 
                 order.setToyyibPayBillCode(billCode);
                 order.setPaymentStatus("PENDING");
+                orderRepository.save(order);  // ✅ SAVE THE ORDER WITH BILL CODE
                 
                 System.out.println("✅ ToyyibPay bill created successfully!");
                 System.out.println("✅ Bill Code: " + billCode);
-                System.out.println("✅ Payment URL: https://toyyibpay.com/" + billCode);
+                System.out.println("✅ Payment URL: " + paymentUrl);
+                System.out.println("✅ Order saved with bill code: " + order.getOrderId());
                 return payment;
             } else {
                 System.err.println("❌ Failed to extract BillCode from ToyyibPay response");
-                System.err.println("❌ Response keys: " + (response != null ? response.keySet() : "NULL"));
-                System.err.println("❌ Response values: " + response);
-                System.err.println("❌ Status: " + response.get("status"));
-                System.err.println("❌ Message: " + response.get("Message"));
+                System.err.println("❌ Response: " + response);
+                System.err.println("❌ Response keys: " + response.keySet());
+                System.err.println("❌ Response status: " + response.get("status"));
+                System.err.println("❌ Response message: " + response.get("Message"));
+                System.err.println("❌ Response error: " + response.get("error"));
                 return null;
             }
         } catch (Exception e) {
@@ -170,6 +210,7 @@ public class ToyyibPayService {
      */
     public Payment checkPaymentStatus(String billCode) {
         try {
+            String checkBillUrl = getCheckBillUrl();
             MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
             requestBody.add("billCode", billCode);
             
@@ -177,7 +218,7 @@ public class ToyyibPayService {
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(requestBody, headers);
             
-            Map response = restTemplate.postForObject(CHECK_BILL_URL, request, Map.class);
+            Map response = restTemplate.postForObject(checkBillUrl, request, Map.class);
             
             if (response != null) {
                 System.out.println("Payment status checked: " + response);

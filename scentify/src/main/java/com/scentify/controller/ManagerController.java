@@ -258,9 +258,13 @@ public class ManagerController {
     public String approveProduct(@PathVariable String id,
                                  HttpSession session,
                                  RedirectAttributes redirect) {
+        System.out.println("APPROVAL ENDPOINT CALLED for product: " + id);
+        
         if (!isManagerLoggedIn(session)) {
+            System.out.println("Manager not logged in!");
             return "redirect:/login";
         }
+        System.out.println("Manager is logged in");
         
         Optional<Product> productOpt = productRepository.findById(id);
         if (productOpt.isEmpty()) {

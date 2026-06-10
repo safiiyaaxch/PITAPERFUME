@@ -118,7 +118,7 @@ public class PaymentController {
             RedirectAttributes redirect) {
         
         try {
-            System.out.println("↩️  Payment Return - OrderId: " + orderId + ", Status: " + status_id);
+            System.out.println("↩️  Payment Return - OrderId: " + orderId + ", Status: " + status_id + ", BillCode: " + billcode);
             
             if (orderId == null) {
                 redirect.addFlashAttribute("error", "Invalid order reference");
@@ -129,17 +129,48 @@ public class PaymentController {
             
             if (orderOpt.isPresent()) {
                 Order order = orderOpt.get();
+                Optional<Payment> paymentOpt = paymentRepository.findByBillCode(billcode);
                 
                 // Status: 1=success, 2=pending, 3=fail
-                if ("1".equals(status_id) && "PAID".equals(order.getPaymentStatus())) {
+                if ("1".equals(status_id)) {
+                    // Payment successful - UPDATE database if needed
+                    if (paymentOpt.isPresent()) {
+                        Payment payment = paymentOpt.get();
+                        if (!"COMPLETED".equals(payment.getPaymentStatus())) {
+                            System.out.println("💾 Updating payment status to COMPLETED for bill code: " + billcode);
+                            payment.setPaymentStatus("COMPLETED");
+                            payment.setCompletedAt(LocalDateTime.now());
+                            paymentRepository.save(payment);
+                        }
+                    }
+                    
+                    // Update order
+                    if (!"PAID".equals(order.getPaymentStatus())) {
+                        System.out.println("💾 Updating order payment status to PAID for order #" + orderId);
+                        order.setPaymentStatus("PAID");
+                        order.setOrderStatus("CONFIRMED");
+                        orderRepository.save(order);
+                    }
+                    
                     redirect.addFlashAttribute("success", "Payment successful! Your order has been confirmed. Order #" + orderId);
                     System.out.println("✅ Payment return - Order #" + orderId + " confirmed");
                     return "redirect:/customer/dashboard";
+                    
                 } else if ("2".equals(status_id)) {
                     redirect.addFlashAttribute("info", "Payment is being processed. Please check back later. Order #" + orderId);
                     System.out.println("⏳ Payment return - Order #" + orderId + " pending");
                     return "redirect:/customer/dashboard";
+                    
                 } else if ("3".equals(status_id)) {
+                    // Payment failed - update status
+                    if (paymentOpt.isPresent()) {
+                        Payment payment = paymentOpt.get();
+                        payment.setPaymentStatus("FAILED");
+                        paymentRepository.save(payment);
+                    }
+                    order.setPaymentStatus("FAILED");
+                    orderRepository.save(order);
+                    
                     redirect.addFlashAttribute("error", "Payment failed. Please try again. Order #" + orderId);
                     System.out.println("❌ Payment return - Order #" + orderId + " failed");
                     return "redirect:/customer/cart";
@@ -153,6 +184,7 @@ public class PaymentController {
             
         } catch (Exception e) {
             System.err.println("❌ Error in payment return: " + e.getMessage());
+            e.printStackTrace();
             redirect.addFlashAttribute("error", "An error occurred while processing your payment");
         }
         

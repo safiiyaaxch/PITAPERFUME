@@ -152,6 +152,22 @@
             width: 100%;
         }
 
+        .member-benefits {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            padding: 0.8rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #4caf50;
+        }
+
+        .non-member-prompt {
+            background: linear-gradient(135deg, #f0e8d8, #fdfcfa);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
         .order-item {
             display: flex;
             gap: 1rem;
@@ -248,6 +264,18 @@
             font-weight: 600;
         }
 
+        .delivery-free {
+            color: green;
+            font-weight: 600;
+        }
+
+        .delivery-strikethrough {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 0.85rem;
+            margin-left: 0.3rem;
+        }
+
         .pay-btn {
             background: var(--primary-color);
             color: white;
@@ -284,38 +312,6 @@
             background: #d4c2b0;
             color: var(--text-dark);
             text-decoration: none;
-        }
-
-        .quantity-control {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin: 1rem 0;
-        }
-
-        .qty-btn {
-            background: #d4c5bd;
-            color: #6b5b58;
-            border: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .qty-btn:hover {
-            background: #c2b0a3;
-        }
-
-        .qty-input {
-            width: 50px;
-            text-align: center;
-            padding: 4px;
-            border: 1px solid #d4c5bd;
-            border-radius: 4px;
-            font-size: 0.9rem;
         }
 
         @media (max-width: 768px) {
@@ -380,7 +376,7 @@
 
                     <div class="form-group">
                         <label class="form-label">Shipping Address</label>
-                        <textarea class="form-control" name="shippingAddress" rows="3" required>[[${customer.address}]]</textarea>
+                        <textarea class="form-control" name="shippingAddress" rows="3" required th:text="${customer.address}"></textarea>
                     </div>
 
                     <div class="form-row">
@@ -396,9 +392,16 @@
                         </div>
                     </div>
 
-                    <!-- Voucher Section -->
-                    <th:block th:if="${!availableVouchers.isEmpty()}">
-                        <div class="voucher-section">
+                    <!-- Member Benefits Banner -->
+                    <div th:if="${customer.isMember}" class="member-benefits">
+                        <i class="fas fa-truck" style="color: #4caf50;"></i> 
+                        <strong style="color: #2e7d32;">Member Benefit:</strong> 
+                        <span style="color: #1b5e20;">FREE Delivery on all orders!</span>
+                    </div>
+
+                    <!-- Voucher Section for Members -->
+                    <div th:if="${customer.isMember}">
+                        <div th:if="${availableVouchers != null and !availableVouchers.isEmpty()}" class="voucher-section">
                             <div class="voucher-title">
                                 <i class="fas fa-ticket-alt"></i> Apply Voucher (Member Only)
                             </div>
@@ -411,18 +414,33 @@
                                 </option>
                             </select>
                         </div>
-                    </th:block>
-
-                    <th:block th:if="${availableVouchers.isEmpty()}">
-                        <div style="background: #f0e8d8; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">
-                            No vouchers available
+                        <div th:if="${availableVouchers == null or availableVouchers.isEmpty()}" class="non-member-prompt">
+                            <i class="fas fa-ticket-alt"></i> 
+                            <strong>No vouchers available</strong> at the moment. 
+                            <br>Complete more purchases to earn vouchers!
                         </div>
-                    </th:block>
+                    </div>
+
+                    <!-- Non-Member Prompt -->
+                    <div th:unless="${customer.isMember}" class="non-member-prompt">
+                        <i class="fas fa-star"></i> 
+                        <strong>Become a member</strong> to unlock:
+                        <ul style="margin: 0.5rem 0 0 1rem; font-size: 0.85rem;">
+                            <li>✨ FREE delivery on all orders</li>
+                            <li>🎫 Exclusive voucher discounts</li>
+                            <li>⭐ Loyalty points program</li>
+                        </ul>
+                        <a href="/customer/apply-membership" style="color: var(--primary-color); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-top: 0.5rem;">
+                            Learn More <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
 
                     <input type="hidden" name="cartId" th:value="${cart.cartId}">
+                    <input type="hidden" name="discountAmount" id="discountAmountInput" value="0.00">
+                    <input type="hidden" name="deliveryCost" id="deliveryCostInput" th:value="${customer.isMember ? 0 : 4.90}">
                     
-                    <!-- Payment Button - INSIDE FORM -->
-                    <button type="button" class="pay-btn" onclick="processCheckout()" style="width: 100%; margin-top: 1.5rem;">
+                    <!-- Payment Button -->
+                    <button type="button" class="pay-btn" onclick="processCheckout()">
                         <i class="fas fa-credit-card"></i> Proceed to Payment
                     </button>
                     
@@ -447,25 +465,23 @@
                 </div>
 
                 <!-- Order Items (Cart) -->
-                <th:block th:if="${!cart.cartItems.isEmpty()}">
-                    <div th:each="item : ${cart.cartItems}" class="order-item" th:data-item-id="${item.cartItemId}" th:data-price="${item.product.price}">
-                        <img th:src="${item.product.prodimage}" 
-                             th:alt="${item.product.productName}"
-                             class="order-item-image"
-                             onerror="this.src='https://via.placeholder.com/80x80?text=No+Image'">
-                        <div class="order-item-details">
-                            <div class="order-item-name" th:text="${item.product.productName}">Product</div>
-                            <div class="order-item-qty">
-                                <button type="button" class="qty-btn-small" onclick="decreaseItemQty(this)">−</button>
-                                <input type="number" class="item-qty-input" th:value="${item.quantity}" min="1" onchange="updateCheckoutTotal()">
-                                <button type="button" class="qty-btn-small" onclick="increaseItemQty(this)">+</button>
-                            </div>
-                            <div class="order-item-price">
-                                RM <span class="item-price-display" th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}">0.00</span>
-                            </div>
+                <div th:each="item : ${cart.cartItems}" class="order-item" th:data-item-id="${item.cartItemId}" th:data-price="${item.product.price}">
+                    <img th:src="${item.product.prodimage}" 
+                         th:alt="${item.product.productName}"
+                         class="order-item-image"
+                         onerror="this.src='https://via.placeholder.com/80x80?text=No+Image'">
+                    <div class="order-item-details">
+                        <div class="order-item-name" th:text="${item.product.productName}">Product</div>
+                        <div class="order-item-qty">
+                            <button type="button" class="qty-btn-small" onclick="decreaseItemQty(this)">−</button>
+                            <input type="number" class="item-qty-input" th:value="${item.quantity}" min="1" onchange="updateCheckoutTotal()">
+                            <button type="button" class="qty-btn-small" onclick="increaseItemQty(this)">+</button>
+                        </div>
+                        <div class="order-item-price">
+                            RM <span class="item-price-display" th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}">0.00</span>
                         </div>
                     </div>
-                </th:block>
+                </div>
 
                 <!-- Price Summary -->
                 <div class="summary-box">
@@ -476,7 +492,15 @@
 
                     <div class="summary-row">
                         <span class="summary-label">Delivery Cost</span>
-                        <span class="summary-value">RM <span id="delivery">4.90</span></span>
+                        <span class="summary-value" id="deliveryValue">
+                            <span th:if="${customer.isMember}">
+                                <span class="delivery-free">FREE</span>
+                                <span class="delivery-strikethrough">RM4.90</span>
+                            </span>
+                            <span th:unless="${customer.isMember}">
+                                RM <span id="delivery">4.90</span>
+                            </span>
+                        </span>
                     </div>
 
                     <div class="summary-row">
@@ -486,203 +510,129 @@
 
                     <div class="summary-row total">
                         <span class="summary-label">Total</span>
-                        <span class="summary-value">RM <span id="total" th:text="${#numbers.formatDecimal(cart.totalPrice + 4.90, 1, 2)}">0.00</span></span>
+                        <span class="summary-value">RM <span id="total">0.00</span></span>
                     </div>
+                </div>
+
+                <!-- Member Savings Note -->
+                <div th:if="${customer.isMember}" style="margin-top: 1rem; padding: 0.5rem; background: #e8f5e9; border-radius: 4px; text-align: center; font-size: 0.85rem; color: #2e7d32;">
+                    <i class="fas fa-tags"></i> You saved RM4.90 on delivery with your membership!
                 </div>
             </div>
         </div>
     </div>
 
     <div style="text-align: center; margin-top: 2rem; margin-bottom: 2rem;">
-        <a href="/customer/cart" class="back-btn" style="display: inline-block;">
+        <a href="/customer/cart" class="back-btn">
             <i class="fas fa-arrow-left"></i> Back to Cart
         </a>
     </div>
 
     <script>
-        // Initialize vouchers array from server
-        const vouchersData = /*[[${availableVouchers}]]*/ [];
+        var deliveryCost = 4.90;
+        var isMember = false;
         
-        const subtotalAmount = /*[[${cart.totalPrice}]]*/ 0;
-        const deliveryCost = 4.90;
+        // Get member status from server
+        /*[/ th:inline="javascript" */
+            isMember = /*[[${customer.isMember}]]*/ false;
+        /*]*/
         
-        // Populate available vouchers from server data
-        const availableVouchers = {};
-        vouchersData.forEach(function(voucher) {
-            const vid = String(voucher.voucherId); // Convert to string for consistency
-            availableVouchers[vid] = {
-                code: voucher.voucherCode,
-                discountValue: parseFloat(voucher.discountValue),
-                discountType: voucher.discountType,
-                minPurchase: parseFloat(voucher.minPurchaseAmount) || 0
-            };
-            console.log('Loaded voucher: ' + vid + ' = ' + availableVouchers[vid].code + ' (' + availableVouchers[vid].discountType + ')');
-        });
-
-        // Get initial subtotal by summing all item prices
-        function calculateCurrentSubtotal() {
-            let total = 0;
-            document.querySelectorAll('.order-item').forEach(item => {
-                const price = parseFloat(item.dataset.price);
-                const qty = parseInt(item.querySelector('.item-qty-input').value) || 1;
-                total += price * qty;
-            });
-            return total;
-        }
-
         function updateCheckoutTotal() {
-            try {
-                const currentSubtotal = calculateCurrentSubtotal();
-                const voucherId = document.getElementById('voucherId');
-                const voucherIdValue = voucherId ? voucherId.value : '';
-                let discountAmount = 0;
-
-                console.log('Update total - Selected voucher ID: ' + voucherIdValue);
-                
-                if (voucherIdValue && availableVouchers[voucherIdValue]) {
-                    const voucher = availableVouchers[voucherIdValue];
-                    console.log('Voucher found: ' + voucher.code + ', Type: ' + voucher.discountType + ', Value: ' + voucher.discountValue);
-                    
-                    if (voucher.discountType === 'PERCENTAGE') {
-                        discountAmount = (currentSubtotal * voucher.discountValue) / 100;
-                        console.log('Percentage discount: ' + voucher.discountValue + '% of RM' + currentSubtotal + ' = RM' + discountAmount);
-                    } else if (voucher.discountType === 'FIXED_AMOUNT') {
-                        discountAmount = parseFloat(voucher.discountValue);
-                        console.log('Fixed amount discount: RM' + discountAmount);
+            var subtotal = 0;
+            var items = document.querySelectorAll('.order-item');
+            items.forEach(function(item) {
+                var price = parseFloat(item.dataset.price) || 0;
+                var qty = parseInt(item.querySelector('.item-qty-input').value) || 1;
+                subtotal += price * qty;
+            });
+            
+            // Calculate delivery cost based on membership
+            var delivery = isMember ? 0 : deliveryCost;
+            
+            // Calculate discount from voucher
+            var voucherSelect = document.getElementById('voucherId');
+            var discount = 0;
+            
+            if (voucherSelect && voucherSelect.value) {
+                var selectedOption = voucherSelect.options[voucherSelect.selectedIndex];
+                var voucherText = selectedOption.text;
+                var discountMatch = voucherText.match(/(\d+(?:\.\d{2})?)\s*(?:%|RM)/);
+                if (discountMatch) {
+                    var amount = parseFloat(discountMatch[1]);
+                    if (voucherText.includes('%')) {
+                        discount = (subtotal * amount) / 100;
+                    } else {
+                        discount = amount;
                     }
-                } else {
-                    console.log('No voucher selected or voucher not found');
                 }
-
-                const total = currentSubtotal + deliveryCost - discountAmount;
-
-                // Update all display values - use safe selectors
-                const subtotalEl = document.getElementById('subtotal');
-                const discountEl = document.getElementById('discount');
-                const totalEl = document.getElementById('total');
-
-                if (subtotalEl) subtotalEl.textContent = currentSubtotal.toFixed(2);
-                if (discountEl) discountEl.textContent = discountAmount.toFixed(2);
-                if (totalEl) totalEl.textContent = total.toFixed(2);
-
-                console.log('Final total: RM' + total.toFixed(2));
-
-                // Update individual item prices
-                document.querySelectorAll('.order-item').forEach(item => {
-                    const price = parseFloat(item.dataset.price) || 0;
-                    const qtyInput = item.querySelector('.item-qty-input');
-                    const qty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
-                    const itemTotal = price * qty;
-                    const itemPriceDisplay = item.querySelector('.item-price-display');
-                    if (itemPriceDisplay) {
-                        itemPriceDisplay.textContent = itemTotal.toFixed(2);
-                    }
-                });
-            } catch (e) {
-                console.error('Error updating checkout total: ' + e.message);
+            }
+            
+            var total = subtotal + delivery - discount;
+            
+            // Update display
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+            document.getElementById('discount').textContent = discount.toFixed(2);
+            document.getElementById('discountAmountInput').value = discount.toFixed(2);
+            document.getElementById('total').textContent = total.toFixed(2);
+            
+            // Update delivery display for non-members only
+            if (!isMember) {
+                var deliverySpan = document.getElementById('delivery');
+                if (deliverySpan) {
+                    deliverySpan.textContent = delivery.toFixed(2);
+                }
+            }
+            
+            // Update hidden delivery cost input
+            var deliveryCostInput = document.getElementById('deliveryCostInput');
+            if (deliveryCostInput) {
+                deliveryCostInput.value = delivery;
             }
         }
-
-        function increaseItemQty(btn) {
-            const input = btn.parentElement.querySelector('.item-qty-input');
-            input.value = parseInt(input.value) + 1;
-            updateCheckoutTotal();
-        }
-
-        function decreaseItemQty(btn) {
-            const input = btn.parentElement.querySelector('.item-qty-input');
-            if (parseInt(input.value) > 1) {
-                input.value = parseInt(input.value) - 1;
-                updateCheckoutTotal();
-            }
-        }
-
+        
         function updateDiscount() {
             updateCheckoutTotal();
         }
-
-        function processCheckout() {
-            console.log('🔄 processCheckout() called');
-            
-            const form = document.getElementById('checkoutForm');
-            console.log('📝 Form found: ' + (form ? 'YES' : 'NO'));
-            
-            if (!form) {
-                console.error('❌ ERROR: checkoutForm not found!');
-                alert('ERROR: Checkout form not found! Please refresh the page.');
-                return false;
-            }
-
-            // Get all required fields
-            const requiredFields = ['recipientName', 'phoneNumber', 'shippingAddress', 'city', 'country'];
-            let isValid = true;
-            let errorMsg = '';
-
-            console.log('🔍 Validating ' + requiredFields.length + ' fields...');
-            
-            requiredFields.forEach(fieldId => {
-                const field = document.querySelector(`[name="${fieldId}"]`);
-                const hasValue = field && field.value && field.value.trim();
-                console.log('   ' + fieldId + ': ' + (hasValue ? '✅ OK' : '❌ MISSING'));
-                
-                if (!hasValue) {
-                    isValid = false;
-                    errorMsg += fieldId + ' is required\n';
-                }
-            });
-
-            if (!isValid) {
-                console.error('❌ Validation failed:', errorMsg);
-                alert('❌ PLEASE FILL IN ALL FIELDS:\n\n' + errorMsg);
-                return false;
-            }
-
-            console.log('✅ All fields valid!');
-            console.log('📍 Form action: ' + form.action);
-            console.log('📍 Form method: ' + form.method);
-            console.log('🚀 Submitting form...');
-            
-            try {
-                // Prevent double submission
-                const submitBtn = event.target;
-                if (submitBtn) submitBtn.disabled = true;
-                
-                form.submit();
-                console.log('✅ Form submitted successfully');
-                return false; // Prevent default button behavior
-            } catch (error) {
-                console.error('❌ Error submitting form: ' + error.message);
-                alert('❌ ERROR: ' + error.message);
-                return false;
+        
+        function increaseItemQty(btn) {
+            var input = btn.parentElement.querySelector('.item-qty-input');
+            var currentVal = parseInt(input.value);
+            if (!isNaN(currentVal)) {
+                input.value = currentVal + 1;
+                updateCheckoutTotal();
             }
         }
 
+        function decreaseItemQty(btn) {
+            var input = btn.parentElement.querySelector('.item-qty-input');
+            var currentVal = parseInt(input.value);
+            if (!isNaN(currentVal) && currentVal > 1) {
+                input.value = currentVal - 1;
+                updateCheckoutTotal();
+            }
+        }
+
+        function processCheckout() {
+            var form = document.getElementById('checkoutForm');
+            if (form) {
+                var recipientName = form.querySelector('[name="recipientName"]').value;
+                var phoneNumber = form.querySelector('[name="phoneNumber"]').value;
+                var shippingAddress = form.querySelector('[name="shippingAddress"]').value;
+                var city = form.querySelector('[name="city"]').value;
+                var country = form.querySelector('[name="country"]').value;
+                
+                if (!recipientName || !phoneNumber || !shippingAddress || !city || !country) {
+                    alert('Please fill in all delivery details before proceeding to payment.');
+                    return;
+                }
+                
+                form.submit();
+            }
+        }
+        
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('✅ Checkout page loaded');
-            console.log('🔍 Looking for checkout form...');
-            const form = document.getElementById('checkoutForm');
-            console.log('   Checkout form found: ' + (form ? 'YES' : 'NO'));
-            
-            if (form) {
-                console.log('   Form action: ' + form.action);
-                console.log('   Form method: ' + form.method);
-            }
-            
-            console.log('🔍 Looking for payment button...');
-            const payBtn = document.querySelector('.pay-btn');
-            console.log('   Payment button found: ' + (payBtn ? 'YES' : 'NO'));
-            if (payBtn) {
-                console.log('   Button text: ' + payBtn.textContent.trim());
-                console.log('   Button onclick: ' + payBtn.getAttribute('onclick'));
-            }
-            
-            try {
-                updateCheckoutTotal();
-                console.log('✅ Initial total calculation done');
-            } catch (e) {
-                console.warn('⚠️ Warning updating total on load: ' + e.message);
-            }
+            updateCheckoutTotal();
         });
     </script>
 </body>

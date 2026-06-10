@@ -14,14 +14,14 @@ import java.time.LocalDateTime;
 public class Product {
     
     @Id
-    @Column(name = "productid", columnDefinition = "char(3)")
+    @Column(name = "productid", length = 50)
     private String productId;  
     
     @Column(name = "userId", nullable = false)
     private Integer userId; 
     
-    @Column(name = "categoryid", length = 3, nullable = false)
-    private String categoryId;
+    @Column(name = "category", length = 100, nullable = false)
+    private String category;
     
     @Column(name = "productName", nullable = false, length = 100)
     private String productName;
@@ -51,9 +51,6 @@ public class Product {
     private LocalDateTime updatedAt;
     
     @Column(length = 50)
-    private String fragranceFamily; // Floral, Woody, Fresh, Spicy, Fruity, Gourmand
-
-    @Column(length = 50)
     private String topNotes; // Citrus, Herbal, Fruity, Spicy, Floral
 
     @Column(length = 50)
@@ -62,29 +59,7 @@ public class Product {
     @Column(length = 50)
     private String baseNotes; // Musk, Vanilla, Woody, Patchouli, Clean
 
-    @Column(length = 50)
-    private String sillage; // Skin scent, Personal, Room, Powerful
-
-    @Column(length = 50)
-    private String longevity; // Short, Medium, Long, Very Long
-
-    @Column(length = 50)
-    private String intensity; // Light, Moderate, Strong, Very Strong
-
-    @Column(length = 50)
-    private String season; // Spring, Summer, Fall, Winter, Year-round
-
-    @Column(length = 50)
-    private String occasion; // Daily, Professional, Evening, Active, Versatile
-
-    @Column(length = 50)
-    private String genderExpression; // Feminine, Masculine, Unisex
-
-    @Column(length = 50)
-    private Integer sweetness; // 1-5
-
-    @Column(length = 50)
-    private String naturalness; // Natural, Synthetic, Abstract
+    
 
     // Pre-persist callback to set timestamps
     @PrePersist

@@ -89,6 +89,206 @@
         font-size: 0.9rem;
     }
 
+    /* Fragrance Notes Dropdown */
+    .notes-container {
+        position: relative;
+    }
+
+    .notes-search {
+        border-radius: 12px;
+        border: 2px solid #e0e0e0;
+        padding: 10px 12px;
+        font-size: 0.95rem;
+    }
+
+    .notes-search:focus {
+        border-color: #c2a98d;
+        box-shadow: 0 0 0 0.2rem rgba(194, 169, 141, 0.25);
+    }
+
+    .notes-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-top: none;
+        border-radius: 0 0 12px 12px;
+        max-height: 200px;
+        overflow-y: auto;
+        display: none;
+        z-index: 1000;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .notes-dropdown.show {
+        display: block;
+    }
+
+    .notes-option {
+        padding: 10px 12px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        font-size: 0.9rem;
+    }
+
+    .notes-option:hover {
+        background-color: #f5f0eb;
+    }
+
+    .notes-option.selected {
+        background-color: #e8dfd6;
+        font-weight: 500;
+    }
+
+    .notes-selected {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+        min-height: 32px;
+    }
+
+    .note-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: linear-gradient(135deg, #c2a98d, #b49374);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .note-chip button {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        padding: 0;
+        font-size: 1rem;
+        line-height: 1;
+    }
+
+    .note-chip button:hover {
+        opacity: 0.8;
+    }
+
+    /* Fragrance Notes Grid */
+    .notes-section {
+        margin-bottom: 2rem;
+    }
+
+    .notes-section-title {
+        font-weight: 600;
+        color: #5a4a42;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .notes-section-desc {
+        font-size: 0.85rem;
+        color: #8b7355;
+        margin-bottom: 1rem;
+    }
+
+    .notes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 12px;
+        margin-bottom: 1rem;
+        min-height: 150px;
+    }
+
+    .note-card {
+        background: #f8f6f3;
+        border: 2px solid #e0d9d0;
+        border-radius: 12px;
+        padding: 12px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .note-card:hover {
+        border-color: #c2a98d;
+        background: #f5f0eb;
+        transform: translateY(-2px);
+    }
+
+    .note-card.selected {
+        background: linear-gradient(135deg, #c2a98d, #b49374);
+        border-color: #9d8368;
+        color: white;
+    }
+
+    .note-card.selected::after {
+        content: '✓';
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #6ba587;
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .note-emoji {
+        font-size: 1.8rem;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .note-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 3px;
+    }
+
+    .note-type {
+        font-size: 0.75rem;
+        opacity: 0.7;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .note-card.selected .note-type {
+        opacity: 0.9;
+    }
+
+    .notes-counter {
+        font-size: 0.85rem;
+        color: #8b7355;
+        margin-bottom: 1rem;
+        font-weight: 500;
+    }
+
+    .add-custom-note {
+        background: #faf7f5;
+        border: 2px dashed #c2a98d;
+        border-radius: 12px;
+        padding: 12px;
+        text-align: center;
+        cursor: pointer;
+        color: #c2a98d;
+        font-size: 0.9rem;
+        transition: all 0.3s;
+    }
+
+    .add-custom-note:hover {
+        background: #f5f0eb;
+        border-color: #b49374;
+        color: #b49374;
+    }
+
 </style>
 
 </head>
@@ -114,8 +314,13 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Category ID <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" th:field="*{categoryId}" required maxlength="3">
+            <label class="form-label">Category <span class="text-danger">*</span></label>
+            <select class="form-control" th:field="*{category}" required>
+                <option value="">-- Select Category --</option>
+                <option value="unisex">Unisex</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select>
         </div>
 
         <!-- Drag-Drop Image Upload -->
@@ -150,6 +355,33 @@
         <div class="mb-3">
             <label class="form-label">Stock</label>
             <input type="number" class="form-control" th:field="*{stock}" min="0">
+        </div>
+
+        <!-- Top Notes -->
+        <div class="notes-section">
+            <div class="notes-section-title">Top Notes</div>
+            <div class="notes-section-desc">These are volatile fragrances that make up the initial scent impression. Click to toggle selection</div>
+            <div class="notes-counter">Selected count: <span id="topNotesCount">0</span></div>
+            <div class="notes-grid" id="topNotesGrid"></div>
+            <input type="hidden" id="topNotesInput" th:field="*{topNotes}" name="topNotes">
+        </div>
+
+        <!-- Middle Notes -->
+        <div class="notes-section">
+            <div class="notes-section-title">Middle Notes</div>
+            <div class="notes-section-desc">These form the core of the fragrance, emerging after the top notes fade. Typically floral or fruity notes.</div>
+            <div class="notes-counter">Selected count: <span id="middleNotesCount">0</span></div>
+            <div class="notes-grid" id="middleNotesGrid"></div>
+            <input type="hidden" id="middleNotesInput" th:field="*{middleNotes}" name="middleNotes">
+        </div>
+
+        <!-- Base Notes -->
+        <div class="notes-section">
+            <div class="notes-section-title">Base Notes</div>
+            <div class="notes-section-desc">Heavy, long-lasting scents that provide substance and longevity. Click to toggle selection</div>
+            <div class="notes-counter">Selected count: <span id="baseNotesCount">0</span></div>
+            <div class="notes-grid" id="baseNotesGrid"></div>
+            <input type="hidden" id="baseNotesInput" th:field="*{baseNotes}" name="baseNotes">
         </div>
 
         <button type="submit" class="btn btn-success">Save Product</button>
@@ -270,6 +502,184 @@
             showError('Please upload a product image before saving');
         }
     });
+
+    // ============ FRAGRANCE NOTES GRID ============
+
+    const fragranceNotesWithEmoji = {
+        TOP: [
+            { name: 'Bergamot', emoji: '🍊' },
+            { name: 'Lemon', emoji: '🍋' },
+            { name: 'Grapefruit', emoji: '🍊' },
+            { name: 'Orange', emoji: '🍊' },
+            { name: 'Lime', emoji: '🟢' },
+            { name: 'Neroli', emoji: '🌸' },
+            { name: 'Petitgrain', emoji: '🌿' },
+            { name: 'Cinnamon', emoji: '🤎' },
+            { name: 'Ginger', emoji: '🟤' },
+            { name: 'Cardamom', emoji: '🌰' },
+            { name: 'Black Pepper', emoji: '⚫' },
+            { name: 'Pink Pepper', emoji: '🟥' },
+            { name: 'Juniper', emoji: '🌲' },
+            { name: 'Anise', emoji: '⭐' },
+            { name: 'Clove', emoji: '🤎' },
+            { name: 'Nutmeg', emoji: '🟤' },
+            { name: 'Apple', emoji: '🍎' },
+            { name: 'Peach', emoji: '🍑' },
+            { name: 'Raspberry', emoji: '🫐' },
+            { name: 'Blackcurrant', emoji: '🫐' },
+            { name: 'Pineapple', emoji: '🍍' },
+            { name: 'Coconut', emoji: '🥥' },
+            { name: 'Aldehydes', emoji: '✨' },
+            { name: 'Green Tea', emoji: '🍃' },
+            { name: 'Mint', emoji: '🌿' },
+            { name: 'Basil', emoji: '🌿' },
+            { name: 'Tarragon', emoji: '🌿' }
+        ],
+        MIDDLE: [
+            { name: 'Jasmine', emoji: '🌸' },
+            { name: 'Rose', emoji: '🌹' },
+            { name: 'Lavender', emoji: '💜' },
+            { name: 'Iris', emoji: '💜' },
+            { name: 'Lily', emoji: '⚪' },
+            { name: 'Orchid', emoji: '🌸' },
+            { name: 'Peony', emoji: '🌸' },
+            { name: 'Freesia', emoji: '💛' },
+            { name: 'Gardenia', emoji: '⚪' },
+            { name: 'Tuberose', emoji: '🌸' },
+            { name: 'Hyacinth', emoji: '💜' },
+            { name: 'Narcissus', emoji: '💛' },
+            { name: 'Magnolia', emoji: '🤍' },
+            { name: 'Geranium', emoji: '🌸' },
+            { name: 'Ylang-Ylang', emoji: '💛' },
+            { name: 'Orange Blossom', emoji: '🌸' },
+            { name: 'Heliotrope', emoji: '💜' },
+            { name: 'Mimosa', emoji: '💛' },
+            { name: 'Violet', emoji: '💜' },
+            { name: 'Carnation', emoji: '❤️' },
+            { name: 'Honeysuckle', emoji: '💛' },
+            { name: 'Lilac', emoji: '💜' },
+            { name: 'Muguet', emoji: '⚪' },
+            { name: 'Cinnamon', emoji: '🤎' },
+            { name: 'Nutmeg', emoji: '🟤' },
+            { name: 'Clove', emoji: '🤎' },
+            { name: 'Damascus Rose', emoji: '🌹' }
+        ],
+        BASE: [
+            { name: 'Sandalwood', emoji: '🪵' },
+            { name: 'Vanilla', emoji: '🟤' },
+            { name: 'Musk', emoji: '🤎' },
+            { name: 'Patchouli', emoji: '🟫' },
+            { name: 'Vetiver', emoji: '🌿' },
+            { name: 'Cedarwood', emoji: '🪵' },
+            { name: 'Oud', emoji: '🟤' },
+            { name: 'Amber', emoji: '🟨' },
+            { name: 'Ambroxan', emoji: '✨' },
+            { name: 'Benzoin', emoji: '🟨' },
+            { name: 'Tonka', emoji: '🟤' },
+            { name: 'Leather', emoji: '🟫' },
+            { name: 'Tobacco', emoji: '🟤' },
+            { name: 'Coffee', emoji: '☕' },
+            { name: 'Cocoa', emoji: '🍫' },
+            { name: 'Incense', emoji: '💨' },
+            { name: 'Frankincense', emoji: '💨' },
+            { name: 'Myrrh', emoji: '🟤' },
+            { name: 'Moss', emoji: '🌿' },
+            { name: 'Oakmoss', emoji: '🌿' },
+            { name: 'Labdanum', emoji: '🟨' },
+            { name: 'Agarwood', emoji: '🪵' },
+            { name: 'Guaiac', emoji: '🪵' },
+            { name: 'Teak', emoji: '🪵' },
+            { name: 'Birch', emoji: '🪵' },
+            { name: 'Almond', emoji: '🤎' },
+            { name: 'Hazelnut', emoji: '🤎' },
+            { name: 'Caramel', emoji: '🟤' },
+            { name: 'Sugar', emoji: '✨' },
+            { name: 'Musk', emoji: '🤎' }
+        ]
+    };
+
+    // Initialize grid for each note type
+    function initializeNotesGrid(noteType) {
+        const gridId = noteType + 'NotesGrid'; // e.g., 'topNotesGrid'
+        const countId = noteType + 'NotesCount'; // e.g., 'topNotesCount'
+        const inputId = noteType + 'NotesInput'; // e.g., 'topNotesInput'
+
+        const grid = document.getElementById(gridId);
+        const countSpan = document.getElementById(countId);
+        const hiddenInput = document.getElementById(inputId);
+
+        let selectedNotes = [];
+
+        // Render grid
+        function renderGrid() {
+            const notes = fragranceNotesWithEmoji[noteType.toUpperCase()];
+            grid.innerHTML = notes.map(note => `
+                <div class="note-card ${selectedNotes.includes(note.name) ? 'selected' : ''}" 
+                     onclick="toggleNote('${noteType}', '${note.name}')">
+                    <span class="note-emoji">${note.emoji}</span>
+                    <div class="note-name">${note.name}</div>
+                    <div class="note-type">${noteType}</div>
+                </div>
+            `).join('');
+        }
+
+        // Toggle selection
+        window[`toggleNote_${noteType}`] = (noteName) => {
+            if (selectedNotes.includes(noteName)) {
+                selectedNotes = selectedNotes.filter(n => n !== noteName);
+            } else {
+                selectedNotes.push(noteName);
+            }
+
+            // Update display
+            countSpan.textContent = selectedNotes.length;
+            hiddenInput.value = selectedNotes.join('|');
+            renderGrid();
+        };
+
+        // Initial render
+        renderGrid();
+    }
+
+    function toggleNote(noteType, noteName) {
+        const fn = window[`toggleNote_${noteType}`];
+        if (fn) fn(noteName);
+    }
+
+    // Initialize all three grids when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('=== DOM Content Loaded ===');
+        
+        // Check if grid elements exist
+        console.log('topNotesGrid:', document.getElementById('topNotesGrid'));
+        console.log('middleNotesGrid:', document.getElementById('middleNotesGrid'));
+        console.log('baseNotesGrid:', document.getElementById('baseNotesGrid'));
+        
+        // Check if data exists
+        console.log('fragranceNotesWithEmoji defined:', typeof fragranceNotesWithEmoji !== 'undefined');
+        console.log('TOP notes count:', fragranceNotesWithEmoji?.TOP?.length);
+        
+        try {
+            console.log('Starting initializeNotesGrid("top")...');
+            initializeNotesGrid('top');
+            console.log('✓ Top notes grid initialized');
+            
+            console.log('Starting initializeNotesGrid("middle")...');
+            initializeNotesGrid('middle');
+            console.log('✓ Middle notes grid initialized');
+            
+            console.log('Starting initializeNotesGrid("base")...');
+            initializeNotesGrid('base');
+            console.log('✓ Base notes grid initialized');
+            
+            console.log('=== All note grids initialized successfully ===');
+        } catch (error) {
+            console.error('❌ Error initializing note grids:', error);
+            console.error('Stack:', error.stack);
+        }
+    });
+
+
 </script>
 </body>
 </html>

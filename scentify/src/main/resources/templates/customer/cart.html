@@ -392,6 +392,19 @@
                         <!-- Product Details -->
                         <div class="cart-item-details">
                             <h3 class="cart-item-name" th:text="${item.product.productName}">Product Name</h3>
+                            
+                            <!-- Star Rating -->
+                            <div style="margin: 0.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                                <div style="color: #DAA520; font-size: 0.85rem; letter-spacing: 0.1em;">
+                                    <th:block th:with="rating=${productRatings.get(item.product.productId) ?: 0.0}">
+                                        <span th:each="i : ${#numbers.sequence(1, 5)}" 
+                                              th:text="${i <= rating ? '★' : '☆'}"></span>
+                                    </th:block>
+                                </div>
+                                <span style="font-size: 0.75rem; color: #8A7F75;" 
+                                      th:text="${#numbers.formatDecimal(productRatings.get(item.product.productId) ?: 0.0, 1, 1)}">0.0</span>
+                            </div>
+                            
                             <div class="cart-item-price">
                                 RM <span th:text="${#numbers.formatDecimal(item.product.price, 1, 2)}">0.00</span> each
                             </div>
@@ -401,7 +414,7 @@
                         </div>
 
                         <!-- Quantity Control -->
-                        <form method="post" th:action="'/customer/cart/update'" class="quantity-control">
+                        <form method="post" th:action="@{/customer/cart/update}" class="quantity-control">
                             <input type="hidden" name="cartItemId" th:value="${item.cartItemId}">
                             <button type="button" class="qty-btn" onclick="decreaseQty(this)">−</button>
                             <input type="number" name="quantity" th:value="${item.quantity}" class="qty-input" min="1" onchange="updatePrice(this); setTimeout(() => this.form.submit(), 300)">
@@ -409,7 +422,7 @@
                         </form>
 
                         <!-- Remove Button -->
-                        <form method="post" th:action="'/customer/cart/remove/' + ${item.cartItemId}" style="display: inline;">
+                        <form method="post" th:action="@{/customer/cart/remove/{id}(id=${item.cartItemId})}" style="display: inline;">
                             <button type="submit" class="remove-btn" title="Remove from cart">
                                 <i class="fas fa-trash-alt"></i>
                             </button>

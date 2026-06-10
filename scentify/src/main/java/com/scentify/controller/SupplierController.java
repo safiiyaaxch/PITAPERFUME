@@ -182,11 +182,11 @@ public class SupplierController {
         User user = getLoggedInUser(session);
         
         try {
-            // Generate product ID if not provided (P01, P02, P03... up to P99)
+            // Generate product ID if not provided (P01, P02, P03... up to P999)
             if (product.getProductId() == null || product.getProductId().trim().isEmpty()) {
                 long count = productRepository.count();
-                // Format: P + 2 digits (P01 to P99)
-                product.setProductId("P" + String.format("%02d", (count % 99) + 1));
+                // Format: P + sequential number (P1, P2, P3, ...)
+                product.setProductId("P" + (count + 1));
             }
             
             product.setUserId(user.getUserId());
@@ -203,7 +203,11 @@ public class SupplierController {
             }
             
             productRepository.save(product);
-            redirect.addFlashAttribute("success", "Product added successfully!");
+            
+            // Trigger auto-enrichment after product is approved by manager
+            System.out.println("✏️ Product created (pending approval): " + product.getProductId());
+            
+            redirect.addFlashAttribute("success", "Product added successfully! Awaiting manager approval for AI enrichment.");
             System.out.println("Product added: " + product.getProductId() + " by user: " + user.getUserId());
         } catch (Exception e) {
             System.out.println("Error adding product: " + e.getMessage());
@@ -254,7 +258,7 @@ public class SupplierController {
             Product product = productOpt.get();
             product.setProductName(productDetails.getProductName());
             product.setDescription(productDetails.getDescription());
-            product.setCategoryId(productDetails.getCategoryId());
+            product.setCategory(productDetails.getCategory());
             product.setProdimage(productDetails.getProdimage());
             product.setPrice(productDetails.getPrice() != null ? productDetails.getPrice() : product.getPrice());
             product.setStock(productDetails.getStock() != null ? productDetails.getStock() : product.getStock());

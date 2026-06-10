@@ -74,7 +74,7 @@ public class ReviewController {
         List<Order> orders = orderRepository.findByCustomer_CustomerId((long) customer.getCustomerId());
         return orders.stream()
             .anyMatch(order -> productId.equals(order.getProduct().getProductId()) && 
-                             ("DELIVERED".equals(order.getOrderStatus()) || "SHIPPED".equals(order.getOrderStatus())));
+                             ("CONFIRMED".equals(order.getOrderStatus()) || "DELIVERED".equals(order.getOrderStatus()) || "SHIPPED".equals(order.getOrderStatus())));
     }
 
     // Check if customer can write review
@@ -98,7 +98,7 @@ public class ReviewController {
         User user = getLoggedInUser(session);
         
         Optional<Product> product = productRepository.findById(productId);
-        Optional<Customer> customer = customerRepository.findById(user.getUserId());
+        Optional<Customer> customer = customerRepository.findByUser(user);
         
         if (product.isEmpty() || customer.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Product or customer not found");
