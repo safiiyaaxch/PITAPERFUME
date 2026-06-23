@@ -1,14 +1,12 @@
-# Use Java 21
-FROM amazoncorretto:21-alpine-jdk
-
-# Set working directory inside container
+# Build stage
+FROM maven:3.8.4-openjdk-17 AS build
 WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Copy your built JAR file into container
-COPY target/scentify-0.0.1-SNAPSHOT.jar app.jar
-
-# When container starts, run this command
-ENTRYPOINT ["java", "-jar", "app.jar"]
-
-# Expose port 8080
-EXPOSE 8080
+# Runtime stage
+FROM openjdk:17-jdk-slim
+COPY --from=build /app/target/*.jar app.jar
+ENTRYPOINT ["java", "-jar", "/app.jar"]
