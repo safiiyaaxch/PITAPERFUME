@@ -4,195 +4,263 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voucher Management - Supplier Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #fdfcfa;
+            min-height: 100vh;
+            padding: 20px;
         }
 
-        h1, h2, h3 {
-            font-family: 'Playfair Display', serif;
-            color: #5a4a42;
-        }
-
-        /* Navbar */
-        .navbar {
-            background: linear-gradient(135deg, #c2a98d, #b49374) !important;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .navbar-brand {
-            font-family: 'Playfair Display', serif;
-            font-weight: 600;
-            color: white !important;
-            font-size: 1.3rem;
-        }
-
-        .nav-link {
-            color: white !important;
-            font-weight: 500;
-            margin: 0 10px;
-        }
-
-        .logout-btn {
-            background: #8b5a52;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.3s;
-        }
-
-        .logout-btn:hover {
-            background: #6d4640;
-        }
-
-        /* Container */
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem;
         }
 
-        /* Header Section */
-        .page-header {
+        /* ===== HEADER ===== */
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(62, 58, 54, 0.06);
+            border: 1px solid #f0e8e0;
+            margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
             flex-wrap: wrap;
             gap: 1rem;
         }
 
-        .page-title {
-            font-size: 2.5rem;
-            margin-bottom: 0;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
         }
 
-        .add-voucher-btn {
-            background: linear-gradient(135deg, #c2a98d, #b49374);
-            color: white;
-            padding: 0.75rem 1.5rem;
+        .header-left h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #3E3A36;
+        }
+
+        .header-left h1 i {
+            color: #C4A484;
+            margin-right: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .welcome-text {
+            color: #3E3A36;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .btn-back {
+            background: #E6D3C1;
+            color: #3E3A36;
+            padding: 0.6rem 1.5rem;
             border-radius: 8px;
             border: none;
             font-weight: 600;
+            font-size: 0.9rem;
             cursor: pointer;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
             text-decoration: none;
+            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        .add-voucher-btn:hover {
-            background: #9d8970;
+        .btn-back:hover {
+            background: #d4c4b0;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(194, 169, 141, 0.3);
-            color: white;
-            text-decoration: none;
         }
 
-        /* Alerts */
-        .alert {
+        .logout-btn {
+            background: #2C2C2C;
+            color: white;
+            padding: 0.6rem 1.5rem;
             border-radius: 8px;
             border: none;
-            margin-bottom: 2rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logout-btn:hover {
+            background: #1a1a1a;
+            transform: translateY(-2px);
+        }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #3E3A36;
+        }
+
+        .btn-add {
+            background: #C4A484;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-add:hover {
+            background: #9d8970;
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        /* ===== ALERTS ===== */
+        .alerts {
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
         }
 
         .alert-success {
-            background: #d8ebd8;
-            color: #5a7a5a;
-            font-weight: 500;
+            background: #eef6f1;
+            color: #2f6b47;
+            border: 1px solid #d4e8dc;
         }
 
-        .alert-danger {
-            background: #e8d0cc;
-            color: #8b5a52;
-            font-weight: 500;
+        .alert-error {
+            background: #f8ecec;
+            color: #8b2f2f;
+            border: 1px solid #f0d6d6;
         }
 
         .alert-info {
-            background: #e8dfd0;
+            background: #f5f0eb;
             color: #5a4a42;
+            border: 1px solid #e8ddd2;
+        }
+
+        /* ===== STATS ===== */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(62, 58, 54, 0.06);
+            border: 1px solid #f0e8e0;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(196, 164, 132, 0.12);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #C4A484;
+        }
+
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #C4A484;
+        }
+
+        .stat-label {
+            color: #8A7F75;
+            font-size: 0.85rem;
             font-weight: 500;
         }
 
-        /* Voucher Cards */
+        /* ===== VOUCHER CARDS ===== */
         .vouchers-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
         }
 
         .voucher-card {
             background: white;
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border-left: 5px solid #c2a98d;
+            box-shadow: 0 4px 20px rgba(62, 58, 54, 0.06);
+            border: 1px solid #f0e8e0;
+            border-left: 5px solid #C4A484;
             transition: all 0.3s ease;
         }
 
         .voucher-card:hover {
-            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-            transform: translateY(-2px);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(196, 164, 132, 0.12);
         }
 
-        .voucher-code {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #5a4a42;
-            font-family: 'Courier New', monospace;
-            margin-bottom: 0.5rem;
-        }
-
-        .voucher-discount {
-            font-size: 1.1rem;
-            color: #c2a98d;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .voucher-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-            color: #8b7355;
-        }
-
-        .voucher-info-item {
-            display: flex;
-            justify-content: space-between;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .voucher-info-label {
-            font-weight: 600;
-            color: #5a4a42;
-        }
-
-        .voucher-status {
+        .voucher-card .voucher-status {
             display: inline-block;
-            padding: 0.4rem 0.8rem;
+            padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             font-weight: 600;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
         }
 
         .status-active {
-            background: #d8ebd8;
-            color: #5a7a5a;
+            background: #d4edda;
+            color: #155724;
         }
 
         .status-inactive {
@@ -201,20 +269,62 @@
         }
 
         .status-expired {
-            background: #e8d0cc;
-            color: #8b5a52;
+            background: #f8d7da;
+            color: #721c24;
         }
 
-        /* Card Actions */
+        .voucher-code {
+            font-family: 'Courier New', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #3E3A36;
+            margin-bottom: 0.3rem;
+            letter-spacing: 1px;
+        }
+
+        .voucher-discount {
+            font-size: 1.1rem;
+            color: #C4A484;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .voucher-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: #8A7F75;
+        }
+
+        .voucher-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid #f5f0eb;
+        }
+
+        .voucher-info-label {
+            font-weight: 600;
+            color: #3E3A36;
+        }
+
+        .voucher-info-value {
+            color: #555;
+        }
+
+        /* ===== CARD ACTIONS ===== */
         .card-actions {
             display: flex;
             gap: 0.5rem;
-            margin-top: 1rem;
+            margin-top: 0.8rem;
+            flex-wrap: wrap;
         }
 
         .btn-sm {
-            padding: 0.5rem 1rem;
-            font-size: 0.85rem;
+            padding: 0.4rem 1rem;
+            font-size: 0.75rem;
             border: none;
             border-radius: 6px;
             cursor: pointer;
@@ -224,17 +334,30 @@
             display: inline-flex;
             align-items: center;
             gap: 0.3rem;
+            font-family: 'Inter', sans-serif;
         }
 
-        .btn-edit {
-            background: #b8a084;
+        .btn-sm:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-products {
+            background: #d4a574;
             color: white;
             flex: 1;
         }
+        .btn-products:hover {
+            background: #c2945f;
+            color: white;
+        }
 
+        .btn-edit {
+            background: #C4A484;
+            color: white;
+            flex: 1;
+        }
         .btn-edit:hover {
             background: #9d8970;
-            text-decoration: none;
             color: white;
         }
 
@@ -243,74 +366,34 @@
             color: white;
             flex: 1;
         }
-
         .btn-delete:hover {
             background: #956253;
-        }
-
-        .btn-products {
-            background: #d4a574;
-            color: white;
-            flex: 1;
-        }
-
-        .btn-products:hover {
-            background: #c2945f;
-            text-decoration: none;
             color: white;
         }
 
-        /* Empty State */
+        /* ===== EMPTY STATE ===== */
         .empty-state {
             text-align: center;
             padding: 3rem 2rem;
             background: white;
-            border-radius: 12px;
-            border: 2px dashed #d4c4b0;
+            border-radius: 14px;
+            border: 2px dashed #e8ddd2;
         }
 
         .empty-state-icon {
             font-size: 3rem;
-            color: #c2a98d;
+            color: #E6D3C1;
             margin-bottom: 1rem;
         }
 
         .empty-state-text {
-            color: #8b7355;
+            color: #8A7F75;
             font-size: 1rem;
             margin-bottom: 1.5rem;
         }
 
-        /* Stats */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-box {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border-top: 3px solid #c2a98d;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #c2a98d;
-        }
-
-        .stat-label {
-            color: #8b7355;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-        }
-
-        /* Modal Confirmation */
-        .delete-confirm-modal {
+        /* ===== MODAL ===== */
+        .modal-overlay {
             display: none;
             position: fixed;
             top: 0;
@@ -323,21 +406,33 @@
             justify-content: center;
         }
 
-        .delete-confirm-modal.show {
+        .modal-overlay.show {
             display: flex;
         }
 
-        .modal-content {
+        .modal-box {
             background: white;
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 2rem;
             max-width: 400px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
         }
 
-        .modal-title {
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
+        .modal-box h3 {
+            font-family: 'Playfair Display', serif;
+            color: #3E3A36;
+            margin-bottom: 0.8rem;
+        }
+
+        .modal-box p {
+            color: #8A7F75;
+            font-size: 0.95rem;
+        }
+
+        .modal-box .text-danger {
+            color: #a8796a;
+            font-size: 0.85rem;
         }
 
         .modal-buttons {
@@ -346,73 +441,151 @@
             margin-top: 1.5rem;
         }
 
+        .modal-buttons .btn-cancel {
+            flex: 1;
+            padding: 0.6rem;
+            border: 1px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #3E3A36;
+            transition: all 0.3s ease;
+        }
+
+        .modal-buttons .btn-cancel:hover {
+            background: #f5f0eb;
+        }
+
+        .modal-buttons .btn-confirm-delete {
+            flex: 1;
+            padding: 0.6rem;
+            background: #a8796a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .modal-buttons .btn-confirm-delete:hover {
+            background: #956253;
+        }
+
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+                padding: 16px 20px;
+            }
+            .header-left h1 {
+                font-size: 1.2rem;
+            }
+            .header-actions {
+                flex-wrap: wrap;
+            }
             .page-header {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: stretch;
             }
-
             .vouchers-grid {
                 grid-template-columns: 1fr;
             }
+            .stats {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .card-actions {
+                flex-direction: column;
+            }
+            .btn-sm {
+                width: 100%;
+                justify-content: center;
+            }
+        }
 
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            .stat-number {
+                font-size: 1.8rem;
+            }
+            .modal-box {
+                padding: 1.5rem;
+            }
+            .modal-buttons {
+                flex-direction: column;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/supplier/dashboard">
-                <i class="fas fa-tag"></i> Scentify Vouchers
-            </a>
-            <div class="ms-auto d-flex align-items-center gap-3">
-                <a class="nav-link" href="/supplier/dashboard">Back to Dashboard</a>
-                <a href="/logout" class="logout-btn">Logout</a>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1><i class="fas fa-store"></i> Supplier Dashboard</h1>
+            </div>
+            <div class="header-actions">
+                <span class="welcome-text">
+                    <i class="fas fa-user-circle"></i> Welcome, <span th:text="${user?.username}"></span>
+                </span>
+                <a href="/supplier/dashboard" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Dashboard
+                </a>
+                <a href="/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
             </div>
         </div>
-    </nav>
 
-    <!-- Main Container -->
-    <div class="container">
         <!-- Page Header -->
         <div class="page-header">
-            <h1 class="page-title">
-                <i class="fas fa-ticket-alt"></i> Create Vouchers
-            </h1>
-            <a href="/supplier/vouchers/add" class="add-voucher-btn">
+            <h2><i class="fas fa-ticket-alt" style="color: #C4A484; margin-right: 0.5rem;"></i> Voucher Management</h2>
+            <a href="/supplier/vouchers/add" class="btn-add">
                 <i class="fas fa-plus"></i> Create New Voucher
             </a>
         </div>
 
         <!-- Alerts -->
-        <div th:if="${success}" class="alert alert-success" role="alert">
-            <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
-        </div>
-        <div th:if="${error}" class="alert alert-danger" role="alert">
-            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+        <div class="alerts">
+            <div th:if="${success}" class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${success}"></span>
+            </div>
+            <div th:if="${error}" class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${error}"></span>
+            </div>
+            <div th:if="${message}" class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <span th:text="${message}"></span>
+            </div>
         </div>
 
-        <!-- Stats -->
-        <div class="stats-grid">
-            <div class="stat-box">
-                <div class="stat-value" th:text="${totalVouchers}">0</div>
+        <!-- Statistics -->
+        <div class="stats">
+            <div class="stat-card">
+                <span class="stat-icon"><i class="fas fa-ticket-alt"></i></span>
+                <div class="stat-number" th:text="${totalVouchers}">0</div>
                 <div class="stat-label">Total Vouchers</div>
             </div>
-            <div class="stat-box">
-                <div class="stat-value" th:text="${activeVouchers}">0</div>
+            <div class="stat-card">
+                <span class="stat-icon"><i class="fas fa-check-circle"></i></span>
+                <div class="stat-number" th:text="${activeVouchers}">0</div>
                 <div class="stat-label">Active Vouchers</div>
             </div>
-            <div class="stat-box">
-                <div class="stat-value" th:text="${totalRedemptions}">0</div>
+            <div class="stat-card">
+                <span class="stat-icon"><i class="fas fa-gift"></i></span>
+                <div class="stat-number" th:text="${totalRedemptions}">0</div>
                 <div class="stat-label">Total Redemptions</div>
             </div>
         </div>
 
-        <!-- Vouchers List -->
+        <!-- Vouchers Grid -->
         <div th:if="${!vouchers.isEmpty()}">
             <div class="vouchers-grid">
                 <div th:each="voucher : ${vouchers}" class="voucher-card">
@@ -446,21 +619,23 @@
                     <div class="voucher-info">
                         <div class="voucher-info-item">
                             <span class="voucher-info-label">Used:</span>
-                            <span><span th:text="${voucher.currentUsage}">0</span>/<span th:text="${voucher.maxUsage ?: 'Unlimited'}">100</span></span>
+                            <span class="voucher-info-value">
+                                <span th:text="${voucher.currentUsage}">0</span>/<span th:text="${voucher.maxUsage ?: '∞'}">∞</span>
+                            </span>
                         </div>
                         <div class="voucher-info-item">
                             <span class="voucher-info-label">Valid:</span>
-                            <span th:if="${voucher.startDate}">
-                                <span th:text="${#temporals.format(voucher.startDate, 'dd MMM')}">01 Jan</span>
+                            <span class="voucher-info-value" th:if="${voucher.startDate}">
+                                <span th:text="${#temporals.format(voucher.startDate, 'dd MMM yyyy')}">01 Jan 2025</span>
                                 <span th:if="${voucher.endDate}">
-                                    - <span th:text="${#temporals.format(voucher.endDate, 'dd MMM')}">31 Dec</span>
+                                    - <span th:text="${#temporals.format(voucher.endDate, 'dd MMM yyyy')}">31 Dec 2025</span>
                                 </span>
                             </span>
-                            <span th:unless="${voucher.startDate}">No date limit</span>
+                            <span class="voucher-info-value" th:unless="${voucher.startDate}">No date limit</span>
                         </div>
                         <div class="voucher-info-item">
                             <span class="voucher-info-label">Min Purchase:</span>
-                            <span th:text="${voucher.minPurchaseAmount != null ? 'RM' + voucher.minPurchaseAmount : 'None'}">None</span>
+                            <span class="voucher-info-value" th:text="${voucher.minPurchaseAmount != null ? 'RM' + voucher.minPurchaseAmount : 'None'}">None</span>
                         </div>
                     </div>
 
@@ -490,32 +665,31 @@
                 <i class="fas fa-ticket-alt"></i>
             </div>
             <p class="empty-state-text">No vouchers created yet</p>
-            <a href="/supplier/vouchers/add" class="add-voucher-btn">
+            <a href="/supplier/vouchers/add" class="btn-add">
                 <i class="fas fa-plus"></i> Create Your First Voucher
             </a>
         </div>
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="delete-confirm-modal">
-        <div class="modal-content">
-            <h3 class="modal-title">Delete Voucher?</h3>
-            <p style="color: #8b7355;">Are you sure you want to delete voucher <strong id="deleteCode">CODE123</strong>?</p>
-            <p style="color: #a8796a; font-size: 0.85rem;">This action cannot be undone.</p>
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>Delete Voucher?</h3>
+            <p>Are you sure you want to delete voucher <strong id="deleteCode">CODE123</strong>?</p>
+            <p class="text-danger">This action cannot be undone.</p>
             <div class="modal-buttons">
-                <button onclick="closeDeleteModal()" style="flex: 1; padding: 0.6rem; border: 1px solid #d4c4b0; background: white; border-radius: 6px; cursor: pointer; font-weight: 600; color: #5a4a42;">Cancel</button>
+                <button onclick="closeDeleteModal()" class="btn-cancel">Cancel</button>
                 <form id="deleteForm" method="POST" style="flex: 1;">
-                    <button type="submit" style="width: 100%; padding: 0.6rem; background: #a8796a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Delete</button>
+                    <button type="submit" class="btn-confirm-delete">Delete</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
     <script>
         function confirmDelete(voucherId, voucherCode) {
             document.getElementById('deleteCode').textContent = voucherCode;
-            document.getElementById('deleteForm').action = `/supplier/vouchers/${voucherId}/delete`;
+            document.getElementById('deleteForm').action = '/supplier/vouchers/' + voucherId + '/delete';
             document.getElementById('deleteModal').classList.add('show');
         }
 

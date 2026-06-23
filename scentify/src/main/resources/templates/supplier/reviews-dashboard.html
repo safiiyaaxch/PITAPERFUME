@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Reviews - Scentify</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -13,104 +13,244 @@
             box-sizing: border-box;
         }
 
-        :root {
-            --primary-color: #C4A484;
-            --secondary-color: #E6D3C1;
-            --accent-color: #FAF7F4;
-            --text-dark: #3E3A36;
-            --text-muted: #8A7F75;
-        }
-
         body {
-            background-color: #FFFFFF;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-            color: var(--text-dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fdfcfa;
+            min-height: 100vh;
+            padding: 20px;
         }
 
-        .navbar {
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
             background: white;
-            border-bottom: 1px solid #f0f0f0;
-            padding: 1rem 0;
+            padding: 20px 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(62, 58, 54, 0.06);
+            border: 1px solid #f0e8e0;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-dark) !important;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
         }
 
-        .nav-link {
-            color: var(--text-dark) !important;
+        .header-left h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #3E3A36;
+        }
+
+        .header-left h1 i {
+            color: #C4A484;
+            margin-right: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .welcome-text {
+            color: #3E3A36;
             font-weight: 500;
-            margin: 0 1rem;
+            font-size: 0.9rem;
+        }
+
+        .btn-back {
+            background: #E6D3C1;
+            color: #3E3A36;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-back:hover {
+            background: #d4c4b0;
+            transform: translateY(-2px);
         }
 
         .logout-btn {
-            background: var(--primary-color);
+            background: #2C2C2C;
             color: white;
             padding: 0.6rem 1.5rem;
-            border-radius: 4px;
+            border-radius: 8px;
             border: none;
             font-weight: 600;
+            font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.3s;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .logout-btn:hover {
-            background: #B89673;
-            color: white;
-            text-decoration: none;
+            background: #1a1a1a;
+            transform: translateY(-2px);
         }
 
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            margin-bottom: 25px;
         }
 
-        .page-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-dark);
+        .page-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #3E3A36;
+        }
+
+        /* ===== ALERTS ===== */
+        .alerts {
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .alert-success {
+            background: #eef6f1;
+            color: #2f6b47;
+            border: 1px solid #d4e8dc;
+        }
+
+        .alert-error {
+            background: #f8ecec;
+            color: #8b2f2f;
+            border: 1px solid #f0d6d6;
+        }
+
+        .alert-info {
+            background: #f5f0eb;
+            color: #5a4a42;
+            border: 1px solid #e8ddd2;
+        }
+
+        /* ===== FILTER SECTION ===== */
+        .filter-section {
+            display: flex;
+            gap: 0.8rem;
             margin-bottom: 2rem;
+            flex-wrap: wrap;
         }
 
-        .review-card {
-            border: 1px solid #e0e0e0;
+        .filter-btn {
+            padding: 0.5rem 1.2rem;
+            border: 2px solid #f0e8e0;
+            background: white;
             border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            color: #8A7F75;
+        }
+
+        .filter-btn:hover {
+            border-color: #C4A484;
+            color: #3E3A36;
+        }
+
+        .filter-btn.active {
+            background: #C4A484;
+            color: white;
+            border-color: #C4A484;
+        }
+
+        /* ===== REVIEW CARDS ===== */
+        .review-card {
+            background: white;
+            border-radius: 14px;
             padding: 1.5rem;
-            background: var(--accent-color);
+            border: 1px solid #f0e8e0;
             margin-bottom: 1.5rem;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
         }
 
         .review-card:hover {
-            border-color: var(--primary-color);
+            border-color: #C4A484;
             box-shadow: 0 4px 12px rgba(196, 164, 132, 0.1);
         }
 
         .review-header {
             display: flex;
             justify-content: space-between;
-            align-items: start;
+            align-items: flex-start;
             margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
-        .review-rating {
-            color: #DAA520;
-            font-size: 1rem;
-        }
-
-        .product-name {
-            font-size: 0.9rem;
+        .review-product {
+            font-size: 0.8rem;
             font-weight: 600;
-            color: var(--primary-color);
+            color: #C4A484;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
+        .review-rating {
+            color: #DAA520;
+            font-size: 0.95rem;
+            margin-top: 0.2rem;
+        }
+
+        .review-rating .empty-star {
+            color: #ddd;
+        }
+
+        .review-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .badge-replied {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
         .review-text {
-            color: var(--text-muted);
+            color: #555;
             font-size: 0.95rem;
             line-height: 1.6;
             margin-bottom: 1rem;
@@ -120,222 +260,253 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #e0e0e0;
+            padding-top: 0.8rem;
+            border-top: 1px solid #f0e8e0;
         }
 
         .reviewer-avatar {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            background: var(--secondary-color);
+            background: #f5f0eb;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: #C4A484;
         }
 
         .reviewer-name {
             font-weight: 600;
-            color: var(--text-dark);
+            color: #3E3A36;
             font-size: 0.9rem;
         }
 
         .reviewer-date {
-            color: var(--text-muted);
+            color: #8A7F75;
             font-size: 0.8rem;
         }
 
+        /* ===== REPLY SECTION ===== */
         .reply-section {
-            background: #f9f9f9;
+            background: #faf7f5;
             padding: 1rem;
-            border-radius: 4px;
+            border-radius: 8px;
             margin-top: 1rem;
-            border-left: 4px solid var(--primary-color);
+            border-left: 4px solid #C4A484;
         }
 
         .reply-header {
             font-weight: 600;
-            color: var(--primary-color);
+            color: #C4A484;
             margin-bottom: 0.5rem;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .reply-text {
-            color: var(--text-muted);
+            color: #555;
             font-size: 0.9rem;
-            margin-bottom: 0.5rem;
             line-height: 1.5;
+            margin-bottom: 0.5rem;
         }
 
         .reply-date {
-            font-size: 0.8rem;
-            color: #999;
+            font-size: 0.75rem;
+            color: #8A7F75;
         }
 
+        .reply-actions {
+            margin-top: 0.8rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* ===== REPLY FORM ===== */
         .reply-form {
             margin-top: 1rem;
         }
 
-        .reply-textarea {
+        .reply-form textarea {
             width: 100%;
             padding: 0.75rem;
             border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-family: inherit;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
             resize: vertical;
-            min-height: 100px;
+            min-height: 80px;
+            transition: border-color 0.3s ease;
+        }
+
+        .reply-form textarea:focus {
+            border-color: #C4A484;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(196, 164, 132, 0.1);
         }
 
         .reply-buttons {
             display: flex;
             gap: 0.5rem;
             margin-top: 0.75rem;
-        }
-
-        .btn-reply {
-            background: var(--primary-color);
-            color: white;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 4px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-        }
-
-        .btn-reply:hover {
-            background: #B89673;
-            color: white;
-            text-decoration: none;
-        }
-
-        .btn-cancel {
-            background: #e0e0e0;
-            color: var(--text-dark);
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 4px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        .btn-cancel:hover {
-            background: #d0d0d0;
-            color: var(--text-dark);
-        }
-
-        .no-reviews {
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-muted);
-        }
-
-        .no-reviews i {
-            font-size: 3rem;
-            color: #e0e0e0;
-            margin-bottom: 1rem;
-        }
-
-        .alert {
-            border-radius: 4px;
-            margin-bottom: 1.5rem;
-        }
-
-        .filter-section {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
             flex-wrap: wrap;
         }
 
-        .filter-btn {
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--secondary-color);
-            background: white;
-            border-radius: 4px;
+        .btn {
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.85rem;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
         }
 
-        .filter-btn.active {
-            background: var(--primary-color);
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-reply {
+            background: #C4A484;
             color: white;
-            border-color: var(--primary-color);
         }
 
-        .filter-btn:hover {
-            border-color: var(--primary-color);
+        .btn-reply:hover {
+            background: #9d8970;
+            color: white;
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.3);
         }
 
+        .btn-edit {
+            background: #d4a574;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #c2936b;
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #E6D3C1;
+            color: #3E3A36;
+        }
+
+        .btn-cancel:hover {
+            background: #d4c4b0;
+            color: #3E3A36;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: white;
+            border-radius: 14px;
+            border: 2px dashed #e8ddd2;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            color: #E6D3C1;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state-text {
+            color: #8A7F75;
+            font-size: 1rem;
+        }
+
+        .empty-state-text strong {
+            color: #3E3A36;
+        }
+
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            .main-container {
-                padding: 1rem;
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+                padding: 16px 20px;
             }
-
-            .page-title {
-                font-size: 1.5rem;
+            .header-left h1 {
+                font-size: 1.2rem;
             }
-
+            .header-actions {
+                flex-wrap: wrap;
+            }
             .review-header {
                 flex-direction: column;
             }
-
             .reply-buttons {
                 flex-direction: column;
             }
-
-            .btn-reply, .btn-cancel {
+            .btn {
                 width: 100%;
+                justify-content: center;
+            }
+            .filter-section {
+                flex-wrap: wrap;
+            }
+            .filter-btn {
+                flex: 1;
+                text-align: center;
+                min-width: 80px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .review-card {
+                padding: 1rem;
+            }
+            .reply-section {
+                padding: 0.8rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="container-fluid" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
-            <a class="navbar-brand" href="/">Scentify</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/supplier/dashboard">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/supplier/manage-product">Products</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/review/supplier/my-reviews">Reviews</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/supplier/manage-voucher">Vouchers</a>
-                    </li>
-                    <li class="nav-item ms-2">
-                        <a href="/logout" class="logout-btn">Log Out</a>
-                    </li>
-                </ul>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1><i class="fas fa-store"></i> Supplier Dashboard</h1>
+            </div>
+            <div class="header-actions">
+                <span class="welcome-text">
+                    <i class="fas fa-user-circle"></i> Welcome, <span th:text="${user?.username}"></span>
+                </span>
+                <a href="/supplier/dashboard" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Dashboard
+                </a>
+                <a href="/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
             </div>
         </div>
-    </nav>
 
-    <!-- Main Content -->
-    <div class="main-container">
-        <h1 class="page-title">Customer Reviews</h1>
-
-        <!-- Success/Error Messages -->
-        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle"></i> <span th:text="${success}">Success message</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <!-- Page Header -->
+        <div class="page-header">
+            <h2><i class="fas fa-star" style="color: #DAA520; margin-right: 0.5rem;"></i> Customer Reviews</h2>
         </div>
 
-        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}">Error message</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <!-- Alerts -->
+        <div class="alerts">
+            <div th:if="${success}" class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${success}"></span>
+            </div>
+            <div th:if="${error}" class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${error}"></span>
+            </div>
+            <div th:if="${message}" class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <span th:text="${message}"></span>
+            </div>
         </div>
 
         <!-- Filter Section -->
@@ -351,15 +522,15 @@
                 <!-- Review Header -->
                 <div class="review-header">
                     <div>
-                        <div class="product-name" th:text="${review.product.productName}">Product Name</div>
+                        <div class="review-product" th:text="${review.product.productName}">Product Name</div>
                         <div class="review-rating">
-                            <span th:each="i : ${#numbers.sequence(1, review.rating)}" style="color: #DAA520;">★</span>
-                            <span th:each="i : ${#numbers.sequence(review.rating + 1, 5)}" style="color: #ddd;">★</span>
+                            <span th:each="i : ${#numbers.sequence(1, review.rating)}">★</span>
+                            <span th:each="i : ${#numbers.sequence(review.rating + 1, 5)}" class="empty-star">★</span>
                         </div>
                     </div>
                     <div>
-                        <span th:if="${review.reply == null}" class="badge bg-warning" style="color: #333;">No Reply</span>
-                        <span th:if="${review.reply != null}" class="badge bg-success">Replied</span>
+                        <span th:if="${review.reply == null}" class="review-badge badge-pending">No Reply</span>
+                        <span th:if="${review.reply != null}" class="review-badge badge-replied">Replied</span>
                     </div>
                 </div>
 
@@ -369,7 +540,7 @@
                 <!-- Reviewer Info -->
                 <div class="reviewer-info">
                     <div class="reviewer-avatar">
-                        <i class="fas fa-user" style="color: #999;"></i>
+                        <i class="fas fa-user"></i>
                     </div>
                     <div>
                         <div class="reviewer-name" th:text="${review.customer.user.username}">Customer Name</div>
@@ -377,24 +548,36 @@
                     </div>
                 </div>
 
-                <!-- Existing Reply or Reply Form -->
+                <!-- Existing Reply -->
                 <div th:if="${review.reply != null}" class="reply-section">
                     <div class="reply-header">
                         <i class="fas fa-reply"></i> Your Response
                     </div>
                     <p class="reply-text" th:text="${review.reply.replyText}">Reply text here</p>
                     <div class="reply-date">Replied on <span th:text="${#temporals.format(review.reply.createdAt, 'dd MMM yyyy')}">date</span></div>
-                    <button class="btn-cancel mt-2" onclick="toggleReplyForm(this)" style="background: var(--secondary-color); width: auto;">Edit Reply</button>
+                    
+                    <div class="reply-actions">
+                        <button class="btn btn-edit" onclick="toggleReplyForm(this)">
+                            <i class="fas fa-edit"></i> Edit Reply
+                        </button>
+                    </div>
+
+                    <!-- Edit Reply Form -->
                     <form method="post" th:action="'/review/reply'" class="reply-form" style="display: none;">
                         <input type="hidden" name="reviewId" th:value="${review.reviewId}">
                         <textarea name="replyText" class="reply-textarea" placeholder="Edit your reply..." required>[[${review.reply.replyText}]]</textarea>
                         <div class="reply-buttons">
-                            <button type="submit" class="btn-reply">Update Reply</button>
-                            <button type="button" class="btn-cancel" onclick="toggleReplyForm(this)">Cancel</button>
+                            <button type="submit" class="btn btn-reply">
+                                <i class="fas fa-save"></i> Update Reply
+                            </button>
+                            <button type="button" class="btn btn-cancel" onclick="toggleReplyForm(this)">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
                         </div>
                     </form>
                 </div>
 
+                <!-- Reply Form (if no reply) -->
                 <div th:if="${review.reply == null}" class="reply-section">
                     <div class="reply-header">
                         <i class="fas fa-pen"></i> Write a Reply
@@ -403,25 +586,31 @@
                         <input type="hidden" name="reviewId" th:value="${review.reviewId}">
                         <textarea name="replyText" class="reply-textarea" placeholder="Share your response to this review..." required></textarea>
                         <div class="reply-buttons">
-                            <button type="submit" class="btn-reply">Post Reply</button>
+                            <button type="submit" class="btn btn-reply">
+                                <i class="fas fa-paper-plane"></i> Post Reply
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- No Reviews Message -->
-        <div th:if="${reviews == null || reviews.isEmpty()}" class="no-reviews">
-            <i class="fas fa-comments"></i>
-            <p><strong>No reviews yet</strong></p>
-            <p>Customer reviews on your products will appear here</p>
+        <!-- Empty State -->
+        <div th:if="${reviews == null || reviews.isEmpty()}" class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-comments"></i>
+            </div>
+            <p class="empty-state-text">
+                <strong>No reviews yet</strong><br>
+                Customer reviews on your products will appear here
+            </p>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
         function toggleReplyForm(btn) {
-            const form = btn.parentElement.querySelector('.reply-form');
+            const parent = btn.closest('.reply-section') || btn.parentElement;
+            const form = parent.querySelector('.reply-form');
             if (form) {
                 form.style.display = form.style.display === 'none' ? 'block' : 'none';
             }

@@ -1,18 +1,11 @@
 package com.scentify.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scentify.model.Product;
 import com.scentify.repository.ProductRepository;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,16 +14,8 @@ public class QuizService {
 
     private static final Logger log = LoggerFactory.getLogger(QuizService.class);
 
-    @Value("${google.ai.api-key}")
-    private String apiKey;
-
-    private final ObjectMapper objectMapper;
-    private final RestTemplate restTemplate;
-
-    public QuizService(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-        this.restTemplate = new RestTemplate();
-    }
+    @Autowired
+    private ProductRepository productRepository;
 
     // =========================================================================
     // 1. QUIZ QUESTIONS
@@ -39,6 +24,7 @@ public class QuizService {
     public List<Map<String, Object>> getAllQuizQuestions() {
         List<Map<String, Object>> questions = new ArrayList<>();
         
+        // Question 1
         Map<String, Object> q1 = new HashMap<>();
         q1.put("id", "q1");
         q1.put("text", "What is your dream way to spend a slow morning?");
@@ -50,8 +36,10 @@ public class QuizService {
             "Sitting in a quiet, wooden library corner with a book in your hands",
             "Brewing a comforting pot of rich spiced tea with cinnamon and clove"
         ));
+        q1.put("optionValues", Arrays.asList("fresh", "warm_cozy", "floral", "woody_earthy", "bold_spicy"));
         questions.add(q1);
         
+        // Question 2
         Map<String, Object> q2 = new HashMap<>();
         q2.put("id", "q2");
         q2.put("text", "Which of these refreshing drinks do you order most often?");
@@ -63,8 +51,10 @@ public class QuizService {
             "Strong black coffee, smoky dark tea, or a rich earthy matcha",
             "A warm spiced apple cider, mulled berry juice, or espresso with cinnamon"
         ));
+        q2.put("optionValues", Arrays.asList("fresh", "warm_cozy", "floral", "woody_earthy", "bold_spicy"));
         questions.add(q2);
         
+        // Question 3
         Map<String, Object> q3 = new HashMap<>();
         q3.put("id", "q3");
         q3.put("text", "Which scent from everyday life brings you instant comfort?");
@@ -76,8 +66,10 @@ public class QuizService {
             "The earthy scent of fireplace logs, cedar wood chips, or a pine forest hike",
             "Warm spices in a boutique kitchen, or the mysterious scent of burning incense"
         ));
+        q3.put("optionValues", Arrays.asList("fresh", "warm_cozy", "floral", "woody_earthy", "bold_spicy"));
         questions.add(q3);
         
+        // Question 4
         Map<String, Object> q4 = new HashMap<>();
         q4.put("id", "q4");
         q4.put("text", "Which fabric or clothing style makes you feel most like yourself?");
@@ -89,8 +81,10 @@ public class QuizService {
             "A structured wool coat, earthy suede jacket, or classic leather boots",
             "A bold satin blazer, glamorous dark velvet, or a statement accessory"
         ));
+        q4.put("optionValues", Arrays.asList("fresh", "warm_cozy", "floral", "woody_earthy", "bold_spicy"));
         questions.add(q4);
         
+        // Question 5
         Map<String, Object> q5 = new HashMap<>();
         q5.put("id", "q5");
         q5.put("text", "If you were given a free afternoon just to relax, where would you go?");
@@ -102,8 +96,10 @@ public class QuizService {
             "A cozy cabin deep in redwood territory with campfires and cedarwood trees",
             "A dimly lit, gorgeous speakeasy lounge with velvet couches and spice aromas"
         ));
+        q5.put("optionValues", Arrays.asList("fresh", "warm_cozy", "floral", "woody_earthy", "bold_spicy"));
         questions.add(q5);
         
+        // Question 6
         Map<String, Object> q6 = new HashMap<>();
         q6.put("id", "q6");
         q6.put("text", "What kind of evening sweet treat or dessert do you naturally prefer?");
@@ -115,8 +111,10 @@ public class QuizService {
             "A simple piece of premium dark chocolate with roasted timber hazelnuts",
             "A slice of spiced gingerbread with cinnamon ice cream or baked honey pears"
         ));
+        q6.put("optionValues", Arrays.asList("fresh", "warm_cozy", "floral", "woody_earthy", "bold_spicy"));
         questions.add(q6);
         
+        // Question 7
         Map<String, Object> q7 = new HashMap<>();
         q7.put("id", "q7");
         q7.put("text", "How would you love your ideal fragrance to make you (and others) feel?");
@@ -128,8 +126,10 @@ public class QuizService {
             "Calm, mysterious, and naturally grounded—like a reassuring and wise silent partner",
             "Bold, completely captivating, and unique—making a beautiful, unforgettable statement"
         ));
+        q7.put("optionValues", Arrays.asList("fresh", "warm_cozy", "floral", "woody_earthy", "bold_spicy"));
         questions.add(q7);
         
+        // Question 8
         Map<String, Object> q8 = new HashMap<>();
         q8.put("id", "q8");
         q8.put("text", "What kind of natural light or ambient environment speaks to your soul?");
@@ -141,18 +141,18 @@ public class QuizService {
             "A quiet, misty fog rolling over deep mountains with giant pine shadows",
             "A warm, candle-lit room under a deep night sky full of stars"
         ));
+        q8.put("optionValues", Arrays.asList("fresh", "warm_cozy", "floral", "woody_earthy", "bold_spicy"));
         questions.add(q8);
         
         return questions;
     }
 
     // =========================================================================
-    // 2. PERSONA SPECTRUM CALCULATORS
+    // 2. PERSONA CALCULATION 
     // =========================================================================
 
     public Map<String, Integer> calculatePersonaScores(Map<String, String> answers) {
         Map<String, Integer> counts = new HashMap<>();
-        
         counts.put("Fresh & Airy", 0);
         counts.put("Warm & Cozy", 0);
         counts.put("Floral & Romantic", 0);
@@ -186,7 +186,7 @@ public class QuizService {
         }
 
         Map<String, Integer> finalPercentages = new HashMap<>();
-        final int divisor = totalAnswered > 0 ? totalAnswered : 8;
+        int divisor = totalAnswered > 0 ? totalAnswered : 8;
         
         counts.forEach((key, val) -> {
             int percentage = (int) Math.round((val.doubleValue() / divisor) * 100);
@@ -205,76 +205,271 @@ public class QuizService {
     }
 
     // =========================================================================
-    // 3. FALLBACK RECOMMENDATION METHODS
+    // 3. MAIN RECOMMENDATION ENGINE 
+    // =========================================================================
+
+    /**
+     * Get recommendations based on quiz answers using rule-based matching
+     */
+    public List<Product> getPersonaBasedRecommendations(
+            Map<String, String> answers,
+            String primaryPersona, 
+            Map<String, Integer> scores) {
+        
+        log.info("========================================");
+        log.info("🎯 RULE-BASED RECOMMENDATION ENGINE");
+        log.info("========================================");
+        log.info("Primary Persona: {}", primaryPersona);
+        log.info("Persona Scores: {}", scores);
+        
+        // Get all approved products from database
+        List<Product> allProducts = productRepository.findByApprovalStatus("approved");
+        
+        if (allProducts.isEmpty()) {
+            log.warn("⚠️ No approved products found in database!");
+            return new ArrayList<>();
+        }
+        
+        log.info("📦 Found {} approved products in database", allProducts.size());
+        
+        // Score each product
+        List<ScoredProduct> scoredProducts = new ArrayList<>();
+        
+        for (Product product : allProducts) {
+            int score = calculateProductScore(product, primaryPersona, scores);
+            scoredProducts.add(new ScoredProduct(product, score));
+            log.debug("Product: {} | Score: {}", product.getProductName(), score);
+        }
+        
+        // Sort by score descending and get top 3
+        scoredProducts.sort((a, b) -> Integer.compare(b.score, a.score));
+        
+        List<Product> recommendations = scoredProducts.stream()
+                .limit(3)
+                .map(sp -> sp.product)
+                .collect(Collectors.toList());
+        
+        log.info("✅ Top 3 recommendations:");
+        for (int i = 0; i < recommendations.size(); i++) {
+            Product p = recommendations.get(i);
+            log.info("  {}. {} (Score: {})", i+1, p.getProductName(), scoredProducts.get(i).score);
+        }
+        
+        return recommendations;
+    }
+
+    /**
+     * Calculate a score for a product based on how well it matches the persona
+     */
+    private int calculateProductScore(Product product, String primaryPersona, Map<String, Integer> scores) {
+        int score = 0;
+        
+        // Get all notes as a single string for searching
+        String allNotes = (product.getTopNotes() != null ? product.getTopNotes() : "") + " " +
+                         (product.getMiddleNotes() != null ? product.getMiddleNotes() : "") + " " +
+                         (product.getBaseNotes() != null ? product.getBaseNotes() : "");
+        allNotes = allNotes.toLowerCase();
+        
+        String category = product.getCategory() != null ? product.getCategory().toLowerCase() : "";
+        
+        // ===== PRIMARY PERSONA MATCH (Highest weight: 50 points) =====
+        switch (primaryPersona) {
+            case "Fresh & Airy":
+                if (matchesFreshNotes(allNotes, category)) score += 50;
+                break;
+            case "Warm & Cozy":
+                if (matchesWarmNotes(allNotes, category)) score += 50;
+                break;
+            case "Floral & Romantic":
+                if (matchesFloralNotes(allNotes, category)) score += 50;
+                break;
+            case "Woody & Earthy":
+                if (matchesWoodyNotes(allNotes, category)) score += 50;
+                break;
+            case "Bold & Spicy":
+                if (matchesBoldNotes(allNotes, category)) score += 50;
+                break;
+        }
+        
+        // ===== SECONDARY PERSONA MATCH (Medium weight: 30 points) =====
+        // Check if product matches any other high-scoring personas
+        for (Map.Entry<String, Integer> entry : scores.entrySet()) {
+            String persona = entry.getKey();
+            int personaScore = entry.getValue();
+            
+            // Only consider personas that have at least 20% and are not the primary
+            if (personaScore >= 20 && !persona.equals(primaryPersona)) {
+                boolean matches = false;
+                switch (persona) {
+                    case "Fresh & Airy":
+                        matches = matchesFreshNotes(allNotes, category);
+                        break;
+                    case "Warm & Cozy":
+                        matches = matchesWarmNotes(allNotes, category);
+                        break;
+                    case "Floral & Romantic":
+                        matches = matchesFloralNotes(allNotes, category);
+                        break;
+                    case "Woody & Earthy":
+                        matches = matchesWoodyNotes(allNotes, category);
+                        break;
+                    case "Bold & Spicy":
+                        matches = matchesBoldNotes(allNotes, category);
+                        break;
+                }
+                if (matches) {
+                    score += 30;
+                }
+            }
+        }
+        
+        // ===== NOTE SPECIFIC MATCHES (Lower weight: 10-20 points) =====
+        // Check each note category
+        if (product.getTopNotes() != null) {
+            String top = product.getTopNotes().toLowerCase();
+            if (containsAny(top, getPersonaKeywords(primaryPersona, "top"))) {
+                score += 15;
+            }
+        }
+        
+        if (product.getMiddleNotes() != null) {
+            String middle = product.getMiddleNotes().toLowerCase();
+            if (containsAny(middle, getPersonaKeywords(primaryPersona, "middle"))) {
+                score += 10;
+            }
+        }
+        
+        if (product.getBaseNotes() != null) {
+            String base = product.getBaseNotes().toLowerCase();
+            if (containsAny(base, getPersonaKeywords(primaryPersona, "base"))) {
+                score += 10;
+            }
+        }
+        
+        // ===== CATEGORY BOOST (5 points) =====
+        if (category.contains(primaryPersona.toLowerCase().replace(" & ", " ").split(" ")[0])) {
+            score += 5;
+        }
+        
+        return score;
+    }
+
+    // ===== PERSONA MATCHING METHODS =====
+
+    private boolean matchesFreshNotes(String notes, String category) {
+        String[] keywords = {"citrus", "bergamot", "lemon", "lime", "orange", "grapefruit", 
+                           "green", "ocean", "marine", "aquatic", "sea", "salt", "mint", 
+                           "herbal", "tea", "cucumber", "aloe", "fresh", "clean", "linen"};
+        return containsAny(notes, keywords) || category.contains("fresh") || category.contains("citrus");
+    }
+
+    private boolean matchesWarmNotes(String notes, String category) {
+        String[] keywords = {"vanilla", "amber", "caramel", "toffee", "honey", "sugar", 
+                           "coconut", "tonka", "benzoin", "creamy", "sweet", "baked", 
+                           "cookie", "cake", "butter", "milky", "cashmere"};
+        return containsAny(notes, keywords) || category.contains("warm") || category.contains("gourmand");
+    }
+
+    private boolean matchesFloralNotes(String notes, String category) {
+        String[] keywords = {"rose", "jasmine", "peony", "iris", "lavender", "lilac", 
+                           "orchid", "gardenia", "tuberose", "ylang", "magnolia", 
+                           "violet", "powder", "floral", "bloom", "petal", "bouquet"};
+        return containsAny(notes, keywords) || category.contains("floral") || category.contains("romantic");
+    }
+
+    private boolean matchesWoodyNotes(String notes, String category) {
+        String[] keywords = {"cedar", "sandalwood", "patchouli", "vetiver", "oakmoss", 
+                           "pine", "fir", "cypress", "woody", "earthy", "forest", 
+                           "wood", "tree", "bark", "moss", "root", "soil", "musk"};
+        return containsAny(notes, keywords) || category.contains("woody") || category.contains("earthy");
+    }
+
+    private boolean matchesBoldNotes(String notes, String category) {
+        String[] keywords = {"pepper", "cinnamon", "clove", "cardamom", "saffron", 
+                           "ginger", "nutmeg", "chili", "spicy", "leather", "tobacco", 
+                           "incense", "resin", "opulent", "daring", "intense", "smoke"};
+        return containsAny(notes, keywords) || category.contains("spicy") || category.contains("bold");
+    }
+
+    private String[] getPersonaKeywords(String persona, String noteType) {
+        switch (persona) {
+            case "Fresh & Airy":
+                if ("top".equals(noteType)) return new String[]{"citrus", "bergamot", "lemon", "mint", "green"};
+                if ("middle".equals(noteType)) return new String[]{"tea", "aquatic", "herbal"};
+                return new String[]{"musk", "woody", "clean"};
+            case "Warm & Cozy":
+                if ("top".equals(noteType)) return new String[]{"coconut", "almond", "sweet"};
+                if ("middle".equals(noteType)) return new String[]{"vanilla", "caramel", "honey"};
+                return new String[]{"amber", "tonka", "benzoin"};
+            case "Floral & Romantic":
+                if ("top".equals(noteType)) return new String[]{"peach", "pear", "berry"};
+                if ("middle".equals(noteType)) return new String[]{"rose", "jasmine", "peony"};
+                return new String[]{"musk", "powder", "iris"};
+            case "Woody & Earthy":
+                if ("top".equals(noteType)) return new String[]{"pine", "cypress", "bergamot"};
+                if ("middle".equals(noteType)) return new String[]{"cedar", "sandalwood"};
+                return new String[]{"patchouli", "vetiver", "oakmoss"};
+            case "Bold & Spicy":
+                if ("top".equals(noteType)) return new String[]{"pepper", "cinnamon", "saffron"};
+                if ("middle".equals(noteType)) return new String[]{"cardamom", "clove", "nutmeg"};
+                return new String[]{"leather", "tobacco", "incense"};
+            default:
+                return new String[]{};
+        }
+    }
+
+    private boolean containsAny(String text, String[] keywords) {
+        if (text == null || keywords == null) return false;
+        text = text.toLowerCase();
+        for (String keyword : keywords) {
+            if (text.contains(keyword.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // =========================================================================
+    // 4. HELPER CLASS FOR SCORING
+    // =========================================================================
+
+    private static class ScoredProduct {
+        Product product;
+        int score;
+        
+        ScoredProduct(Product product, int score) {
+            this.product = product;
+            this.score = score;
+        }
+    }
+
+    // =========================================================================
+    // 5. COMPATIBILITY METHODS (Keep existing methods)
     // =========================================================================
 
     public List<Product> getRecommendations(Map<String, String> answers) {
-        log.info("📋 USING FALLBACK RECOMMENDATIONS (Rule-based)");
-        List<Product> allProducts = getAllAvailableProductsFromDb();
-        if (allProducts.isEmpty()) {
-            log.warn("No products found in database for fallback");
-            return Collections.emptyList();
-        }
-        
+        log.info("📋 Getting recommendations (legacy method)");
         String primaryPersona = getPrimaryPersona(answers);
-        log.info("Fallback using primary persona: {}", primaryPersona);
-        
-        List<Product> filtered = allProducts.stream()
-                .filter(p -> matchesPersona(p, primaryPersona))
-                .limit(3)
-                .collect(Collectors.toList());
-        
-        log.info("Fallback returned {} products", filtered.size());
-        return filtered;
-    }
-    
-    private boolean matchesPersona(Product product, String persona) {
-        String notes = (product.getTopNotes() + " " + 
-                       product.getMiddleNotes() + " " + 
-                       product.getBaseNotes()).toLowerCase();
-        
-        switch(persona) {
-            case "Fresh & Airy":
-                return notes.contains("citrus") || notes.contains("aquatic") || 
-                       notes.contains("marine") || notes.contains("bergamot") || 
-                       notes.contains("lemon") || notes.contains("ocean");
-            case "Warm & Cozy":
-                return notes.contains("vanilla") || notes.contains("amber") || 
-                       notes.contains("caramel") || notes.contains("tonka");
-            case "Floral & Romantic":
-                return notes.contains("rose") || notes.contains("jasmine") || 
-                       notes.contains("peony") || notes.contains("floral");
-            case "Woody & Earthy":
-                return notes.contains("sandalwood") || notes.contains("cedar") || 
-                       notes.contains("vetiver") || notes.contains("patchouli");
-            case "Bold & Spicy":
-                return notes.contains("pepper") || notes.contains("cinnamon") || 
-                       notes.contains("saffron") || notes.contains("leather");
-            default:
-                return true;
-        }
+        Map<String, Integer> scores = calculatePersonaScores(answers);
+        return getPersonaBasedRecommendations(answers, primaryPersona, scores);
     }
 
     public List<Product> getAIPoweredRecommendations(Map<String, String> answers) {
-        log.info("🤖 AI-Powered Recommendations requested");
-        Map<String, Integer> scores = calculatePersonaScores(answers);
-        String primaryPersona = getPrimaryPersona(answers);
-        return getPersonaBasedAIRecommendations(answers, primaryPersona, scores);
+        log.info("🤖 AI-powered recommendations requested - using rule-based instead");
+        return getRecommendations(answers);
     }
 
     public List<Product> getHybridRecommendations(Map<String, String> answers) {
-        log.info("⚡ Hybrid Recommendations requested");
-        try {
-            List<Product> aiRecs = getAIPoweredRecommendations(answers);
-            if (aiRecs != null && !aiRecs.isEmpty()) {
-                log.info("✅ Hybrid using AI recommendations: {}", aiRecs.size());
-                return aiRecs;
-            }
-        } catch (Exception e) {
-            log.warn("⚠️ AI failed in hybrid mode: {}", e.getMessage());
-        }
-        log.info("🔄 Hybrid falling back to traditional recommendations");
+        log.info("⚡ Hybrid recommendations requested - using rule-based instead");
         return getRecommendations(answers);
+    }
+
+    public List<Product> getPersonaBasedAIRecommendations(
+            Map<String, String> answers,
+            String primaryPersona, 
+            Map<String, Integer> scores) {
+        log.info("🎯 Persona-based recommendations requested");
+        return getPersonaBasedRecommendations(answers, primaryPersona, scores);
     }
 
     public void saveQuizResponse(String userId, Map<String, String> answers, List<Product> topRecommendations) {
@@ -283,289 +478,8 @@ public class QuizService {
 
     public List<Product> getCustomerRecommendationHistory(String userId) {
         log.info("📜 Retrieving recommendation history for user: {}", userId);
-        return getAllAvailableProductsFromDb();
-    }
-
-    // =========================================================================
-    // 4. MAIN AI RECOMMENDATION ENGINE
-    // =========================================================================
-
-    public List<Product> getPersonaBasedAIRecommendations(
-            Map<String, String> allAnswers,
-            String primaryPersona, 
-            Map<String, Integer> scores) {
-        
-        log.info("╔══════════════════════════════════════════════════════════════╗");
-        log.info("║         🚨 AI RECOMMENDATION METHOD CALLED 🚨                ║");
-        log.info("╚══════════════════════════════════════════════════════════════╝");
-        log.info("📅 TIMESTAMP: {}", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-        log.info("🎯 PRIMARY PERSONA: {}", primaryPersona);
-        log.info("📊 PERSONA SCORES: {}", scores);
-        
-        // Check API Key
-        boolean hasApiKey = apiKey != null && !apiKey.isEmpty() && !apiKey.equals("YOUR_ACTUAL_GEMINI_API_KEY");
-        log.info("🔑 API Key configured: {}", hasApiKey);
-        
-        if (!hasApiKey) {
-            log.error("❌ No valid API key found! Using fallback.");
-            return getRecommendations(allAnswers).stream().limit(3).collect(Collectors.toList());
-        }
-        
-        // Get Products
-        List<Product> availableProducts = getAllAvailableProductsFromDb();
-        if (availableProducts.isEmpty()) {
-            log.error("❌ No products in database!");
-            return Collections.emptyList();
-        }
-        
-        log.info("📦 Found {} products in database", availableProducts.size());
-
-        try {
-            log.info("📡 Attempting Gemini API call...");
-            
-            String prompt = buildPrompt(allAnswers, primaryPersona, scores, availableProducts);
-            String aiResponse = callGeminiAPI(prompt);
-            
-            log.info("✅ Gemini API call successful!");
-            log.info("📝 Response: {}", aiResponse.length() > 500 ? aiResponse.substring(0, 500) + "..." : aiResponse);
-            
-            // Parse the response
-            List<String> recommendedProductIds = parseAIResponse(aiResponse);
-            log.info("🎯 AI recommended product IDs: {}", recommendedProductIds);
-            
-            // Match with database
-            List<Product> recommendations = availableProducts.stream()
-                    .filter(p -> recommendedProductIds.contains(p.getProductId()))
-                    .limit(3)
-                    .collect(Collectors.toList());
-            
-            if (recommendations.isEmpty()) {
-                log.warn("⚠️ No matches found for AI recommendations, using fallback");
-                return getRecommendations(allAnswers).stream().limit(3).collect(Collectors.toList());
-            }
-            
-            log.info("✅ Final AI recommendations: {}", recommendations.stream().map(Product::getProductName).collect(Collectors.toList()));
-            return recommendations;
-            
-        } catch (Exception e) {
-            log.error("❌ AI recommendation failed: {}", e.getMessage());
-            log.info("🔄 Falling back to traditional recommendations");
-            return getRecommendations(allAnswers).stream().limit(3).collect(Collectors.toList());
-        }
-    }
-    
-    private String buildPrompt(Map<String, String> answers, String primaryPersona, 
-                                Map<String, Integer> scores, List<Product> products) {
-        
-        StringBuilder prompt = new StringBuilder();
-        prompt.append("You are a perfume recommendation expert. Based on the user's quiz answers, recommend 3 perfumes from the list below.\n\n");
-        
-        prompt.append("USER'S QUIZ ANSWERS:\n");
-        for (int i = 1; i <= 8; i++) {
-            String answer = answers.get("q" + i);
-            if (answer != null) {
-                prompt.append("Q").append(i).append(": ").append(getAnswerDescription(i, answer)).append("\n");
-            }
-        }
-        
-        prompt.append("\nPERSONA: ").append(primaryPersona).append("\n");
-        prompt.append("PERSONA BREAKDOWN: ").append(scores).append("\n\n");
-        
-        prompt.append("AVAILABLE PERFUMES (ONLY pick from these):\n");
-        for (Product p : products) {
-            prompt.append("ID: ").append(p.getProductId())
-                  .append(" | Name: ").append(p.getProductName())
-                  .append(" | Category: ").append(p.getCategory())
-                  .append(" | Top Notes: ").append(p.getTopNotes())
-                  .append(" | Middle Notes: ").append(p.getMiddleNotes())
-                  .append(" | Base Notes: ").append(p.getBaseNotes())
-                  .append("\n");
-        }
-        
-        prompt.append("\nIMPORTANT: Return ONLY a JSON object with this exact format:\n");
-        prompt.append("{\"recommendations\": [\"PRODUCT_ID_1\", \"PRODUCT_ID_2\", \"PRODUCT_ID_3\"]}\n");
-        prompt.append("Do not include any other text or explanation.\n");
-        
-        return prompt.toString();
-    }
-    
-    private String getAnswerDescription(int questionNum, String answer) {
-        switch(answer) {
-            case "fresh":
-                String[] freshDesc = {
-                    "Enjoys crisp, cool breezes and fresh morning air",
-                    "Prefers light, refreshing drinks like cucumber water or green tea",
-                    "Comforted by clean linen and sea air scents",
-                    "Likes light, airy fabrics like linen and cotton",
-                    "Drawn to coastal breezes and ocean mist",
-                    "Enjoys light, refreshing desserts like lemon sorbet",
-                    "Wants to feel revitalized, fresh, and bright",
-                    "Attracted to sparkling blue morning light"
-                };
-                return freshDesc[questionNum - 1];
-            case "warm_cozy":
-                String[] warmDesc = {
-                    "Enjoys warm vanilla latte moments under cozy blankets",
-                    "Prefers sweet, indulgent drinks like hot cocoa or vanilla latte",
-                    "Comforted by warm sugar cookies and caramel scents",
-                    "Likes soft, warm fabrics like cashmere and knits",
-                    "Drawn to artisan bakeries with warm butter aromas",
-                    "Enjoys rich desserts like crème brûlée or chocolate chip cookies",
-                    "Wants to feel comforting, sweet, and gentle",
-                    "Attracted to warm golden hour amber glow"
-                };
-                return warmDesc[questionNum - 1];
-            case "floral":
-                String[] floralDesc = {
-                    "Enjoys walking through blooming gardens with dew-kissed flowers",
-                    "Prefers delicate drinks like peach nectar or rose milk",
-                    "Comforted by fresh roses and jasmine scents",
-                    "Likes elegant fabrics like silk and lace",
-                    "Drawn to lush greenhouse gardens with orchids",
-                    "Enjoys delicate desserts like lavender macarons",
-                    "Wants to feel elegant, refined, and lovely",
-                    "Attracted to soft pastel sunrises"
-                };
-                return floralDesc[questionNum - 1];
-            case "woody_earthy":
-                String[] woodyDesc = {
-                    "Enjoys quiet wooden library corners with books",
-                    "Prefers strong, earthy drinks like black coffee or matcha",
-                    "Comforted by fireplace logs and cedarwood scents",
-                    "Likes structured, grounded fabrics like wool and leather",
-                    "Drawn to cozy cabins in redwood forests",
-                    "Enjoys dark chocolate with roasted hazelnuts",
-                    "Wants to feel calm, mysterious, and grounded",
-                    "Attracted to misty pine forests and mountains"
-                };
-                return woodyDesc[questionNum - 1];
-            case "bold_spicy":
-                String[] boldDesc = {
-                    "Enjoys rich spiced tea with cinnamon and clove",
-                    "Prefers warm spiced drinks like mulled cider",
-                    "Comforted by warm spices and incense",
-                    "Likes bold fabrics like velvet and satin",
-                    "Drawn to mysterious speakeasy lounges",
-                    "Enjoys spiced desserts like gingerbread",
-                    "Wants to feel bold, captivating, and unique",
-                    "Attracted to candlelit rooms under starry skies"
-                };
-                return boldDesc[questionNum - 1];
-            default:
-                return "No preference specified";
-        }
-    }
-    
-    private String callGeminiAPI(String prompt) throws Exception {
-        // IMPORTANT: Use v1beta API with gemini-pro model
-        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + apiKey;
-        
-        log.info("🌐 Calling Gemini API at: {}", url.replace(apiKey, "***"));
-        
-        // Build request body
-        Map<String, Object> requestBody = new HashMap<>();
-        List<Map<String, Object>> contents = new ArrayList<>();
-        Map<String, Object> content = new HashMap<>();
-        List<Map<String, String>> parts = new ArrayList<>();
-        Map<String, String> part = new HashMap<>();
-        part.put("text", prompt);
-        parts.add(part);
-        content.put("parts", parts);
-        contents.add(content);
-        requestBody.put("contents", contents);
-        
-        // Add generation config
-        Map<String, Object> generationConfig = new HashMap<>();
-        generationConfig.put("temperature", 0.2);
-        generationConfig.put("topK", 40);
-        generationConfig.put("topP", 0.95);
-        requestBody.put("generationConfig", generationConfig);
-        
-        // Set headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-        
-        try {
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-            
-            if (response.getStatusCode() != HttpStatus.OK) {
-                log.error("❌ API returned status: {}", response.getStatusCode());
-                log.error("Response body: {}", response.getBody());
-                throw new Exception("API returned " + response.getStatusCode());
-            }
-            
-            String responseBody = response.getBody();
-            log.debug("Raw API response: {}", responseBody);
-            
-            // Parse the response
-            var rootNode = objectMapper.readTree(responseBody);
-            String textContent = rootNode.path("candidates")
-                    .get(0)
-                    .path("content")
-                    .path("parts")
-                    .get(0)
-                    .path("text")
-                    .asText();
-            
-            log.info("✅ Extracted text: {}", textContent);
-            return textContent;
-            
-        } catch (Exception e) {
-            log.error("❌ API call failed: {}", e.getMessage());
-            throw new Exception("Gemini API call failed: " + e.getMessage(), e);
-        }
-    }
-    
-    private List<String> parseAIResponse(String aiResponse) {
-        List<String> productIds = new ArrayList<>();
-        
-        try {
-            // Try to parse as JSON
-            var rootNode = objectMapper.readTree(aiResponse);
-            if (rootNode.has("recommendations")) {
-                var recs = rootNode.get("recommendations");
-                if (recs.isArray()) {
-                    for (var rec : recs) {
-                        if (rec.isTextual()) {
-                            productIds.add(rec.asText());
-                        } else if (rec.has("productId")) {
-                            productIds.add(rec.get("productId").asText());
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.warn("Failed to parse JSON, trying text extraction: {}", e.getMessage());
-            
-            // Fallback: Extract product IDs from text
-            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("P\\d+");
-            java.util.regex.Matcher matcher = pattern.matcher(aiResponse);
-            while (matcher.find()) {
-                String id = matcher.group();
-                if (!productIds.contains(id)) {
-                    productIds.add(id);
-                }
-            }
-        }
-        
-        // Limit to 3 recommendations
-        return productIds.stream().limit(3).collect(Collectors.toList());
-    }
-
-    @Autowired
-    private ProductRepository productRepository;
-
-    private List<Product> getAllAvailableProductsFromDb() {
-        try {
-            log.info("🔍 Querying database for approved products...");
-            List<Product> products = productRepository.findByApprovalStatus("approved");
-            log.info("📊 Database returned {} products", products.size());
-            return products;
-        } catch (Exception e) {
-            log.error("❌ Database query failed: {}", e.getMessage());
-            return new ArrayList<>();
-        }
+        return productRepository.findByApprovalStatus("approved").stream()
+                .limit(5)
+                .collect(Collectors.toList());
     }
 }

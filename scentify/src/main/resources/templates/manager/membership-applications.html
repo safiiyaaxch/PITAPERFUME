@@ -3,29 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Membership Applications - Manager Dashboard</title>
+    <title>Membership Applications - Scentify</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #C4A484;
+            --secondary-color: #E6D3C1;
+            --accent-color: #FAF7F4;
+            --text-dark: #3E3A36;
+            --text-muted: #8A7F75;
+            --hover-brown: #9d8970;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --error-color: #f44336;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        :root {
-            --primary-color: #8b7355;
-            --secondary-color: #d4c4b0;
-            --accent-color: #f5f1ed;
-            --text-dark: #5a4a42;
-            --text-muted: #8b7355;
-            --success-color: #4caf50;
-            --warning-color: #ff9800;
-            --error-color: #f44336;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f1ed 0%, #e8ddd4 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fdfcfa;
             min-height: 100vh;
             padding: 2rem 1rem;
         }
@@ -35,67 +37,114 @@
             margin: 0 auto;
         }
 
+        /* ========== HEADER ========== */
         .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(62, 58, 54, 0.06);
+            border: 1px solid #f0e8e0;
+            margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 2px solid var(--secondary-color);
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
-        .header h1 {
-            font-size: 2rem;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-left h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .header-left h1 i {
             color: var(--primary-color);
+            margin-right: 0.5rem;
         }
 
         .header-actions {
             display: flex;
             gap: 1rem;
+            align-items: center;
         }
 
-        .btn {
-            padding: 0.8rem 1.5rem;
-            border: none;
+        .btn-back {
+            background: var(--secondary-color);
+            color: var(--text-dark);
+            padding: 0.6rem 1.5rem;
             border-radius: 8px;
-            font-size: 1rem;
+            border: none;
             font-weight: 600;
+            font-size: 0.9rem;
             cursor: pointer;
+            text-decoration: none;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            text-decoration: none;
         }
 
-        .btn-primary {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #6b5b48;
+        .btn-back:hover {
+            background: #d4c4b0;
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .btn-secondary {
-            background: var(--secondary-color);
-            color: var(--text-dark);
-        }
-
-        .btn-secondary:hover {
-            background: #c0b0a0;
-        }
-
-        .btn-small {
-            padding: 0.5rem 1rem;
+        .logout-btn {
+            background: #2C2C2C;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
             font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
         }
 
+        .logout-btn:hover {
+            background: #1a1a1a;
+        }
+
+        /* ========== ALERTS ========== */
+        .alerts {
+            margin-bottom: 25px;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .alert-success {
+            background: #eef6f1;
+            color: #2f6b47;
+            border: 1px solid #d4e8dc;
+        }
+
+        .alert-error {
+            background: #f8ecec;
+            color: #8b2f2f;
+            border: 1px solid #f0d6d6;
+        }
+
+        /* ========== STATS ========== */
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 1rem;
             margin-bottom: 2rem;
         }
@@ -103,73 +152,65 @@
         .stat-card {
             background: white;
             padding: 1.5rem;
-            border-radius: 12px;
+            border-radius: 14px;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            border-top: 4px solid var(--secondary-color);
+            box-shadow: 0 4px 20px rgba(62, 58, 54, 0.06);
+            border: 1px solid #f0e8e0;
+            transition: all 0.3s ease;
         }
 
-        .stat-card.pending {
-            border-top-color: var(--warning-color);
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(196, 164, 132, 0.12);
         }
 
-        .stat-card.approved {
-            border-top-color: var(--success-color);
+        .stat-card .stat-icon {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 0.5rem;
         }
 
-        .stat-card.rejected {
-            border-top-color: var(--error-color);
-        }
+        .stat-card.pending .stat-icon { color: var(--warning-color); }
+        .stat-card.approved .stat-icon { color: var(--success-color); }
+        .stat-card.rejected .stat-icon { color: var(--error-color); }
 
         .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
             color: var(--primary-color);
-            margin: 0.5rem 0;
         }
 
         .stat-label {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            font-weight: 500;
         }
 
-        .alert {
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
+        /* ========== TABS ========== */
         .tabs {
             display: flex;
             gap: 0.5rem;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #f0e8e0;
+            flex-wrap: wrap;
         }
 
         .tab-btn {
-            padding: 1rem;
+            padding: 0.8rem 1.5rem;
             background: none;
             border: none;
             border-bottom: 3px solid transparent;
             color: var(--text-muted);
             font-weight: 600;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-dark);
         }
 
         .tab-btn.active {
@@ -185,44 +226,54 @@
             display: block;
         }
 
+        /* ========== TABLE ========== */
+        .table-wrapper {
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(62, 58, 54, 0.06);
+            border: 1px solid #f0e8e0;
+        }
+
         .table {
             width: 100%;
             border-collapse: collapse;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .table thead {
-            background: var(--primary-color);
-            color: white;
+            background: var(--accent-color);
         }
 
         .table th {
-            padding: 1rem;
+            padding: 1rem 1.2rem;
             text-align: left;
             font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .table td {
-            padding: 1rem;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .table tbody tr {
-            transition: background 0.3s ease;
+            padding: 1rem 1.2rem;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95rem;
         }
 
         .table tbody tr:hover {
-            background: #f5f1ed;
+            background: var(--accent-color);
         }
 
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ========== STATUS BADGES ========== */
         .status-badge {
             display: inline-block;
-            padding: 0.4rem 0.8rem;
+            padding: 0.3rem 0.8rem;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 600;
         }
 
@@ -241,72 +292,77 @@
             color: #721c24;
         }
 
+        /* ========== ACTION BUTTONS ========== */
         .actions {
             display: flex;
             gap: 0.5rem;
             flex-wrap: wrap;
         }
 
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
         .btn-approve {
             background: var(--success-color);
             color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
         }
 
         .btn-approve:hover {
             background: #45a049;
-            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
         }
 
         .btn-reject {
             background: var(--error-color);
             color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
         }
 
         .btn-reject:hover {
             background: #da190b;
-            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
         }
 
         .btn-view {
             background: var(--primary-color);
             color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
         }
 
         .btn-view:hover {
-            background: #6b5b48;
-            transform: translateY(-2px);
+            background: var(--hover-brown);
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.3);
         }
 
+        /* ========== EMPTY STATE ========== */
         .empty-message {
             text-align: center;
-            padding: 3rem;
+            padding: 3rem 2rem;
             color: var(--text-muted);
-            font-size: 1.1rem;
+            font-size: 1.05rem;
         }
 
+        .empty-message i {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+        }
+
+        /* ========== MODAL ========== */
         .modal {
             display: none;
             position: fixed;
@@ -325,23 +381,29 @@
         }
 
         .modal-content {
-            background-color: white;
+            background: white;
             padding: 2rem;
-            border-radius: 12px;
+            border-radius: 16px;
             max-width: 500px;
             width: 90%;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
         }
 
         .modal-header {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-dark);
             margin-bottom: 1rem;
         }
 
         .modal-body {
             margin-bottom: 1.5rem;
+        }
+
+        .modal-body p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
         }
 
         .form-group {
@@ -353,16 +415,23 @@
             margin-bottom: 0.5rem;
             color: var(--text-dark);
             font-weight: 600;
+            font-size: 0.9rem;
         }
 
         .form-group textarea {
             width: 100%;
             padding: 0.8rem;
             border: 1px solid #e0e0e0;
-            border-radius: 6px;
+            border-radius: 8px;
             font-family: inherit;
             resize: vertical;
-            min-height: 100px;
+            min-height: 80px;
+            font-size: 0.95rem;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
         }
 
         .modal-footer {
@@ -371,28 +440,67 @@
             justify-content: flex-end;
         }
 
-        .btn-close {
+        .btn-cancel {
             background: #e0e0e0;
             color: var(--text-dark);
             border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 6px;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
+            transition: all 0.3s ease;
         }
 
-        .btn-close:hover {
+        .btn-cancel:hover {
             background: #d0d0d0;
         }
 
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin: 1rem 0;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            cursor: pointer;
+            font-weight: 400;
+            color: var(--text-dark);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+        }
+
+        /* ========== RESPONSIVE ========== */
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
+                align-items: stretch;
                 gap: 1rem;
+                padding: 20px;
+            }
+
+            .header-left h1 {
+                font-size: 1.3rem;
+            }
+
+            .header-actions {
+                flex-wrap: wrap;
+            }
+
+            .stats {
+                grid-template-columns: repeat(3, 1fr);
             }
 
             .table {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
             }
 
             .table th, .table td {
@@ -403,9 +511,28 @@
                 flex-direction: column;
             }
 
-            .btn-approve, .btn-reject, .btn-view {
+            .btn {
                 width: 100%;
-                text-align: center;
+                justify-content: center;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-number {
+                font-size: 1.8rem;
             }
         }
     </style>
@@ -414,40 +541,43 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div>
+            <div class="header-left">
                 <h1><i class="fas fa-crown"></i> Membership Applications</h1>
             </div>
             <div class="header-actions">
-                <a href="/manager/dashboard" class="btn btn-secondary">
+                <a href="/manager/dashboard" class="btn-back">
                     <i class="fas fa-arrow-left"></i> Back to Dashboard
                 </a>
+                <a href="/logout" class="logout-btn">Log Out</a>
             </div>
         </div>
 
         <!-- Alerts -->
-        <div th:if="${success}" class="alert alert-success">
-            <i class="fas fa-check-circle"></i>
-            <span th:text="${success}"></span>
-        </div>
-        <div th:if="${error}" class="alert alert-error">
-            <i class="fas fa-exclamation-circle"></i>
-            <span th:text="${error}"></span>
+        <div class="alerts">
+            <div th:if="${success}" class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${success}"></span>
+            </div>
+            <div th:if="${error}" class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${error}"></span>
+            </div>
         </div>
 
         <!-- Statistics -->
         <div class="stats">
             <div class="stat-card pending">
-                <i class="fas fa-hourglass-half" style="font-size: 2rem; color: var(--warning-color);"></i>
+                <span class="stat-icon"><i class="fas fa-hourglass-half"></i></span>
                 <div class="stat-number" th:text="${pendingCount}">0</div>
-                <div class="stat-label">Pending</div>
+                <div class="stat-label">Pending Applications</div>
             </div>
             <div class="stat-card approved">
-                <i class="fas fa-check-circle" style="font-size: 2rem; color: var(--success-color);"></i>
+                <span class="stat-icon"><i class="fas fa-check-circle"></i></span>
                 <div class="stat-number" th:text="${approvedCount}">0</div>
                 <div class="stat-label">Approved</div>
             </div>
             <div class="stat-card rejected">
-                <i class="fas fa-times-circle" style="font-size: 2rem; color: var(--error-color);"></i>
+                <span class="stat-icon"><i class="fas fa-times-circle"></i></span>
                 <div class="stat-number" th:text="${rejectedCount}">0</div>
                 <div class="stat-label">Rejected</div>
             </div>
@@ -456,7 +586,7 @@
         <!-- Tabs -->
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('pending')">
-                <i class="fas fa-hourglass-half"></i> Pending Applications
+                <i class="fas fa-hourglass-half"></i> Pending
             </button>
             <button class="tab-btn" onclick="switchTab('approved')">
                 <i class="fas fa-check-circle"></i> Approved
@@ -466,107 +596,105 @@
             </button>
         </div>
 
-        <!-- Pending Applications Tab -->
+        <!-- Pending Applications -->
         <div id="pending" class="tab-content active">
             <div th:if="${#lists.isEmpty(pendingApplications)}" class="empty-message">
-                <i class="fas fa-inbox"></i><br>
+                <i class="fas fa-inbox"></i>
                 No pending membership applications at the moment.
             </div>
-            <table th:if="${!#lists.isEmpty(pendingApplications)}" class="table">
-                <thead>
-                    <tr>
-                        <th>Customer Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Applied Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="app : ${pendingApplications}">
-                        <td th:text="${app.customer.fullname}">-</td>
-                        <td th:text="${app.customer.user.email}">-</td>
-                        <td th:text="${app.customer.phone}">-</td>
-                        <td th:text="${#temporals.format(app.appliedDate, 'dd/MM/yyyy HH:mm')}">-</td>
-                        <td>
-                            <div class="actions">
-                                <button class="btn-approve" th:onclick="'openApproveModal(' + ${app.applicationId} + ')'">
-                                    <i class="fas fa-check"></i> Approve
-                                </button>
-                                <button class="btn-reject" th:onclick="'openRejectModal(' + ${app.applicationId} + ')'">
-                                    <i class="fas fa-times"></i> Reject
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div th:unless="${#lists.isEmpty(pendingApplications)}" class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Applied Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="app : ${pendingApplications}">
+                            <td th:text="${app.customer.fullname}">-</td>
+                            <td th:text="${app.customer.user.email}">-</td>
+                            <td th:text="${app.customer.phone}">-</td>
+                            <td th:text="${#temporals.format(app.appliedDate, 'dd/MM/yyyy HH:mm')}">-</td>
+                            <td>
+                                <div class="actions">
+                                    <button class="btn btn-approve" th:onclick="'openApproveModal(' + ${app.applicationId} + ')'">
+                                        <i class="fas fa-check"></i> Approve
+                                    </button>
+                                    <button class="btn btn-reject" th:onclick="'openRejectModal(' + ${app.applicationId} + ')'">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <!-- Approved Applications Tab -->
+        <!-- Approved Applications -->
         <div id="approved" class="tab-content">
             <div th:if="${#lists.isEmpty(approvedApplications)}" class="empty-message">
-                <i class="fas fa-check-circle"></i><br>
+                <i class="fas fa-check-circle"></i>
                 No approved applications yet.
             </div>
-            <table th:if="${!#lists.isEmpty(approvedApplications)}" class="table">
-                <thead>
-                    <tr>
-                        <th>Customer Name</th>
-                        <th>Email</th>
-                        <th>Applied Date</th>
-                        <th>Approved Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="app : ${approvedApplications}">
-                        <td th:text="${app.customer.fullname}">-</td>
-                        <td th:text="${app.customer.user.email}">-</td>
-                        <td th:text="${#temporals.format(app.appliedDate, 'dd/MM/yyyy')}">-</td>
-                        <td th:text="${#temporals.format(app.approvedDate, 'dd/MM/yyyy')}">-</td>
-                        <td>
-                            <a th:href="@{/manager/membership-applications/{id}/details(id=${app.applicationId})}" class="btn-view">
-                                <i class="fas fa-eye"></i> View
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div th:unless="${#lists.isEmpty(approvedApplications)}" class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Email</th>
+                            <th>Applied Date</th>
+                            <th>Approved Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="app : ${approvedApplications}">
+                            <td th:text="${app.customer.fullname}">-</td>
+                            <td th:text="${app.customer.user.email}">-</td>
+                            <td th:text="${#temporals.format(app.appliedDate, 'dd/MM/yyyy')}">-</td>
+                            <td th:text="${#temporals.format(app.approvedDate, 'dd/MM/yyyy')}">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <!-- Rejected Applications Tab -->
+        <!-- Rejected Applications -->
         <div id="rejected" class="tab-content">
             <div th:if="${#lists.isEmpty(rejectedApplications)}" class="empty-message">
-                <i class="fas fa-times-circle"></i><br>
+                <i class="fas fa-times-circle"></i>
                 No rejected applications.
             </div>
-            <table th:if="${!#lists.isEmpty(rejectedApplications)}" class="table">
-                <thead>
-                    <tr>
-                        <th>Customer Name</th>
-                        <th>Email</th>
-                        <th>Applied Date</th>
-                        <th>Rejected Date</th>
-                        <th>Reason</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="app : ${rejectedApplications}">
-                        <td th:text="${app.customer.fullname}">-</td>
-                        <td th:text="${app.customer.user.email}">-</td>
-                        <td th:text="${#temporals.format(app.appliedDate, 'dd/MM/yyyy')}">-</td>
-                        <td th:text="${#temporals.format(app.approvedDate, 'dd/MM/yyyy')}">-</td>
-                        <td th:text="${app.rejectionReason}">-</td>
-                        <td>
-                            <a th:href="@{/manager/membership-applications/{id}/details(id=${app.applicationId})}" class="btn-view">
-                                <i class="fas fa-eye"></i> View
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div th:unless="${#lists.isEmpty(rejectedApplications)}" class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Email</th>
+                            <th>Applied Date</th>
+                            <th>Rejected Date</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="app : ${rejectedApplications}">
+                            <td th:text="${app.customer.fullname}">-</td>
+                            <td th:text="${app.customer.user.email}">-</td>
+                            <td th:text="${#temporals.format(app.appliedDate, 'dd/MM/yyyy')}">-</td>
+                            <td th:text="${#temporals.format(app.approvedDate, 'dd/MM/yyyy')}">-</td>
+                            <td th:text="${app.rejectionReason}">-</td>
+                            <td>
+                                <a th:href="@{/manager/membership-applications/{id}/details(id=${app.applicationId})}" class="btn btn-view">
+                                    <i class="fas fa-eye"></i> View Details
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -583,8 +711,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-close" onclick="closeApproveModal()">Cancel</button>
-                    <button type="submit" class="btn-approve">Confirm Approval</button>
+                    <button type="button" class="btn-cancel" onclick="closeApproveModal()">Cancel</button>
+                    <button type="submit" class="btn btn-approve">Confirm Approval</button>
                 </div>
             </form>
         </div>
@@ -597,37 +725,39 @@
             <form method="post" id="rejectForm">
                 <div class="modal-body">
                     <p><strong>Select rejection reason(s):</strong></p>
-                    <div style="display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1rem;">
-                        <label style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer;">
-                            <input type="checkbox" name="rejectionReasons" value="Duplicate Account" style="width: 18px; height: 18px; cursor: pointer;">
-                            <span>Duplicate/Multiple Accounts Detected</span>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" name="rejectionReasons" value="Duplicate Account">
+                            Duplicate/Multiple Accounts Detected
                         </label>
-                        <label style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer;">
-                            <input type="checkbox" name="rejectionReasons" value="Suspicious Activity" style="width: 18px; height: 18px; cursor: pointer;">
-                            <span>Suspicious Activity Flagged</span>
+                        <label>
+                            <input type="checkbox" name="rejectionReasons" value="Suspicious Activity">
+                            Suspicious Activity Flagged
                         </label>
-                        <label style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer;">
-                            <input type="checkbox" name="rejectionReasons" value="Policy Violation" style="width: 18px; height: 18px; cursor: pointer;">
-                            <span>Policy Violation History</span>
+                        <label>
+                            <input type="checkbox" name="rejectionReasons" value="Policy Violation">
+                            Policy Violation History
                         </label>
-                        <label style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer;">
-                            <input type="checkbox" name="rejectionReasons" value="Incomplete Profile" style="width: 18px; height: 18px; cursor: pointer;">
-                            <span>Incomplete Profile Information</span>
+                        <label>
+                            <input type="checkbox" name="rejectionReasons" value="Incomplete Profile">
+                            Incomplete Profile Information
                         </label>
-                        <label style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer;">
-                            <input type="checkbox" name="rejectionReasons" value="Other" style="width: 18px; height: 18px; cursor: pointer;" onchange="toggleOtherReason()">
-                            <span>Other (Please specify)</span>
+                        <label>
+                            <input type="checkbox" name="rejectionReasons" value="Other" onchange="toggleOtherReason()">
+                            Other (Please specify)
                         </label>
                     </div>
                     <div id="otherReasonGroup" style="display: none; margin-top: 1rem;">
-                        <label for="otherReason">Other Reason:</label>
-                        <textarea id="otherReason" name="otherReason" placeholder="Specify the rejection reason..." style="width: 100%; padding: 0.8rem; border: 1px solid #e0e0e0; border-radius: 6px; font-family: inherit; resize: vertical; min-height: 80px;"></textarea>
+                        <div class="form-group">
+                            <label for="otherReason">Other Reason:</label>
+                            <textarea id="otherReason" name="otherReason" placeholder="Specify the rejection reason..."></textarea>
+                        </div>
                     </div>
                     <input type="hidden" id="rejectionReasonInput" name="rejectionReason">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-close" onclick="closeRejectModal()">Cancel</button>
-                    <button type="submit" class="btn-reject">Confirm Rejection</button>
+                    <button type="button" class="btn-cancel" onclick="closeRejectModal()">Cancel</button>
+                    <button type="submit" class="btn btn-reject">Confirm Rejection</button>
                 </div>
             </form>
         </div>
@@ -637,32 +767,25 @@
         let currentApplicationId = null;
 
         function switchTab(tabName) {
-            // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-
-            // Show selected tab
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
         }
 
         function openApproveModal(applicationId) {
             currentApplicationId = applicationId;
-            const form = document.getElementById('approveForm');
-            form.action = '/manager/membership-applications/' + applicationId + '/approve';
+            document.getElementById('approveForm').action = '/manager/membership-applications/' + applicationId + '/approve';
             document.getElementById('approveModal').classList.add('show');
         }
 
         function closeApproveModal() {
             document.getElementById('approveModal').classList.remove('show');
-            currentApplicationId = null;
         }
 
         function openRejectModal(applicationId) {
             currentApplicationId = applicationId;
-            const form = document.getElementById('rejectForm');
-            form.action = '/manager/membership-applications/' + applicationId + '/reject';
-            // Reset checkboxes
+            document.getElementById('rejectForm').action = '/manager/membership-applications/' + applicationId + '/reject';
             document.querySelectorAll('input[name="rejectionReasons"]').forEach(cb => cb.checked = false);
             document.getElementById('otherReason').value = '';
             document.getElementById('otherReasonGroup').style.display = 'none';
@@ -671,7 +794,6 @@
 
         function closeRejectModal() {
             document.getElementById('rejectModal').classList.remove('show');
-            currentApplicationId = null;
         }
 
         function toggleOtherReason() {
@@ -685,7 +807,6 @@
             }
         }
 
-        // Handle reject form submission
         document.getElementById('rejectForm').addEventListener('submit', function(e) {
             const checkboxes = document.querySelectorAll('input[name="rejectionReasons"]:checked');
             const reasonInput = document.getElementById('rejectionReasonInput');
@@ -699,7 +820,7 @@
             const reasons = Array.from(checkboxes).map(cb => cb.value);
             const otherCheckbox = document.querySelector('input[name="rejectionReasons"][value="Other"]');
             
-            if (otherCheckbox.checked) {
+            if (otherCheckbox && otherCheckbox.checked) {
                 const otherText = document.getElementById('otherReason').value.trim();
                 if (!otherText) {
                     e.preventDefault();
@@ -712,15 +833,9 @@
             reasonInput.value = reasons.join('; ');
         });
 
-        // Close modal when clicking outside
         window.onclick = function(event) {
-            const approveModal = document.getElementById('approveModal');
-            const rejectModal = document.getElementById('rejectModal');
-            if (event.target == approveModal) {
-                approveModal.classList.remove('show');
-            }
-            if (event.target == rejectModal) {
-                rejectModal.classList.remove('show');
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
             }
         }
     </script>

@@ -115,7 +115,7 @@ public class SupplierController {
         model.addAttribute("pendingProducts", pendingProducts);
         model.addAttribute("approvedProducts", approvedProducts);
         model.addAttribute("rejectedProducts", rejectedProducts);
-        model.addAttribute("user", loggedInUser);  // Add user to model for template
+        model.addAttribute("user", loggedInUser);
         return "supplier/manage-product/dashboard";
     }
     
@@ -185,7 +185,6 @@ public class SupplierController {
             // Generate product ID if not provided (P01, P02, P03... up to P999)
             if (product.getProductId() == null || product.getProductId().trim().isEmpty()) {
                 long count = productRepository.count();
-                // Format: P + sequential number (P1, P2, P3, ...)
                 product.setProductId("P" + (count + 1));
             }
             
@@ -204,10 +203,12 @@ public class SupplierController {
             
             productRepository.save(product);
             
-            // Trigger auto-enrichment after product is approved by manager
             System.out.println("✏️ Product created (pending approval): " + product.getProductId());
+            System.out.println("   Top Notes: " + product.getTopNotes());
+            System.out.println("   Middle Notes: " + product.getMiddleNotes());
+            System.out.println("   Base Notes: " + product.getBaseNotes());
             
-            redirect.addFlashAttribute("success", "Product added successfully! Awaiting manager approval for AI enrichment.");
+            redirect.addFlashAttribute("success", "Product added successfully! Awaiting manager approval.");
             System.out.println("Product added: " + product.getProductId() + " by user: " + user.getUserId());
         } catch (Exception e) {
             System.out.println("Error adding product: " + e.getMessage());
@@ -233,7 +234,16 @@ public class SupplierController {
             return "redirect:/supplier/dashboard";
         }
         
-        model.addAttribute("product", productOpt.get());
+        Product product = productOpt.get();
+        
+        // Log existing notes for debugging
+        System.out.println("📝 Editing Product: " + id);
+        System.out.println("   Existing Top Notes: " + product.getTopNotes());
+        System.out.println("   Existing Middle Notes: " + product.getMiddleNotes());
+        System.out.println("   Existing Base Notes: " + product.getBaseNotes());
+        System.out.println("   Status: " + product.getApprovalStatus());
+        
+        model.addAttribute("product", product);
         return "supplier/manage-product/edit-product";
     }
     
@@ -256,22 +266,104 @@ public class SupplierController {
         
         try {
             Product product = productOpt.get();
+            
+            // Update basic fields
             product.setProductName(productDetails.getProductName());
             product.setDescription(productDetails.getDescription());
             product.setCategory(productDetails.getCategory());
             product.setProdimage(productDetails.getProdimage());
             product.setPrice(productDetails.getPrice() != null ? productDetails.getPrice() : product.getPrice());
             product.setStock(productDetails.getStock() != null ? productDetails.getStock() : product.getStock());
-            product.setApprovalStatus(productDetails.getApprovalStatus());
+            
+            // ===== IMPORTANT: Update fragrance notes =====
+            product.setTopNotes(productDetails.getTopNotes());
+            product.setMiddleNotes(productDetails.getMiddleNotes());
+            product.setBaseNotes(productDetails.getBaseNotes());
+            
+            // Update timestamp
+            product.setUpdatedAt(java.time.LocalDateTime.now());
+            
+            // If product was rejected, set back to pending for re-review
+            // Check if approvalStatus exists and is "rejected" (case insensitive)
+            if (product.getApprovalStatus() != null && "rejected".equalsIgnoreCase(product.getApprovalStatus())) {
+                product.setApprovalStatus("pending");
+                // Note: rejectionReason field may not exist, so we don't try to clear it
+            }
             
             productRepository.save(product);
+            
+            // Log the update
+            System.out.println("✅ Product updated: " + id + " by user: " + user.getUserId());
+            System.out.println("   Updated Top Notes: " + product.getTopNotes());
+            System.out.println("   Updated Middle Notes: " + product.getMiddleNotes());
+            System.out.println("   Updated Base Notes: " + product.getBaseNotes());
+            System.out.println("   Status: " + product.getApprovalStatus());
+            
             redirect.addFlashAttribute("success", "Product updated successfully!");
-            System.out.println("Product updated: " + id + " by user: " + user.getUserId());
+            
         } catch (Exception e) {
-            System.out.println("Error updating product: " + e.getMessage());
-            redirect.addFlashAttribute("error", "Failed to update product");
+            System.out.println("❌ Error updating product: " + e.getMessage());
+            e.printStackTrace();
+            redirect.addFlashAttribute("error", "Failed to update product: " + e.getMessage());
         }
-        return "redirect:/supplier/dashboard";
+        return "redirect:/supplier/products";
+    }
+    
+    // ========== RESUBMIT PRODUCT (for rejected products) ==========
+    @PostMapping("/products/resubmit/{id}")
+    public String resubmitProduct(@PathVariable String id,
+                                 @ModelAttribute Product productDetails,
+                                 RedirectAttributes redirect,
+                                 HttpSession session) {
+        if (!isSupplierLoggedIn(session)) {
+            return "redirect:/login";
+        }
+        
+        User user = getLoggedInUser(session);
+        Optional<Product> productOpt = productRepository.findById(id);
+        
+        if (productOpt.isEmpty() || !productOpt.get().getUserId().equals(user.getUserId())) {
+            redirect.addFlashAttribute("error", "Unauthorized");
+            return "redirect:/supplier/dashboard";
+        }
+        
+        try {
+            Product product = productOpt.get();
+            
+            // Update all fields with the new data
+            product.setProductName(productDetails.getProductName());
+            product.setDescription(productDetails.getDescription());
+            product.setCategory(productDetails.getCategory());
+            product.setProdimage(productDetails.getProdimage());
+            product.setPrice(productDetails.getPrice() != null ? productDetails.getPrice() : product.getPrice());
+            product.setStock(productDetails.getStock() != null ? productDetails.getStock() : product.getStock());
+            
+            // Update fragrance notes
+            product.setTopNotes(productDetails.getTopNotes());
+            product.setMiddleNotes(productDetails.getMiddleNotes());
+            product.setBaseNotes(productDetails.getBaseNotes());
+            
+            // Reset to pending for re-approval
+            product.setApprovalStatus("pending");
+            // Note: rejectionReason field may not exist, so we don't try to clear it
+            product.setUpdatedAt(java.time.LocalDateTime.now());
+            
+            productRepository.save(product);
+            
+            System.out.println("🔄 Product resubmitted: " + id + " by user: " + user.getUserId());
+            System.out.println("   Top Notes: " + product.getTopNotes());
+            System.out.println("   Middle Notes: " + product.getMiddleNotes());
+            System.out.println("   Base Notes: " + product.getBaseNotes());
+            System.out.println("   New Status: " + product.getApprovalStatus());
+            
+            redirect.addFlashAttribute("success", "Product resubmitted for approval successfully!");
+            
+        } catch (Exception e) {
+            System.out.println("❌ Error resubmitting product: " + e.getMessage());
+            e.printStackTrace();
+            redirect.addFlashAttribute("error", "Failed to resubmit product: " + e.getMessage());
+        }
+        return "redirect:/supplier/products";
     }
     
     // ========== DELETE PRODUCT ==========

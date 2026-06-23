@@ -69,20 +69,52 @@ public class ReviewController {
         return customer.getIsMember() != null && customer.getIsMember();
     }
 
-    // Check if customer has purchased this product
+    /**
+     * Check if customer has purchased this product (supports multiple items per order)
+     */
     private boolean hasCustomerPurchasedProduct(Customer customer, String productId) {
         List<Order> orders = orderRepository.findByCustomer_CustomerId((long) customer.getCustomerId());
+        
         return orders.stream()
-            .anyMatch(order -> productId.equals(order.getProduct().getProductId()) && 
-                             ("CONFIRMED".equals(order.getOrderStatus()) || "DELIVERED".equals(order.getOrderStatus()) || "SHIPPED".equals(order.getOrderStatus())));
+            .filter(order -> "PAID".equals(order.getPaymentStatus()) && 
+                            ("CONFIRMED".equals(order.getOrderStatus()) || 
+                             "DELIVERED".equals(order.getOrderStatus())))
+            .flatMap(order -> order.getOrderItems().stream())
+            .anyMatch(orderItem -> productId.equals(orderItem.getProduct().getProductId()));
     }
 
-    // Check if customer can write review
+    /**
+     * Check if customer can write review
+     */
     private boolean canCustomerWriteReview(Customer customer, String productId) {
-        return hasCustomerMembership(customer) && hasCustomerPurchasedProduct(customer, productId);
+        if (!hasCustomerMembership(customer)) {
+            return false;
+        }
+        if (!hasCustomerPurchasedProduct(customer, productId)) {
+            return false;
+        }
+        Optional<Review> existingReview = reviewRepository.findByCustomerAndProduct_ProductId(customer, productId);
+        return existingReview.isEmpty();
     }
 
-    // Submit a new review
+    /**
+     * Get reason why customer can't write review
+     */
+    private String getReviewBlockReason(Customer customer, String productId) {
+        if (!hasCustomerMembership(customer)) {
+            return "You need to be a member to write reviews. Please apply for membership.";
+        }
+        if (!hasCustomerPurchasedProduct(customer, productId)) {
+            return "You can only review products you've purchased and received.";
+        }
+        Optional<Review> existingReview = reviewRepository.findByCustomerAndProduct_ProductId(customer, productId);
+        if (existingReview.isPresent()) {
+            return "You have already reviewed this product.";
+        }
+        return null;
+    }
+
+    // ========== SUBMIT REVIEW ==========
     @PostMapping("/submit")
     public String submitReview(
             @RequestParam String productId,
@@ -97,45 +129,49 @@ public class ReviewController {
         
         User user = getLoggedInUser(session);
         
-        Optional<Product> product = productRepository.findById(productId);
-        Optional<Customer> customer = customerRepository.findByUser(user);
+        Optional<Product> productOpt = productRepository.findById(productId);
+        Optional<Customer> customerOpt = customerRepository.findByUser(user);
         
-        if (product.isEmpty() || customer.isEmpty()) {
+        if (productOpt.isEmpty() || customerOpt.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Product or customer not found");
             return "redirect:/customer/product/" + productId;
         }
         
-        // Check membership
-        if (!hasCustomerMembership(customer.get())) {
+        Product product = productOpt.get();
+        Customer customer = customerOpt.get();
+        
+        if (!hasCustomerMembership(customer)) {
             redirectAttributes.addFlashAttribute("error", "Only members can write reviews. Please upgrade your membership.");
             return "redirect:/customer/product/" + productId;
         }
         
-        // Check if customer purchased this product
-        if (!hasCustomerPurchasedProduct(customer.get(), productId)) {
-            redirectAttributes.addFlashAttribute("error", "You can only review products you've purchased.");
+        if (!hasCustomerPurchasedProduct(customer, productId)) {
+            redirectAttributes.addFlashAttribute("error", "You can only review products you've purchased and received.");
             return "redirect:/customer/product/" + productId;
         }
         
-        // Validate review text
+        Optional<Review> existingReview = reviewRepository.findByCustomerAndProduct_ProductId(customer, productId);
+        if (existingReview.isPresent()) {
+            redirectAttributes.addFlashAttribute("error", "You have already reviewed this product.");
+            return "redirect:/customer/product/" + productId;
+        }
+        
         if (reviewText == null || reviewText.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Review cannot be empty");
             return "redirect:/customer/product/" + productId;
         }
         
-        // Validate rating
         if (rating == null || rating < 1 || rating > 5) {
             redirectAttributes.addFlashAttribute("error", "Please select a valid rating (1-5 stars)");
             return "redirect:/customer/product/" + productId;
         }
         
-        // Create new review
         Review review = new Review();
-        review.setProduct(product.get());
-        review.setCustomer(customer.get());
+        review.setProduct(product);
+        review.setCustomer(customer);
         review.setRating(rating);
         review.setReviewText(reviewText);
-        review.setReviewStatus("APPROVED"); // Auto-approve reviews
+        review.setReviewStatus("APPROVED");
         review.setHelpfulCount(0);
         review.setCreatedAt(LocalDateTime.now());
         review.setUpdatedAt(LocalDateTime.now());
@@ -146,7 +182,7 @@ public class ReviewController {
         return "redirect:/customer/product/" + productId;
     }
 
-    // Supplier reply to a review
+    // ========== SUPPLIER REPLY TO REVIEW ==========
     @PostMapping("/reply")
     public String replyToReview(
             @RequestParam Long reviewId,
@@ -160,38 +196,41 @@ public class ReviewController {
         
         User user = getLoggedInUser(session);
         
-        Optional<Supplier> supplier = supplierRepository.findByUser_UserId(user.getUserId());
-        Optional<Review> review = reviewRepository.findById(reviewId);
+        Optional<Supplier> supplierOpt = supplierRepository.findByUser_UserId(user.getUserId());
+        Optional<Review> reviewOpt = reviewRepository.findById(reviewId);
         
-        if (supplier.isEmpty() || review.isEmpty()) {
+        if (supplierOpt.isEmpty() || reviewOpt.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Supplier or review not found");
             return "redirect:/review/supplier/my-reviews";
         }
         
-        // Check if supplier owns the product being reviewed
-        if (!review.get().getProduct().getUserId().equals(user.getUserId())) {
+        Supplier supplier = supplierOpt.get();
+        Review review = reviewOpt.get();
+        
+        if (!review.getProduct().getUserId().equals(user.getUserId())) {
             redirectAttributes.addFlashAttribute("error", "You can only reply to reviews of your own products");
             return "redirect:/review/supplier/my-reviews";
         }
         
-        // Validate reply text
         if (replyText == null || replyText.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Reply cannot be empty");
             return "redirect:/review/supplier/my-reviews";
         }
         
-        // Create new reply
-        ReviewReply reply = new ReviewReply();
-        reply.setReview(review.get());
-        reply.setSupplier(supplier.get());
-        reply.setReplyText(replyText);
-        reply.setCreatedAt(LocalDateTime.now());
-        reply.setUpdatedAt(LocalDateTime.now());
-        
-        // Delete existing reply if any
         Optional<ReviewReply> existingReply = reviewReplyRepository.findByReview_ReviewId(reviewId);
+        ReviewReply reply;
+        
         if (existingReply.isPresent()) {
-            reviewReplyRepository.delete(existingReply.get());
+            reply = existingReply.get();
+            reply.setReplyText(replyText);
+            reply.setUpdatedAt(LocalDateTime.now());
+        } else {
+            reply = new ReviewReply();
+            reply.setReview(review);
+            reply.setSupplier(supplier);
+            reply.setReplyText(replyText);
+            reply.setCreatedAt(LocalDateTime.now());
+            reply.setUpdatedAt(LocalDateTime.now());
         }
         
         reviewReplyRepository.save(reply);
@@ -200,7 +239,49 @@ public class ReviewController {
         return "redirect:/review/supplier/my-reviews";
     }
 
-    // Supplier dashboard - view reviews for their products
+    // ========== VIEW REVIEW FORM ==========
+    @GetMapping("/write/{productId}")
+    public String showReviewForm(@PathVariable String productId, 
+                                 HttpSession session, 
+                                 Model model,
+                                 RedirectAttributes redirect) {
+        
+        if (!isCustomerLoggedIn(session)) {
+            return "redirect:/login";
+        }
+        
+        User user = getLoggedInUser(session);
+        
+        Optional<Customer> customerOpt = customerRepository.findByUser(user);
+        Optional<Product> productOpt = productRepository.findById(productId);
+        
+        if (customerOpt.isEmpty() || productOpt.isEmpty()) {
+            redirect.addFlashAttribute("error", "Customer or product not found");
+            return "redirect:/customer/dashboard";
+        }
+        
+        Customer customer = customerOpt.get();
+        Product product = productOpt.get();
+        
+        if (!"approved".equalsIgnoreCase(product.getApprovalStatus())) {
+            redirect.addFlashAttribute("error", "This product is not available for review");
+            return "redirect:/customer/dashboard";
+        }
+        
+        String blockReason = getReviewBlockReason(customer, productId);
+        if (blockReason != null) {
+            redirect.addFlashAttribute("error", blockReason);
+            return "redirect:/customer/product/" + productId;
+        }
+        
+        model.addAttribute("product", product);
+        model.addAttribute("customer", customer);
+        model.addAttribute("user", user);
+        
+        return "customer/write-review";
+    }
+
+    // ========== ✅ FIXED: SUPPLIER DASHBOARD ==========
     @GetMapping("/supplier/my-reviews")
     public String getSupplierReviews(HttpSession session, Model model) {
         if (!isSupplierLoggedIn(session)) {
@@ -209,17 +290,83 @@ public class ReviewController {
         
         User user = getLoggedInUser(session);
         
-        Optional<Supplier> supplier = supplierRepository.findByUser_UserId(user.getUserId());
-        if (supplier.isEmpty()) {
+        Optional<Supplier> supplierOpt = supplierRepository.findByUser_UserId(user.getUserId());
+        if (supplierOpt.isEmpty()) {
             return "redirect:/login";
         }
         
-        // Get all reviews for products owned by this supplier (userId matches)
-        List<Review> allReviews = reviewRepository.findBySupplierUserId(user.getUserId());
+        Supplier supplier = supplierOpt.get();
+        
+        // ✅ FIXED: Convert Integer to Long
+        Long userId = user.getUserId().longValue();
+        List<Review> allReviews = reviewRepository.findBySupplierUserId(userId);
+        
+        // ✅ FIXED: Get all replies by this supplier (using reviewReplyRepository)
+        List<ReviewReply> replies = reviewReplyRepository.findBySupplier(supplier);
         
         model.addAttribute("reviews", allReviews);
-        model.addAttribute("supplier", supplier.get());
+        model.addAttribute("replies", replies);
+        model.addAttribute("supplier", supplier);
         
         return "supplier/reviews-dashboard";
+    }
+
+    // ========== HELPFUL COUNTER ==========
+    @PostMapping("/helpful/{reviewId}")
+    @ResponseBody
+    public String markReviewHelpful(@PathVariable Long reviewId, HttpSession session) {
+        if (!isCustomerLoggedIn(session)) {
+            return "error: Please login to mark reviews as helpful";
+        }
+        
+        Optional<Review> reviewOpt = reviewRepository.findById(reviewId);
+        if (reviewOpt.isEmpty()) {
+            return "error: Review not found";
+        }
+        
+        Review review = reviewOpt.get();
+        review.setHelpfulCount(review.getHelpfulCount() + 1);
+        reviewRepository.save(review);
+        
+        return "success: " + review.getHelpfulCount();
+    }
+
+    // ========== API: CHECK IF CUSTOMER CAN REVIEW ==========
+    @GetMapping("/can-review/{productId}")
+    @ResponseBody
+    public boolean canReviewProduct(@PathVariable String productId, HttpSession session) {
+        if (!isCustomerLoggedIn(session)) {
+            return false;
+        }
+        
+        User user = getLoggedInUser(session);
+        Optional<Customer> customerOpt = customerRepository.findByUser(user);
+        
+        if (customerOpt.isEmpty()) {
+            return false;
+        }
+        
+        Customer customer = customerOpt.get();
+        return canCustomerWriteReview(customer, productId);
+    }
+
+    // ========== API: GET REVIEW BLOCK REASON ==========
+    @GetMapping("/review-block-reason/{productId}")
+    @ResponseBody
+    public String getReviewBlockReason(@PathVariable String productId, HttpSession session) {
+        if (!isCustomerLoggedIn(session)) {
+            return "Please login to write a review";
+        }
+        
+        User user = getLoggedInUser(session);
+        Optional<Customer> customerOpt = customerRepository.findByUser(user);
+        
+        if (customerOpt.isEmpty()) {
+            return "Customer not found";
+        }
+        
+        Customer customer = customerOpt.get();
+        String reason = getReviewBlockReason(customer, productId);
+        return reason != null ? reason : "You can write a review!";
     }
 }

@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Scentify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #C4A484;
+            --secondary-color: #E6D3C1;
+            --accent-color: #FAF7F4;
+            --text-dark: #3E3A36;
+            --text-muted: #8A7F75;
+            --hover-brown: #9d8970;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #FFFFFF;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            color: var(--text-dark);
+        }
+
+        /* ========== NAVIGATION ========== */
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar .container-fluid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .navbar-brand {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-dark) !important;
+        }
+
+        .nav-link {
+            color: var(--text-dark) !important;
+            font-weight: 500;
+            margin: 0 1.5rem;
+            font-size: 0.95rem;
+            text-decoration: none;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        .nav-link.active {
+            color: var(--primary-color) !important;
+        }
+
+        .logout-btn {
+            background: #2C2C2C;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 4px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .logout-btn:hover {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .membership-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #c2a98d, #b49374);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* ========== HERO SECTION ========== */
+        .about-hero {
+            background: linear-gradient(135deg, #F5F0EB 0%, #EDE6DF 100%);
+            padding: 5rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid #D4C4B8;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-hero::before {
+            content: '🌸';
+            position: absolute;
+            top: 10%;
+            left: 5%;
+            font-size: 4rem;
+            opacity: 0.15;
+            animation: floatIcon 8s ease-in-out infinite;
+        }
+
+        .about-hero::after {
+            content: '✨';
+            position: absolute;
+            bottom: 15%;
+            right: 8%;
+            font-size: 3.5rem;
+            opacity: 0.12;
+            animation: floatIcon 10s ease-in-out infinite reverse;
+        }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        .about-hero .hero-badge {
+            display: inline-block;
+            background: rgba(196, 164, 132, 0.15);
+            color: #8A7F75;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(196, 164, 132, 0.2);
+        }
+
+        .about-hero h1 {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .about-hero h1 span {
+            color: var(--primary-color);
+        }
+
+        .about-hero .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* ========== OUR STORY ========== */
+        .story-section {
+            padding: 4rem 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .story-image {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .story-image img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+
+        .story-content .label {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: var(--primary-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .story-content h2 {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .story-content p {
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .story-content .highlight {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* ========== VALUES ========== */
+        .values-section {
+            padding: 4rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .values-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .values-header .label {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: var(--primary-color);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .values-header h2 {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-top: 0.5rem;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .value-card {
+            text-align: center;
+            padding: 2.5rem 2rem;
+            background: var(--accent-color);
+            border-radius: 16px;
+            border: 1px solid #ebe5df;
+            transition: all 0.3s ease;
+        }
+
+        .value-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 30px rgba(196, 164, 132, 0.15);
+            border-color: var(--primary-color);
+        }
+
+        .value-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(196, 164, 132, 0.12);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.8rem;
+        }
+
+        .value-card h4 {
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.75rem;
+        }
+
+        .value-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* ========== TEAM / STATS ========== */
+        .stats-section {
+            padding: 4rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 0.25rem;
+        }
+
+        /* ========== TEAM SECTION ========== */
+        .team-section {
+            padding: 4rem 0;
+        }
+
+        .team-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .team-header .label {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: var(--primary-color);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .team-header h2 {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-top: 0.5rem;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .team-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .team-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+        }
+
+        .team-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .team-card h4 {
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .team-card .role {
+            color: var(--primary-color);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .team-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.75rem;
+        }
+
+        /* ========== TESTIMONIAL ========== */
+        .testimonial-section {
+            background: linear-gradient(135deg, #F5F0EB 0%, #EDE6DF 100%);
+            padding: 4rem 2rem;
+            border-radius: 16px;
+            margin: 2rem 0 3rem;
+            text-align: center;
+            border: 1px solid #D4C4B8;
+        }
+
+        .testimonial-section .quote-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            opacity: 0.3;
+            margin-bottom: 0.5rem;
+        }
+
+        .testimonial-section blockquote {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 1.5rem;
+            font-style: italic;
+            color: var(--text-dark);
+            max-width: 700px;
+            margin: 0 auto 1.5rem;
+            line-height: 1.6;
+        }
+
+        .testimonial-section .author {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .testimonial-section .author-title {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ========== CTA ========== */
+        .cta-section {
+            background: var(--text-dark);
+            border-radius: 16px;
+            padding: 4rem 3rem;
+            margin: 2rem 0 4rem;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .cta-section p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.05rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.9rem 2.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .cta-btn:hover {
+            background: var(--hover-brown);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(196, 164, 132, 0.4);
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-top: 1px solid #f0f0f0;
+            margin-top: 2rem;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 992px) {
+            .story-section {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .story-image img {
+                height: 300px;
+            }
+
+            .values-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .about-hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .about-hero {
+                padding: 3rem 1.5rem;
+            }
+
+            .about-hero::before,
+            .about-hero::after {
+                display: none;
+            }
+
+            .values-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }
+
+            .stat-number {
+                font-size: 2.2rem;
+            }
+
+            .testimonial-section blockquote {
+                font-size: 1.2rem;
+            }
+
+            .cta-section {
+                padding: 2.5rem 1.5rem;
+            }
+
+            .cta-section h2 {
+                font-size: 1.8rem;
+            }
+
+            .main-container {
+                padding: 0 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .about-hero h1 {
+                font-size: 2rem;
+            }
+
+            .about-hero .subtitle {
+                font-size: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .story-image img {
+                height: 200px;
+            }
+
+            .value-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ========== NAVBAR ========== -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/customer/dashboard">
+                <i class="fas fa-leaf"></i> Scentify
+            </a>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <a class="nav-link" href="/customer/dashboard">Home</a>
+                <a class="nav-link" href="/customer/cart">
+                    <i class="fas fa-shopping-cart"></i> Cart
+                </a>
+                <a class="nav-link" href="/customer/order-history">Order History</a>
+                <a class="nav-link active" href="/customer/about">About Us</a>
+                <span class="membership-badge">
+                    <i class="fas fa-crown"></i> Premium Member
+                </span>
+                <a href="/logout" class="logout-btn">Log Out</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== HERO SECTION ========== -->
+    <section class="about-hero">
+        <span class="hero-badge">✨ Our Story</span>
+        <h1>Crafting <span>Memories</span> Through Scent</h1>
+        <p class="subtitle">
+            At Scentify, we believe that fragrance is more than just a scent — 
+            it's a memory, an emotion, a signature of who you are.
+        </p>
+    </section>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <div class="main-container">
+
+        <!-- ========== OUR STORY ========== -->
+        <section class="story-section">
+            <div class="story-content">
+                <div class="label">✦ Our Journey</div>
+                <h2>From Passion to <br>Fragrance House</h2>
+                <p>
+                    Founded in 2021, Scentify was born from a simple belief: 
+                    <span class="highlight">everyone deserves a signature scent</span> 
+                    that tells their unique story. What started as a small 
+                    collection of hand-selected fragrances has grown into a 
+                    curated destination for scent enthusiasts.
+                </p>
+                <p>
+                    We travel the world to discover the finest ingredients, 
+                    working directly with master perfumers to bring you 
+                    <span class="highlight">exceptional quality at accessible prices</span>. 
+                    Every bottle in our collection is chosen with care, 
+                    ensuring it meets our standards of excellence.
+                </p>
+                <p>
+                    Today, Scentify is proud to serve <span class="highlight">10,000+</span> 
+                    happy customers who trust us to help them find their perfect scent.
+                </p>
+            </div>
+            <div class="story-image">
+                <img src="https://images.pexels.com/photos/396132/pexels-photo-396132.jpeg?w=800" 
+                     alt="Luxury perfume bottles">
+            </div>
+        </section>
+
+        <!-- ========== VALUES ========== -->
+        <section class="values-section">
+            <div class="values-header">
+                <div class="label">✦ What We Stand For</div>
+                <h2>Our Core Values</h2>
+            </div>
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">🌿</div>
+                    <h4>Quality First</h4>
+                    <p>We source only the finest ingredients from around the world, ensuring every fragrance meets our premium standards.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🎨</div>
+                    <h4>Authenticity</h4>
+                    <p>Every scent tells a story. We curate fragrances that are genuine, unique, and true to their craft.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🤝</div>
+                    <h4>Community</h4>
+                    <p>We believe in building a community of scent lovers who share a passion for discovery and self-expression.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== STATS ========== -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">10K+</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">200+</div>
+                    <div class="stat-label">Fragrances Curated</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">15+</div>
+                    <div class="stat-label">Countries Sourced</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">4.9★</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== TESTIMONIAL ========== -->
+        <section class="testimonial-section">
+            <div class="quote-icon">❝</div>
+            <blockquote>
+                "Scentify helped me discover my signature scent. 
+                The quiz was fun, and the recommendations were spot on. 
+                I've never received so many compliments!"
+            </blockquote>
+            <div class="author">Sarah M.</div>
+            <div class="author-title">⭐ Verified Customer</div>
+        </section>
+
+        <!-- ========== TEAM ========== -->
+        <section class="team-section">
+            <div class="team-header">
+                <div class="label">✦ The Team</div>
+                <h2>Passionate About Scent</h2>
+            </div>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-avatar">👩‍💼</div>
+                    <h4>Amanda Chen</h4>
+                    <div class="role">Founder & CEO</div>
+                    <p>With a background in luxury fragrance, Amanda brings over 15 years of industry expertise to Scentify.</p>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar">👨‍🔬</div>
+                    <h4>James Park</h4>
+                    <div class="role">Head Perfumer</div>
+                    <p>A master perfumer with training in Grasse, France, James curates our exclusive collection.</p>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar">👩‍💻</div>
+                    <h4>Lisa Wong</h4>
+                    <div class="role">Customer Experience</div>
+                    <p>Lisa ensures every customer finds their perfect scent through our personalized quiz and support.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== CTA ========== -->
+        <section class="cta-section">
+            <h2>Find Your Signature Scent Today</h2>
+            <p>Take our 2-minute quiz and discover fragrances perfectly matched to you.</p>
+            <a href="/customer/quiz/start" class="cta-btn">
+                Start Your Scent Journey →
+            </a>
+        </section>
+
+    </div>
+
+    <!-- ========== FOOTER ========== -->
+    <footer>
+        <p>&copy; 2026 Scentify. Discover Your Signature Scent. ✨</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

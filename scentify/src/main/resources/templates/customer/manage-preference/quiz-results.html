@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #D4C4B8 0%, #E8D8CC 100%);
             min-height: 100vh;
             padding: 40px 20px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -15,7 +15,7 @@
         
         .results-header {
             text-align: center;
-            color: white;
+            color: #3E3A36;
             margin-bottom: 40px;
             animation: slideDown 0.6s ease-out;
         }
@@ -39,13 +39,25 @@
         
         .results-header p {
             font-size: 1.2em;
+            color: #8A7F75;
+        }
+        
+        .results-header .persona-badge {
+            display: inline-block;
+            background: #C4A484;
+            color: white;
+            padding: 8px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 1rem;
         }
         
         .recommendations-container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 30px;
             margin-bottom: 50px;
         }
@@ -54,11 +66,12 @@
             background: white;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
             transition: all 0.3s ease;
             animation: scaleIn 0.6s ease-out forwards;
             opacity: 0;
             position: relative;
+            border: 1px solid #f0e8e0;
         }
         
         .perfume-card:nth-child(1) { animation-delay: 0.1s; }
@@ -78,96 +91,156 @@
         
         .perfume-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 50px rgba(196, 164, 132, 0.2);
         }
         
         .rank-badge {
             position: absolute;
             top: -15px;
             left: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #C4A484 0%, #9d8970 100%);
             color: white;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2em;
+            font-size: 1.5em;
             font-weight: 700;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 5px 15px rgba(196, 164, 132, 0.3);
+            z-index: 10;
         }
         
         .perfume-image {
             width: 100%;
-            height: 250px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            height: 200px;
+            background: linear-gradient(135deg, #f8f5f1 0%, #ebe5df 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 5em;
+            font-size: 4em;
+            position: relative;
+        }
+        
+        .perfume-image .category-tag {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(62, 58, 54, 0.8);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
         
         .perfume-details {
-            padding: 40px 25px 25px;
+            padding: 30px 25px 25px;
         }
         
         .perfume-name {
-            font-size: 1.5em;
+            font-size: 1.3em;
             font-weight: 700;
-            color: #333;
-            margin-bottom: 10px;
+            color: #3E3A36;
+            margin-bottom: 5px;
         }
         
         .perfume-brand {
-            color: #667eea;
+            color: #C4A484;
             font-weight: 600;
-            margin-bottom: 15px;
-            font-size: 0.95em;
+            margin-bottom: 12px;
+            font-size: 0.9em;
         }
         
         .perfume-description {
             color: #666;
-            font-size: 0.95em;
+            font-size: 0.9em;
             line-height: 1.6;
-            margin-bottom: 20px;
-            min-height: 60px;
+            margin-bottom: 18px;
+            min-height: 50px;
         }
         
-        .perfume-specs {
-            background: #f8f9ff;
+        /* ===== NOTES SECTION ===== */
+        .notes-section {
+            background: #f8f5f1;
+            border-radius: 12px;
             padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 0.85em;
+            margin-bottom: 18px;
         }
         
-        .spec-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
-            color: #555;
-        }
-        
-        .spec-label {
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .spec-value {
-            color: #667eea;
-        }
-        
-        .perfume-price {
-            font-size: 1.5em;
+        .notes-section .notes-title {
+            font-size: 0.75rem;
             font-weight: 700;
-            color: #667eea;
-            margin-bottom: 20px;
+            color: #8A7F75;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
         }
         
+        .note-row {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+        }
+        
+        .note-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .note-label {
+            min-width: 55px;
+            font-weight: 700;
+            color: #3E3A36;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .note-label.top { color: #e67e22; }
+        .note-label.middle { color: #8e44ad; }
+        .note-label.base { color: #2c3e50; }
+        
+        .note-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .note-tag {
+            display: inline-block;
+            background: white;
+            border: 1px solid #e6d3c1;
+            border-radius: 12px;
+            padding: 2px 12px;
+            font-size: 0.75rem;
+            color: #3E3A36;
+        }
+        
+        .note-tag.top-tag { border-color: #f5cba7; background: #fef9f4; }
+        .note-tag.middle-tag { border-color: #d7bde2; background: #faf5ff; }
+        .note-tag.base-tag { border-color: #aeb6bf; background: #f4f6f7; }
+        
+        /* ===== NO NOTES FALLBACK ===== */
+        .no-notes {
+            color: #8A7F75;
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+        
+        /* ===== PRICE ===== */
+        .perfume-price {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #C4A484;
+            margin-bottom: 15px;
+        }
+        
+        /* ===== BUTTON ===== */
         .btn-add-cart {
             width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #C4A484 0%, #9d8970 100%);
             border: none;
             color: white;
             padding: 12px;
@@ -175,15 +248,19 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
         }
         
         .btn-add-cart:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 5px 15px rgba(196, 164, 132, 0.3);
             color: white;
             text-decoration: none;
         }
         
+        /* ===== ACTION BUTTONS ===== */
         .action-buttons {
             text-align: center;
             margin-top: 30px;
@@ -191,28 +268,34 @@
         
         .btn-secondary-action {
             background: white;
-            border: 2px solid #667eea;
-            color: #667eea;
+            border: 2px solid #C4A484;
+            color: #C4A484;
             padding: 12px 30px;
             border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
             margin: 10px;
             transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
         }
         
         .btn-secondary-action:hover {
-            background: #667eea;
+            background: #C4A484;
             color: white;
+            text-decoration: none;
         }
         
-        .success-animation {
-            animation: bounce 0.6s ease-out;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .recommendations-container {
+                grid-template-columns: 1fr;
+                max-width: 450px;
+            }
+            
+            .results-header h1 {
+                font-size: 1.8em;
+            }
         }
     </style>
 </head>
@@ -220,43 +303,71 @@
     <div class="results-header">
         <h1>🎉 Your Perfect Matches Found!</h1>
         <p>Based on your preferences, here are our top 3 recommendations</p>
+        <div class="persona-badge" th:if="${primaryPersona}" th:text="'✨ ' + ${primaryPersona} + ' Persona'"></div>
     </div>
     
     <div class="recommendations-container">
         <th:block th:each="perfume, iterStat : ${recommendations}">
             <div class="perfume-card">
                 <div class="rank-badge" th:text="${iterStat.count}"></div>
+                
                 <div class="perfume-image">
-                    💐
+                    🌸
+                    <span class="category-tag" th:text="${perfume.category} ?: 'Fragrance'"></span>
                 </div>
+                
                 <div class="perfume-details">
                     <div class="perfume-name" th:text="${perfume.productName}"></div>
-                    <div class="perfume-brand" th:text="${perfume.brandName} ?: 'Premium Brand'"></div>
-                    <div class="perfume-description" th:text="${perfume.description}"></div>
+                    <div class="perfume-brand" th:text="${perfume.category} ?: 'Luxury Fragrance'"></div>
                     
-                    <div class="perfume-specs">
-                        <div class="spec-item" th:if="${perfume.fragranceFamily}">
-                            <span class="spec-label">Family:</span>
-                            <span class="spec-value" th:text="${perfume.fragranceFamily}"></span>
+                    <div class="perfume-description" th:text="${perfume.description} ?: 'A beautifully crafted fragrance.'"></div>
+                    
+                    <!-- ===== NOTES SECTION ===== -->
+                    <div class="notes-section">
+                        <div class="notes-title">📋 Fragrance Notes</div>
+                        
+                        <!-- Top Notes - Split by | -->
+                        <div class="note-row" th:if="${perfume.topNotes} != null and ${perfume.topNotes} != ''">
+                            <span class="note-label top">Top</span>
+                            <div class="note-tags">
+                                <th:block th:each="note : ${#strings.arraySplit(perfume.topNotes, '\\|')}">
+                                    <span class="note-tag top-tag" th:text="${#strings.trim(note)}"></span>
+                                </th:block>
+                            </div>
                         </div>
-                        <div class="spec-item" th:if="${perfume.intensity}">
-                            <span class="spec-label">Intensity:</span>
-                            <span class="spec-value" th:text="${perfume.intensity}"></span>
+                        
+                        <!-- Middle Notes - Split by | -->
+                        <div class="note-row" th:if="${perfume.middleNotes} != null and ${perfume.middleNotes} != ''">
+                            <span class="note-label middle">Heart</span>
+                            <div class="note-tags">
+                                <th:block th:each="note : ${#strings.arraySplit(perfume.middleNotes, '\\|')}">
+                                    <span class="note-tag middle-tag" th:text="${#strings.trim(note)}"></span>
+                                </th:block>
+                            </div>
                         </div>
-                        <div class="spec-item" th:if="${perfume.season}">
-                            <span class="spec-label">Season:</span>
-                            <span class="spec-value" th:text="${perfume.season}"></span>
+                        
+                        <!-- Base Notes - Split by | -->
+                        <div class="note-row" th:if="${perfume.baseNotes} != null and ${perfume.baseNotes} != ''">
+                            <span class="note-label base">Base</span>
+                            <div class="note-tags">
+                                <th:block th:each="note : ${#strings.arraySplit(perfume.baseNotes, '\\|')}">
+                                    <span class="note-tag base-tag" th:text="${#strings.trim(note)}"></span>
+                                </th:block>
+                            </div>
                         </div>
-                        <div class="spec-item" th:if="${perfume.occasion}">
-                            <span class="spec-label">Occasion:</span>
-                            <span class="spec-value" th:text="${perfume.occasion}"></span>
+                        
+                        <!-- Fallback if no notes -->
+                        <div class="no-notes" th:if="${(perfume.topNotes == null or perfume.topNotes == '') and (perfume.middleNotes == null or perfume.middleNotes == '') and (perfume.baseNotes == null or perfume.baseNotes == '')}">
+                            <span>✨ A unique blend of exquisite notes</span>
                         </div>
                     </div>
                     
-                    <div class="perfume-price" th:text="'$' + ${#numbers.formatDecimal(perfume.price, 1, 2)}"></div>
+                    <!-- ===== PRICE ===== -->
+                    <div class="perfume-price" th:if="${perfume.price}" th:text="'$' + ${#numbers.formatDecimal(perfume.price, 1, 2)}"></div>
                     
+                    <!-- ===== VIEW DETAILS BUTTON ===== -->
                     <a th:href="'/customer/product/' + ${perfume.productId}" class="btn-add-cart">
-                        View & Add to Cart 🛒
+                        View Details 🛒
                     </a>
                 </div>
             </div>
@@ -264,20 +375,17 @@
     </div>
     
     <div class="action-buttons">
-        <button onclick="location.href='/customer/quiz/start'" class="btn-secondary-action">
-            Retake Quiz
-        </button>
-        <button onclick="location.href='/customer/products'" class="btn-secondary-action">
-            Browse All Perfumes
-        </button>
-        <button onclick="location.href='/customer/dashboard'" class="btn-secondary-action">
-            Back to Dashboard
-        </button>
+        <a href="/customer/quiz/start" class="btn-secondary-action">
+            🔄 Retake Quiz
+        </a>
+        <a href="/customer/dashboard" class="btn-secondary-action">
+            🏠 Back to Dashboard
+        </a>
     </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Confetti animation
+        // ===== CONFETTI CELEBRATION =====
         function celebrateWithConfetti() {
             const canvas = document.createElement('canvas');
             canvas.width = window.innerWidth;
@@ -291,33 +399,54 @@
             
             const ctx = canvas.getContext('2d');
             const particles = [];
+            const colors = ['#C4A484', '#9d8970', '#E8D8CC', '#D4C4B8', '#8A7F75', '#f5cba7', '#d7bde2'];
             
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < 60; i++) {
                 particles.push({
                     x: Math.random() * canvas.width,
-                    y: -10,
-                    vx: (Math.random() - 0.5) * 8,
-                    vy: Math.random() * 5 + 5,
-                    life: 1
+                    y: Math.random() * canvas.height - canvas.height,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: Math.random() * 4 + 3,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    rotation: Math.random() * 360,
+                    rotSpeed: (Math.random() - 0.5) * 10,
+                    life: Math.random() * 0.5 + 0.5
                 });
             }
             
             function animate() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
+                let alive = false;
                 particles.forEach((p, i) => {
+                    p.x += p.vx + Math.sin(p.y / 50) * 0.5;
                     p.y += p.vy;
-                    p.vy += 0.1;
-                    p.life -= 0.01;
+                    p.vy += 0.05;
+                    p.rotation += p.rotSpeed;
+                    p.life -= 0.003;
                     
-                    ctx.globalAlpha = p.life;
-                    ctx.fillStyle = ['#667eea', '#764ba2', '#f093fb', '#4facfe'][Math.floor(Math.random() * 4)];
-                    ctx.fillRect(p.x, p.y, 10, 10);
-                    
-                    if (p.life <= 0) particles.splice(i, 1);
+                    if (p.life > 0) {
+                        alive = true;
+                        ctx.save();
+                        ctx.globalAlpha = p.life;
+                        ctx.translate(p.x, p.y);
+                        ctx.rotate(p.rotation * Math.PI / 180);
+                        ctx.fillStyle = p.color;
+                        
+                        // Draw diamond shape
+                        ctx.beginPath();
+                        ctx.moveTo(0, -p.size);
+                        ctx.lineTo(p.size, 0);
+                        ctx.lineTo(0, p.size);
+                        ctx.lineTo(-p.size, 0);
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.restore();
+                    }
                 });
                 
-                if (particles.length > 0) {
+                if (alive) {
                     requestAnimationFrame(animate);
                 } else {
                     canvas.remove();
@@ -327,7 +456,9 @@
             animate();
         }
         
-        window.addEventListener('load', celebrateWithConfetti);
+        window.addEventListener('load', function() {
+            setTimeout(celebrateWithConfetti, 500);
+        });
     </script>
 </body>
 </html>

@@ -2,290 +2,409 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Manager Dashboard</title>
+    <title>Manager Dashboard - Scentify</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-    body {
-        font-family: 'Inter', sans-serif;
-        background: linear-gradient(135deg, #fdfcfa 0%, #f5ede6 100%);
-        min-height: 100vh;
-    }
-
-    /* Navbar */
-    .navbar {
-        background: linear-gradient(135deg, #667eea, #764ba2) !important;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    .navbar-brand {
-        font-family: 'Playfair Display', serif;
-        letter-spacing: 1px;
-        font-weight: 600;
-    }
-
-    /* Main Container */
-    .main-container {
-        min-height: calc(100vh - 100px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 40px 20px;
-    }
-
-    /* Dashboard Cards */
-    .dashboard-card {
-        border-radius: 24px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-        border: none;
-        transition: all 0.3s ease;
-        overflow: hidden;
-        height: 100%;
-    }
-
-    .dashboard-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 30px 80px rgba(0,0,0,0.15);
-    }
-
-    .card-body {
-        padding: 40px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        height: 100%;
-    }
-
-    .card-icon {
-        font-size: 64px;
-        margin-bottom: 20px;
-        margin-top: 10px;
-    }
-
-    .manage-supplier .card-icon {
-        color: #667eea;
-    }
-
-    .manage-products .card-icon {
-        color: #c2a98d;
-    }
-
-    .manage-membership .card-icon {
-        color: #48c6a6;
-    }
-
-    .card-title {
-        font-family: 'Playfair Display', serif;
-        font-size: 32px;
-        font-weight: 600;
-        margin-bottom: 15px;
-        color: #5a4a42;
-    }
-
-    .card-description {
-        font-size: 16px;
-        color: #8b7355;
-        margin-bottom: 30px;
-        line-height: 1.6;
-    }
-
-    .card-link {
-        text-decoration: none;
-        display: block;
-        height: 100%;
-        padding: 0;
-    }
-
-    .card-link:hover {
-        text-decoration: none;
-    }
-
-    /* Action Button */
-    .action-btn {
-        padding: 14px 40px;
-        border-radius: 14px;
-        font-weight: 600;
-        font-size: 16px;
-        transition: all 0.3s ease;
-        border: none;
-        color: white;
-    }
-
-    .btn-manage-supplier {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-    }
-
-    .btn-manage-supplier:hover {
-        background: linear-gradient(135deg, #764ba2, #6a4ba3);
-        color: white;
-        transform: translateY(-2px);
-    }
-
-    .btn-manage-products {
-        background: linear-gradient(135deg, #c2a98d, #b49374);
-    }
-
-    .btn-manage-products:hover {
-        background: linear-gradient(135deg, #b49374, #9d7d62);
-        color: white;
-        transform: translateY(-2px);
-    }
-
-    .btn-manage-membership {
-        background: linear-gradient(135deg, #48c6a6, #3ab89a);
-    }
-
-    .btn-manage-membership:hover {
-        background: linear-gradient(135deg, #3ab89a, #2eac88);
-        color: white;
-        transform: translateY(-2px);
-    }
-
-    /* Badge */
-    .badge-pending {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        background: #ff6b6b;
-        color: white;
-        padding: 8px 14px;
-        border-radius: 20px;
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-    /* Stats Section */
-    .stats-row {
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 2px solid rgba(0,0,0,0.05);
-    }
-
-    .stat-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .stat-number {
-        font-family: 'Playfair Display', serif;
-        font-size: 28px;
-        font-weight: 600;
-        color: #5a4a42;
-    }
-
-    .stat-label {
-        font-size: 12px;
-        color: #8b7355;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    /* Header */
-    .header {
-        text-align: center;
-        margin-bottom: 50px;
-    }
-
-    .header h1 {
-        font-family: 'Playfair Display', serif;
-        font-size: 48px;
-        font-weight: 600;
-        color: #5a4a42;
-        margin-bottom: 10px;
-    }
-
-    .header p {
-        font-size: 18px;
-        color: #8b7355;
-    }
-
-    .logout-btn {
-        position: absolute;
-        top: 20px;
-        right: 30px;
-        background: white;
-        color: #667eea;
-        padding: 10px 18px;
-        border-radius: 14px;
-        text-decoration: none;
-        font-size: 14px;
-        font-weight: 600;
-        border: none;
-    }
-
-    .logout-btn:hover {
-        opacity: 0.9;
-        color: #667eea;
-    }
-
-    .card-wrapper {
-        position: relative;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .main-container {
-            padding: 30px 20px;
+        :root {
+            --primary-color: #C4A484;
+            --secondary-color: #E6D3C1;
+            --accent-color: #FAF7F4;
+            --text-dark: #3E3A36;
+            --text-muted: #8A7F75;
+            --hover-brown: #9d8970;
         }
 
-        .card-body {
-            padding: 30px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .card-title {
-            font-size: 24px;
+        body {
+            background: #FFFFFF;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            color: var(--text-dark);
+            min-height: 100vh;
         }
 
-        .card-icon {
-            font-size: 48px;
+        /* ========== NAVIGATION ========== */
+        .navbar {
+            background: white !important;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: none !important;
         }
 
-        .header h1 {
-            font-size: 36px;
+        .navbar .container-fluid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
         }
 
-        .header p {
-            font-size: 16px;
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-dark) !important;
+            letter-spacing: 1px;
+        }
+
+        .navbar-brand i {
+            color: var(--primary-color);
+        }
+
+        .navbar .nav-link {
+            color: var(--text-dark) !important;
+            font-weight: 500;
+            margin: 0 1.5rem;
+            font-size: 0.95rem;
+            text-decoration: none;
+        }
+
+        .navbar .nav-link:hover {
+            color: var(--primary-color) !important;
         }
 
         .logout-btn {
-            position: static;
+            background: #2C2C2C;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 4px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        /* ========== MAIN CONTAINER ========== */
+        .main-container {
+            min-height: calc(100vh - 100px);
+            padding: 40px 20px;
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .header .badge {
+            display: inline-block;
+            background: rgba(196, 164, 132, 0.15);
+            color: var(--text-muted);
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(196, 164, 132, 0.2);
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .header h1 span {
+            color: var(--primary-color);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        /* ========== DASHBOARD CARDS ========== */
+        .dashboard-card {
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(62, 58, 54, 0.06);
+            border: 1px solid #f0e8e0;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            height: 100%;
+            background: white;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 30px rgba(196, 164, 132, 0.15);
+            border-color: var(--primary-color);
+        }
+
+        .card-body {
+            padding: 40px 35px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+            position: relative;
+        }
+
+        .card-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
             margin-bottom: 20px;
         }
-    }
+
+        .manage-supplier .card-icon {
+            background: rgba(102, 126, 234, 0.12);
+            color: #667eea;
+        }
+
+        .manage-products .card-icon {
+            background: rgba(196, 164, 132, 0.12);
+            color: var(--primary-color);
+        }
+
+        .manage-membership .card-icon {
+            background: rgba(72, 198, 166, 0.12);
+            color: #48c6a6;
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .card-link {
+            text-decoration: none;
+            display: block;
+            height: 100%;
+            padding: 0;
+        }
+
+        .card-link:hover {
+            text-decoration: none;
+        }
+
+        /* ========== BADGE PENDING ========== */
+        .badge-pending {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff6b6b;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            animation: pulse-badge 2s infinite;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* ========== STATS SECTION ========== */
+        .stats-row {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid rgba(0,0,0,0.05);
+            width: 100%;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ========== ACTION BUTTONS ========== */
+        .action-btn {
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            border: none;
+            color: white;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .btn-manage-supplier {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .btn-manage-supplier:hover {
+            background: linear-gradient(135deg, #764ba2, #6a4ba3);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-manage-products {
+            background: linear-gradient(135deg, var(--primary-color), var(--hover-brown));
+        }
+
+        .btn-manage-products:hover {
+            background: linear-gradient(135deg, var(--hover-brown), #8a7a6a);
+            box-shadow: 0 6px 20px rgba(196, 164, 132, 0.3);
+        }
+
+        .btn-manage-membership {
+            background: linear-gradient(135deg, #48c6a6, #3ab89a);
+        }
+
+        .btn-manage-membership:hover {
+            background: linear-gradient(135deg, #3ab89a, #2eac88);
+            box-shadow: 0 6px 20px rgba(72, 198, 166, 0.3);
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 992px) {
+            .navbar .container-fluid {
+                padding: 0 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 30px 15px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .card-body {
+                padding: 30px 25px;
+            }
+
+            .card-title {
+                font-size: 1.3rem;
+            }
+
+            .card-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+
+            .stat-number {
+                font-size: 1.8rem;
+            }
+
+            .navbar-brand {
+                font-size: 1.1rem;
+            }
+
+            .logout-btn {
+                padding: 0.4rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.6rem;
+            }
+
+            .card-body {
+                padding: 25px 20px;
+            }
+
+            .action-btn {
+                padding: 10px 20px;
+                font-size: 0.85rem;
+            }
+        }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark">
+<!-- ========== NAVBAR ========== -->
+<nav class="navbar">
     <div class="container-fluid">
-        <span class="navbar-brand">Scentify Manager</span>
-        <div class="ms-auto">
-            <span class="text-light me-3" th:text="'Welcome, ' + ${user?.username}"></span>
-            <a class="btn btn-sm btn-outline-light" href="/logout">Logout</a>
+        <a class="navbar-brand" href="/manager/dashboard">
+            <i class="fas fa-leaf"></i> Scentify Manager
+        </a>
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <span style="color: var(--text-muted); font-size: 0.95rem;" th:text="'Welcome, ' + ${user?.username}"></span>
+            <a href="/logout" class="logout-btn">Log Out</a>
         </div>
     </div>
 </nav>
 
+<!-- ========== MAIN CONTENT ========== -->
 <div class="main-container">
     <div class="container">
+        <!-- Header -->
         <div class="header">
-            <h1>Manager Dashboard</h1>
+            <span class="badge">✦ Manager Dashboard</span>
+            <h1>Welcome Back, <span>Manager</span></h1>
             <p>Select what you'd like to manage</p>
         </div>
 
+        <!-- Cards Grid -->
         <div class="row g-4">
             <!-- Manage Suppliers Card -->
             <div class="col-md-4">
-                <div class="card-wrapper">
+                <div class="card-wrapper" style="position: relative;">
                     <a href="/manager/suppliers" class="card-link">
                         <div class="card dashboard-card manage-supplier">
-                            <div th:if="${pendingSuppliers > 0}" class="badge-pending" th:text="${pendingSuppliers} + ' Pending'"></div>
                             <div class="card-body">
+                                <div th:if="${pendingSuppliers > 0}" class="badge-pending" th:text="${pendingSuppliers} + ' Pending'"></div>
                                 <div class="card-icon">
                                     <i class="fas fa-store"></i>
                                 </div>
@@ -295,11 +414,11 @@
                                 </p>
                                 <div class="stats-row">
                                     <div class="stat-item">
-                                        <div class="stat-number" th:text="${pendingSuppliers}"></div>
+                                        <div class="stat-number" th:text="${pendingSuppliers}">0</div>
                                         <div class="stat-label">Pending Approval</div>
                                     </div>
                                 </div>
-                                <button class="action-btn btn-manage-supplier mt-4">
+                                <button class="action-btn btn-manage-supplier">
                                     <i class="fas fa-arrow-right me-2"></i> Review Suppliers
                                 </button>
                             </div>
@@ -310,11 +429,11 @@
 
             <!-- Manage Products Card -->
             <div class="col-md-4">
-                <div class="card-wrapper">
+                <div class="card-wrapper" style="position: relative;">
                     <a href="/manager/products" class="card-link">
                         <div class="card dashboard-card manage-products">
-                            <div th:if="${pendingProducts > 0}" class="badge-pending" th:text="${pendingProducts} + ' Pending'"></div>
                             <div class="card-body">
+                                <div th:if="${pendingProducts > 0}" class="badge-pending" th:text="${pendingProducts} + ' Pending'"></div>
                                 <div class="card-icon">
                                     <i class="fas fa-box"></i>
                                 </div>
@@ -324,11 +443,11 @@
                                 </p>
                                 <div class="stats-row">
                                     <div class="stat-item">
-                                        <div class="stat-number" th:text="${pendingProducts}"></div>
+                                        <div class="stat-number" th:text="${pendingProducts}">0</div>
                                         <div class="stat-label">Pending Approval</div>
                                     </div>
                                 </div>
-                                <button class="action-btn btn-manage-products mt-4">
+                                <button class="action-btn btn-manage-products">
                                     <i class="fas fa-arrow-right me-2"></i> Review Products
                                 </button>
                             </div>
@@ -339,11 +458,11 @@
 
             <!-- Manage Membership Card -->
             <div class="col-md-4">
-                <div class="card-wrapper">
+                <div class="card-wrapper" style="position: relative;">
                     <a href="/manager/membership-applications" class="card-link">
                         <div class="card dashboard-card manage-membership">
-                            <div th:if="${pendingMemberships > 0}" class="badge-pending" th:text="${pendingMemberships} + ' Pending'"></div>
                             <div class="card-body">
+                                <div th:if="${pendingMemberships > 0}" class="badge-pending" th:text="${pendingMemberships} + ' Pending'"></div>
                                 <div class="card-icon">
                                     <i class="fas fa-users"></i>
                                 </div>
@@ -353,11 +472,11 @@
                                 </p>
                                 <div class="stats-row">
                                     <div class="stat-item">
-                                        <div class="stat-number" th:text="${pendingMemberships}"></div>
+                                        <div class="stat-number" th:text="${pendingMemberships}">0</div>
                                         <div class="stat-label">Pending Approval</div>
                                     </div>
                                 </div>
-                                <button class="action-btn btn-manage-membership mt-4">
+                                <button class="action-btn btn-manage-membership">
                                     <i class="fas fa-arrow-right me-2"></i> Manage Members
                                 </button>
                             </div>

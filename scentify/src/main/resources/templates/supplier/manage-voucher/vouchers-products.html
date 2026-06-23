@@ -4,98 +4,202 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assign Products - Scentify</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #fdfcfa;
+            min-height: 100vh;
+            padding: 20px;
         }
 
-        h1, h2, h3 {
-            font-family: 'Playfair Display', serif;
-            color: #5a4a42;
-        }
-
-        /* Navbar */
-        .navbar {
-            background: linear-gradient(135deg, #c2a98d, #b49374) !important;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .navbar-brand {
-            font-family: 'Playfair Display', serif;
-            font-weight: 600;
-            color: white !important;
-            font-size: 1.3rem;
-        }
-
-        .nav-link {
-            color: white !important;
-            font-weight: 500;
-        }
-
-        .logout-btn {
-            background: #8b5a52;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        /* Container */
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 2rem;
         }
 
+        /* ===== HEADER ===== */
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(62, 58, 54, 0.06);
+            border: 1px solid #f0e8e0;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .header-left h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #3E3A36;
+        }
+
+        .header-left h1 i {
+            color: #C4A484;
+            margin-right: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .welcome-text {
+            color: #3E3A36;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .btn-back {
+            background: #E6D3C1;
+            color: #3E3A36;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-back:hover {
+            background: #d4c4b0;
+            transform: translateY(-2px);
+        }
+
+        .logout-btn {
+            background: #2C2C2C;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logout-btn:hover {
+            background: #1a1a1a;
+            transform: translateY(-2px);
+        }
+
+        /* ===== PAGE HEADER ===== */
         .page-header {
-            margin-bottom: 2rem;
+            margin-bottom: 25px;
         }
 
-        .page-title {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+        .page-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #3E3A36;
         }
 
-        .page-subtitle {
-            color: #8b7355;
-            font-size: 1rem;
+        .page-header p {
+            color: #8A7F75;
+            font-size: 0.95rem;
+            margin-top: 4px;
         }
 
-        /* Voucher Info Card */
+        /* ===== ALERTS ===== */
+        .alerts {
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .alert-success {
+            background: #eef6f1;
+            color: #2f6b47;
+            border: 1px solid #d4e8dc;
+        }
+
+        .alert-error {
+            background: #f8ecec;
+            color: #8b2f2f;
+            border: 1px solid #f0d6d6;
+        }
+
+        .alert-info {
+            background: #f5f0eb;
+            color: #5a4a42;
+            border: 1px solid #e8ddd2;
+        }
+
+        /* ===== VOUCHER INFO CARD ===== */
         .voucher-info-card {
             background: white;
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 1.5rem;
             margin-bottom: 2rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border-left: 5px solid #c2a98d;
+            box-shadow: 0 4px 20px rgba(62, 58, 54, 0.06);
+            border: 1px solid #f0e8e0;
+            border-left: 5px solid #C4A484;
         }
 
         .voucher-code-display {
             font-family: 'Courier New', monospace;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 700;
-            color: #5a4a42;
-            margin-bottom: 0.5rem;
+            color: #3E3A36;
+            margin-bottom: 0.3rem;
+            letter-spacing: 1px;
         }
 
         .voucher-discount-display {
-            color: #c2a98d;
+            color: #C4A484;
             font-weight: 600;
+            font-size: 1rem;
         }
 
-        /* Products Grid */
+        .voucher-discount-display i {
+            margin-right: 0.3rem;
+        }
+
+        /* ===== PRODUCTS CONTAINER ===== */
         .products-container {
             background: white;
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 20px rgba(62, 58, 54, 0.06);
+            border: 1px solid #f0e8e0;
         }
 
         .products-header {
@@ -104,46 +208,66 @@
             align-items: center;
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
-            border-bottom: 2px solid #e8dfd0;
+            border-bottom: 2px solid #f0e8e0;
+            flex-wrap: wrap;
+            gap: 0.8rem;
         }
 
         .products-title {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
-            color: #5a4a42;
+            color: #3E3A36;
+        }
+
+        .products-title i {
+            color: #C4A484;
+            margin-right: 0.5rem;
         }
 
         .select-all-checkbox {
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #8A7F75;
         }
 
-        /* Products Grid */
+        .select-all-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #C4A484;
+        }
+
+        .select-all-checkbox label {
+            cursor: pointer;
+            margin: 0;
+        }
+
+        /* ===== PRODUCTS GRID ===== */
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1rem;
         }
 
         .product-item {
-            border: 2px solid #e8dfd0;
-            border-radius: 8px;
+            border: 2px solid #f0e8e0;
+            border-radius: 10px;
             padding: 1rem;
             transition: all 0.3s ease;
             cursor: pointer;
+            background: #faf7f5;
         }
 
         .product-item:hover {
-            border-color: #c2a98d;
-            box-shadow: 0 4px 12px rgba(194, 169, 141, 0.15);
+            border-color: #C4A484;
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.12);
+            background: white;
         }
 
-        .product-item input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            margin-right: 0.75rem;
+        .product-item.has-checkbox {
+            cursor: default;
         }
 
         .product-item label {
@@ -152,134 +276,217 @@
             gap: 0.75rem;
             cursor: pointer;
             margin: 0;
+            width: 100%;
+        }
+
+        .product-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            cursor: pointer;
+            flex-shrink: 0;
+            accent-color: #C4A484;
         }
 
         .product-info {
             flex: 1;
+            min-width: 0;
         }
 
         .product-name {
             font-weight: 600;
-            color: #5a4a42;
+            color: #3E3A36;
             margin-bottom: 0.25rem;
+            font-size: 0.95rem;
         }
 
         .product-details {
-            font-size: 0.85rem;
-            color: #8b7355;
+            font-size: 0.8rem;
+            color: #8A7F75;
         }
 
-        .product-item input[type="checkbox"]:checked ~ .product-info {
-            color: #c2a98d;
+        .product-details div {
+            margin-bottom: 2px;
         }
 
-        /* Empty State */
+        .product-details .out-of-stock {
+            color: #a8796a;
+            font-weight: 500;
+        }
+
+        .product-details .in-stock {
+            color: #4caf50;
+            font-weight: 500;
+        }
+
+        /* Product checked state */
+        .product-item.checked {
+            border-color: #C4A484;
+            background: #f8f4f0;
+        }
+
+        /* ===== EMPTY STATE ===== */
         .empty-state {
             text-align: center;
-            padding: 3rem;
-            color: #8b7355;
+            padding: 3rem 2rem;
+            color: #8A7F75;
         }
 
         .empty-state-icon {
             font-size: 3rem;
-            color: #c2a98d;
+            color: #E6D3C1;
             margin-bottom: 1rem;
         }
 
-        /* Buttons */
+        .empty-state a {
+            color: #C4A484;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .empty-state a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== BUTTONS ===== */
         .button-group {
             display: flex;
             gap: 1rem;
-            margin-top: 2rem;
+            margin-top: 1.5rem;
             padding-top: 1.5rem;
-            border-top: 2px solid #e8dfd0;
+            border-top: 2px solid #f0e8e0;
+            flex-wrap: wrap;
         }
 
-        .btn-save {
-            background: linear-gradient(135deg, #c2a98d, #b49374);
-            color: white;
-            padding: 0.75rem 1.5rem;
+        .btn {
+            padding: 0.6rem 1.5rem;
             border-radius: 8px;
             border: none;
             font-weight: 600;
+            font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-save {
+            background: #C4A484;
+            color: white;
         }
 
         .btn-save:hover {
             background: #9d8970;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(194, 169, 141, 0.3);
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.3);
             color: white;
         }
 
-        .btn-back {
-            background: white;
-            color: #5a4a42;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            border: 1px solid #d4c4b0;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s ease;
+        .btn-save:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
-        .btn-back:hover {
-            background: #f5f5f5;
-            text-decoration: none;
-            color: #5a4a42;
+        .btn-cancel {
+            background: #E6D3C1;
+            color: #3E3A36;
         }
 
-        /* Alert */
-        .alert {
-            border-radius: 8px;
-            border: none;
-            margin-bottom: 1.5rem;
+        .btn-cancel:hover {
+            background: #d4c4b0;
+            color: #3E3A36;
         }
 
-        .alert-success {
-            background: #d8ebd8;
-            color: #5a7a5a;
-        }
-
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+                padding: 16px 20px;
+            }
+            .header-left h1 {
+                font-size: 1.2rem;
+            }
+            .header-actions {
+                flex-wrap: wrap;
+            }
             .products-grid {
                 grid-template-columns: 1fr;
             }
-
             .button-group {
                 flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .products-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .voucher-info-card {
+                padding: 1rem;
+            }
+            .products-container {
+                padding: 1rem;
+            }
+            .product-item {
+                padding: 0.8rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/supplier/vouchers">
-                <i class="fas fa-tag"></i> Scentify Vouchers
-            </a>
-            <div class="ms-auto">
-                <a href="/logout" class="logout-btn">Logout</a>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1><i class="fas fa-store"></i> Supplier Dashboard</h1>
+            </div>
+            <div class="header-actions">
+                <span class="welcome-text">
+                    <i class="fas fa-user-circle"></i> Welcome, <span th:text="${user?.username}"></span>
+                </span>
+                <a href="/supplier/vouchers" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Back to Vouchers
+                </a>
+                <a href="/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
             </div>
         </div>
-    </nav>
 
-    <!-- Main Container -->
-    <div class="container">
         <!-- Page Header -->
         <div class="page-header">
-            <h1 class="page-title">
-                <i class="fas fa-box"></i> Assign Products to Voucher
-            </h1>
-            <p class="page-subtitle">Select which products this voucher can be applied to</p>
+            <h2><i class="fas fa-box" style="color: #C4A484; margin-right: 0.5rem;"></i> Assign Products to Voucher</h2>
+            <p>Select which products this voucher can be applied to</p>
         </div>
 
-        <!-- Alert -->
-        <div th:if="${success}" class="alert alert-success" role="alert">
-            <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+        <!-- Alerts -->
+        <div class="alerts">
+            <div th:if="${success}" class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${success}"></span>
+            </div>
+            <div th:if="${error}" class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${error}"></span>
+            </div>
+            <div th:if="${message}" class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <span th:text="${message}"></span>
+            </div>
         </div>
 
         <!-- Voucher Info -->
@@ -305,29 +512,32 @@
                     </span>
                     <div class="select-all-checkbox">
                         <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
-                        <label for="selectAll" style="margin: 0; cursor: pointer; color: #8b7355;">Select All</label>
+                        <label for="selectAll">Select All</label>
                     </div>
                 </div>
 
                 <!-- Products Grid -->
                 <div th:if="${!products.isEmpty()}">
                     <div class="products-grid">
-                        <div th:each="product : ${products}" class="product-item">
+                        <div th:each="product : ${products}" class="product-item" 
+                             th:classappend="${assignedProductIds != null and assignedProductIds.contains(product.productId)} ? 'checked' : ''">
                             <label>
                                 <input type="checkbox" 
                                        name="productIds" 
                                        th:value="${product.productId}"
                                        th:checked="${assignedProductIds != null and assignedProductIds.contains(product.productId)}"
                                        class="product-checkbox"
-                                       onchange="updateSelectAllCheckbox()">
+                                       onchange="updateSelectAllCheckbox(); updateProductItem(this)">
                                 <div class="product-info">
                                     <div class="product-name" th:text="${product.productName}">Product Name</div>
                                     <div class="product-details">
                                         <div>ID: <span th:text="${product.productId}">P001</span></div>
                                         <div>Price: RM<span th:text="${#numbers.formatDecimal(product.price, 1, 2)}">99.99</span></div>
-                                        <div th:if="${product.stock > 0}">Stock: <span th:text="${product.stock}">10</span> units</div>
-                                        <div th:if="${product.stock <= 0}" style="color: #a8796a;">
-                                            <i class="fas fa-times"></i> Out of Stock
+                                        <div th:if="${product.stock != null and product.stock > 0}" class="in-stock">
+                                            <i class="fas fa-check-circle"></i> Stock: <span th:text="${product.stock}">10</span> units
+                                        </div>
+                                        <div th:if="${product.stock == null or product.stock <= 0}" class="out-of-stock">
+                                            <i class="fas fa-times-circle"></i> Out of Stock
                                         </div>
                                     </div>
                                 </div>
@@ -341,23 +551,22 @@
                     <div class="empty-state-icon">
                         <i class="fas fa-boxes"></i>
                     </div>
-                    <p>No products available. <a href="/supplier/products/add" style="color: #c2a98d; font-weight: 600;">Create a product</a> first.</p>
+                    <p>No products available. <a href="/supplier/products/add">Create a product</a> first.</p>
                 </div>
 
                 <!-- Buttons -->
                 <div class="button-group">
-                    <button type="submit" class="btn-save" th:disabled="${products.isEmpty()}">
+                    <button type="submit" class="btn btn-save" th:disabled="${products.isEmpty()}">
                         <i class="fas fa-save"></i> Save Assignments
                     </button>
-                    <a href="/supplier/vouchers" class="btn-back">
-                        <i class="fas fa-arrow-left"></i> Back to Vouchers
+                    <a href="/supplier/vouchers" class="btn btn-cancel">
+                        <i class="fas fa-times"></i> Cancel
                     </a>
                 </div>
             </div>
         </form>
     </div>
 
-    <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
     <script>
         function toggleSelectAll() {
             const selectAllCheckbox = document.getElementById('selectAll');
@@ -365,6 +574,7 @@
             
             productCheckboxes.forEach(checkbox => {
                 checkbox.checked = selectAllCheckbox.checked;
+                updateProductItem(checkbox);
             });
         }
 
@@ -373,11 +583,26 @@
             const productCheckboxes = document.querySelectorAll('.product-checkbox');
             const checkedCount = document.querySelectorAll('.product-checkbox:checked').length;
             
-            selectAllCheckbox.checked = checkedCount === productCheckboxes.length;
+            selectAllCheckbox.checked = checkedCount === productCheckboxes.length && productCheckboxes.length > 0;
+        }
+
+        function updateProductItem(checkbox) {
+            const productItem = checkbox.closest('.product-item');
+            if (checkbox.checked) {
+                productItem.classList.add('checked');
+            } else {
+                productItem.classList.remove('checked');
+            }
         }
 
         // Initialize
-        updateSelectAllCheckbox();
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSelectAllCheckbox();
+            // Add checked class to pre-checked items
+            document.querySelectorAll('.product-checkbox:checked').forEach(function(checkbox) {
+                updateProductItem(checkbox);
+            });
+        });
     </script>
 </body>
 </html>

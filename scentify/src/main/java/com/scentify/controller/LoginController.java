@@ -188,7 +188,6 @@ public class LoginController {
             Customer customer = new Customer();
             customer.setUser(user);
             customer.setFullname(fullname);
-            customer.setLoyaltyPoints(0);
             customerRepository.save(customer);
         }
 

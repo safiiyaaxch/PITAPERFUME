@@ -158,6 +158,11 @@
             font-weight: 500;
         }
         
+        /* Note tag specific colors */
+        .accord-tag.top-tag { border-color: #f5cba7; background: #fef9f4; }
+        .accord-tag.middle-tag { border-color: #d7bde2; background: #faf5ff; }
+        .accord-tag.base-tag { border-color: #aeb6bf; background: #f4f6f7; }
+        
         .vibe-description {
             font-size: 0.95rem;
             color: var(--muted-brown);
@@ -251,6 +256,304 @@
             font-size: 1.15rem;
         }
         
+        /* ========== THINKING / WAITING ANIMATION ========== */
+        .waiting-container {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            display: none;
+        }
+        
+        .waiting-container.active {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .waiting-emoji {
+            font-size: 64px;
+            display: block;
+            margin-bottom: 20px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .waiting-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark-brown);
+            margin-bottom: 10px;
+        }
+        
+        .waiting-subtitle {
+            font-size: 1rem;
+            color: var(--muted-brown);
+            margin-bottom: 25px;
+        }
+        
+        .waiting-dots {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .waiting-dot {
+            width: 14px;
+            height: 14px;
+            background: linear-gradient(135deg, var(--accent-brown), var(--hover-brown));
+            border-radius: 50%;
+            animation: dotBounce 1.4s infinite;
+        }
+        
+        .waiting-dot:nth-child(1) { animation-delay: 0s; }
+        .waiting-dot:nth-child(2) { animation-delay: 0.2s; }
+        .waiting-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes dotBounce {
+            0%, 80%, 100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+            40% {
+                transform: translateY(-15px);
+                opacity: 1;
+            }
+        }
+        
+        /* ========== RECOMMENDATIONS SECTION ========== */
+        .recommendations-section {
+            display: none;
+        }
+        
+        .recommendations-section.active {
+            display: block;
+            animation: fadeInUp 0.6s ease;
+        }
+        
+        .recommendations-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-brown);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .recommendations-subtitle {
+            font-size: 0.95rem;
+            color: var(--muted-brown);
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        /* ===== RECOMMENDATION GRID - FIXED FOR EQUAL HEIGHT ===== */
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .recommendation-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #f0e8e0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .recommendation-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(196, 164, 132, 0.2);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            padding: 25px 20px 15px;
+            border-bottom: 1px solid #f0e8e0;
+            flex-shrink: 0;
+        }
+        
+        .card-number {
+            background: linear-gradient(135deg, var(--accent-brown), var(--hover-brown));
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .card-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .product-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--dark-brown);
+            margin-bottom: 5px;
+        }
+        
+        .product-brand {
+            font-size: 0.85rem;
+            color: var(--accent-brown);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+        
+        .price-badge {
+            display: inline-block;
+            background: var(--light-beige);
+            border: 1px solid var(--primary-beige);
+            border-radius: 15px;
+            padding: 5px 12px;
+            font-size: 0.75rem;
+            color: var(--muted-brown);
+            font-weight: 600;
+        }
+        
+        .card-body {
+            padding: 15px 20px 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-description {
+            font-size: 0.9rem;
+            color: var(--dark-brown);
+            line-height: 1.6;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+        
+        /* ===== NOTES SECTION - FIXED ===== */
+        .notes-section {
+            background: #f8f5f1;
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+        
+        .notes-section .notes-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #8A7F75;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .note-row {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+        }
+        
+        .note-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .note-label {
+            min-width: 50px;
+            font-weight: 700;
+            color: #3E3A36;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+        
+        .note-label.top { color: #e67e22; }
+        .note-label.middle { color: #8e44ad; }
+        .note-label.base { color: #2c3e50; }
+        
+        .note-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        
+        .note-tag {
+            display: inline-block;
+            background: white;
+            border: 1px solid #e6d3c1;
+            border-radius: 12px;
+            padding: 1px 10px;
+            font-size: 0.7rem;
+            color: #3E3A36;
+        }
+        
+        .note-tag.top-tag { border-color: #f5cba7; background: #fef9f4; }
+        .note-tag.middle-tag { border-color: #d7bde2; background: #faf5ff; }
+        .note-tag.base-tag { border-color: #aeb6bf; background: #f4f6f7; }
+        
+        .no-notes {
+            color: #8A7F75;
+            font-size: 0.75rem;
+            font-style: italic;
+        }
+        
+        /* ===== VIEW DETAILS BUTTON - ALWAYS AT BOTTOM ===== */
+        .btn-view-wrapper {
+            margin-top: auto;
+            padding-top: 10px;
+        }
+        
+        .btn-view-details {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-brown), var(--hover-brown));
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .btn-view-details:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(196, 164, 132, 0.3);
+            color: white;
+        }
+        
         /* ========== ACTION BUTTONS ========== */
         .action-buttons {
             display: flex;
@@ -305,200 +608,6 @@
             transform: translateY(-3px);
         }
         
-        /* ========== AI RECOMMENDATIONS SECTION ========== */
-        .gemini-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-            animation: pulse-glow 2s infinite;
-        }
-        
-        @keyframes pulse-glow {
-            0%, 100% {
-                box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
-            }
-            50% {
-                box-shadow: 0 4px 25px rgba(255, 215, 0, 0.6);
-            }
-        }
-        
-        .thinking-container {
-            background: white;
-            border-radius: 20px;
-            padding: 60px 40px;
-            text-align: center;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-            animation: fadeIn 0.5s ease-in;
-            margin-bottom: 30px;
-        }
-        
-        /* ADD THIS - Hide thinking container when not needed */
-        .thinking-container.hidden {
-            display: none;
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .thinking-text {
-            font-size: 1.1rem;
-            color: var(--dark-brown);
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-        
-        .thinking-dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            padding: 20px;
-        }
-        
-        .dot {
-            width: 12px;
-            height: 12px;
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            border-radius: 50%;
-            animation: bounce 1.4s infinite;
-        }
-        
-        .dot:nth-child(1) { animation-delay: 0s; }
-        .dot:nth-child(2) { animation-delay: 0.2s; }
-        .dot:nth-child(3) { animation-delay: 0.4s; }
-        
-        @keyframes bounce {
-            0%, 80%, 100% {
-                transform: translateY(0);
-                opacity: 0.5;
-            }
-            40% {
-                transform: translateY(-10px);
-                opacity: 1;
-            }
-        }
-        
-        .recommendations-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--dark-brown);
-            text-align: center;
-            margin-bottom: 15px;
-        }
-        
-        .recommendations-subtitle {
-            font-size: 0.95rem;
-            color: var(--muted-brown);
-            text-align: center;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-        
-        .recommendations-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-        
-        .recommendation-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            border: 1px solid #f0e8e0;
-            animation: slideIn 0.5s ease-out both;
-        }
-        
-        .recommendation-card:nth-child(1) { animation-delay: 0.1s; }
-        .recommendation-card:nth-child(2) { animation-delay: 0.2s; }
-        .recommendation-card:nth-child(3) { animation-delay: 0.3s; }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .recommendation-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(196, 164, 132, 0.2);
-        }
-        
-        .card-number {
-            background: linear-gradient(135deg, var(--accent-brown), var(--hover-brown));
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-right: 15px;
-            flex-shrink: 0;
-        }
-        
-        .card-content {
-            flex: 1;
-        }
-        
-        .product-name {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--dark-brown);
-            margin-bottom: 5px;
-        }
-        
-        .product-brand {
-            font-size: 0.85rem;
-            color: var(--accent-brown);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 10px;
-        }
-        
-        .price-badge {
-            display: inline-block;
-            background: var(--light-beige);
-            border: 1px solid var(--primary-beige);
-            border-radius: 15px;
-            padding: 5px 12px;
-            font-size: 0.75rem;
-            color: var(--muted-brown);
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-        
-        .product-description {
-            font-size: 0.9rem;
-            color: var(--dark-brown);
-            line-height: 1.6;
-            margin-bottom: 10px;
-        }
-        
         .no-recommendations {
             background: white;
             border-radius: 20px;
@@ -516,6 +625,12 @@
         }
         
         /* ========== RESPONSIVE ========== */
+        @media (max-width: 992px) {
+            .recommendations-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
         @media (max-width: 768px) {
             .scent-portrait-card,
             .spectrum-card {
@@ -541,6 +656,20 @@
             .btn-action {
                 padding: 10px 20px;
                 font-size: 0.85rem;
+            }
+            
+            .recommendations-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+            
+            .waiting-container {
+                padding: 40px 20px;
+            }
+            
+            .waiting-title {
+                font-size: 1.4rem;
             }
         }
     </style>
@@ -693,24 +822,21 @@
             </div>
         </div>
 
-        <!-- AI RECOMMENDATIONS SECTION -->
-        <div th:if="${recommendations != null and recommendations.size() > 0}">
-            <div style="text-align: center; margin-bottom: 30px;">
-                <span class="gemini-badge">✨ Gemini AI Engineered Match</span>
+        <!-- ===== WAITING / THINKING ANIMATION ===== -->
+        <div class="waiting-container active" id="waitingContainer">
+            <span class="waiting-emoji">🔍</span>
+            <h2 class="waiting-title">Finding Your Perfect Scents...</h2>
+            <p class="waiting-subtitle">Analyzing your persona and curating the best fragrances just for you</p>
+            <div class="waiting-dots">
+                <div class="waiting-dot"></div>
+                <div class="waiting-dot"></div>
+                <div class="waiting-dot"></div>
             </div>
-            
-            <!-- Thinking Animation Container - HIDDEN BY DEFAULT, SHOWN ONLY IF NEEDED -->
-            <div class="thinking-container hidden" id="thinkingContainer">
-                <div class="thinking-text">Analyzing your persona...</div>
-                <div class="thinking-dots">
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                </div>
-            </div>
-            
-            <!-- Recommendations Grid -->
-            <div class="recommendations-title">Your Perfect Fragrance Matches</div>
+        </div>
+
+        <!-- ===== RECOMMENDATIONS SECTION ===== -->
+        <div class="recommendations-section" id="recommendationsSection" th:if="${recommendations != null and recommendations.size() > 0}">
+            <div class="recommendations-title">✨ Your Perfect Fragrance Matches</div>
             <div class="recommendations-subtitle">
                 Based on your <strong th:text="${primaryPersona}"></strong> persona and personal preferences,
                 these fragrances are perfectly tailored for you.
@@ -718,24 +844,67 @@
             
             <div class="recommendations-grid">
                 <div class="recommendation-card" th:each="recommendation, iterStat : ${recommendations}">
-                    <div style="display: flex; align-items: flex-start; padding: 25px; border-bottom: 1px solid #f0e8e0;">
-                        <div class="card-number" th:text="${iterStat.count < 10 ? '0' + iterStat.count : iterStat.count}"></div>
+                    <!-- Card Header -->
+                    <div class="card-header">
+                        <div class="card-number" th:text="${iterStat.count}"></div>
                         <div class="card-content">
                             <div class="product-name" th:text="${recommendation.productName}"></div>
                             <div class="product-brand" th:if="${recommendation.category}" th:text="${recommendation.category}"></div>
                             <div class="price-badge" th:if="${recommendation.price}">
-                                <span th:text="'$' + ${#numbers.formatDecimal(recommendation.price, 0, 2)}"></span>
+                                <span th:text="'RM' + ${#numbers.formatDecimal(recommendation.price, 0, 2)}"></span>
                             </div>
                         </div>
                     </div>
-                    <div style="padding: 20px;">
+                    
+                    <!-- Card Body -->
+                    <div class="card-body">
                         <div class="product-description" th:text="${recommendation.description}"></div>
                         
-                        <!-- Accord Tags -->
-                        <div class="accord-tags">
-                            <span class="accord-tag" th:if="${recommendation.topNotes}" th:text="'Top: ' + recommendation.topNotes"></span>
-                            <span class="accord-tag" th:if="${recommendation.middleNotes}" th:text="'Heart: ' + recommendation.middleNotes"></span>
-                            <span class="accord-tag" th:if="${recommendation.baseNotes}" th:text="'Base: ' + recommendation.baseNotes"></span>
+                        <!-- Notes Section -->
+                        <div class="notes-section">
+                            <div class="notes-title">📋 Fragrance Notes</div>
+                            
+                            <!-- Top Notes -->
+                            <div class="note-row" th:if="${recommendation.topNotes != null and recommendation.topNotes != ''}">
+                                <span class="note-label top">Top</span>
+                                <div class="note-tags">
+                                    <th:block th:each="note : ${#strings.arraySplit(recommendation.topNotes, '\\|')}">
+                                        <span class="note-tag top-tag" th:text="${#strings.trim(note)}"></span>
+                                    </th:block>
+                                </div>
+                            </div>
+                            
+                            <!-- Middle Notes -->
+                            <div class="note-row" th:if="${recommendation.middleNotes != null and recommendation.middleNotes != ''}">
+                                <span class="note-label middle">Heart</span>
+                                <div class="note-tags">
+                                    <th:block th:each="note : ${#strings.arraySplit(recommendation.middleNotes, '\\|')}">
+                                        <span class="note-tag middle-tag" th:text="${#strings.trim(note)}"></span>
+                                    </th:block>
+                                </div>
+                            </div>
+                            
+                            <!-- Base Notes -->
+                            <div class="note-row" th:if="${recommendation.baseNotes != null and recommendation.baseNotes != ''}">
+                                <span class="note-label base">Base</span>
+                                <div class="note-tags">
+                                    <th:block th:each="note : ${#strings.arraySplit(recommendation.baseNotes, '\\|')}">
+                                        <span class="note-tag base-tag" th:text="${#strings.trim(note)}"></span>
+                                    </th:block>
+                                </div>
+                            </div>
+                            
+                            <!-- Fallback -->
+                            <div class="no-notes" th:if="${(recommendation.topNotes == null or recommendation.topNotes == '') and (recommendation.middleNotes == null or recommendation.middleNotes == '') and (recommendation.baseNotes == null or recommendation.baseNotes == '')}">
+                                ✨ A unique blend of exquisite notes
+                            </div>
+                        </div>
+                        
+                        <!-- View Details Button - Always at bottom -->
+                        <div class="btn-view-wrapper">
+                            <a th:href="'/customer/product/' + ${recommendation.productId}" class="btn-view-details">
+                                View Details 🛒
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -747,13 +916,13 @@
             <div style="font-size: 3em; margin-bottom: 20px;">🤔</div>
             <h3 style="color: var(--dark-brown); margin-bottom: 15px;">Finding Your Perfect Scents...</h3>
             <p style="color: var(--muted-brown); margin-bottom: 25px;">
-                Our AI is curating personalized recommendations based on your unique profile.
+                We're curating personalized recommendations based on your unique profile.
                 <br>This may take a moment.
             </p>
-            <div class="thinking-dots">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
+            <div class="waiting-dots">
+                <div class="waiting-dot"></div>
+                <div class="waiting-dot"></div>
+                <div class="waiting-dot"></div>
             </div>
             <p style="color: var(--muted-brown); margin-top: 25px; font-size: 0.85rem;">
                 <a href="/customer/quiz/start" style="color: var(--accent-brown);">← Retake Quiz</a> if this takes too long
@@ -770,25 +939,33 @@
 
     <!-- FOOTER -->
     <footer>
-        <p>&copy; 2024 Scentify. Discover Your Signature Scent. ✨</p>
+        <p>&copy; 2026 Scentify. Discover Your Signature Scent. ✨</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // Log the received data for debugging
-        console.log("=== Persona Results Page Loaded ===");
-        console.log("Primary Persona:", /*[[${primaryPersona}]]*/ null);
-        console.log("Persona Scores:", /*[[${personaScores}]]*/ null);
-        console.log("Recommendations Count:", /*[[${recommendations != null ? recommendations.size() : 0}]]*/ 0);
-        
-        // Hide the thinking container immediately since recommendations are already loaded
         document.addEventListener('DOMContentLoaded', function() {
-            var thinkingContainer = document.getElementById('thinkingContainer');
-            if (thinkingContainer) {
-                thinkingContainer.classList.add('hidden');
-                console.log("Thinking container hidden - recommendations are ready");
+            const waitingContainer = document.getElementById('waitingContainer');
+            const recommendationsSection = document.getElementById('recommendationsSection');
+            
+            // If there are recommendations, show waiting then reveal
+            if (recommendationsSection) {
+                // Show waiting first
+                waitingContainer.classList.add('active');
+                recommendationsSection.classList.remove('active');
+                
+                // After 2.5 seconds, show recommendations
+                setTimeout(function() {
+                    waitingContainer.classList.remove('active');
+                    recommendationsSection.classList.add('active');
+                }, 2500);
             }
+            
+            console.log("=== Persona Results Page Loaded ===");
+            console.log("Primary Persona:", /*[[${primaryPersona}]]*/ null);
+            console.log("Persona Scores:", /*[[${personaScores}]]*/ null);
+            console.log("Recommendations Count:", /*[[${recommendations != null ? recommendations.size() : 0}]]*/ 0);
         });
     </script>
 </body>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice - Scentify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #C4A484;
+            --secondary-color: #E6D3C1;
+            --accent-color: #FAF7F4;
+            --text-dark: #3E3A36;
+            --text-muted: #8A7F75;
+        }
+
+        body {
+            background: var(--accent-color);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            padding: 2rem;
+        }
+
+        .invoice-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 3rem;
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .invoice-brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .invoice-brand i {
+            color: var(--primary-color);
+        }
+
+        .invoice-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .invoice-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .invoice-info h6 {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.3rem;
+        }
+
+        .invoice-info p {
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+
+        .invoice-table th {
+            background: var(--accent-color);
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .invoice-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .invoice-total {
+            text-align: right;
+            padding: 1.5rem 0;
+            border-top: 2px solid var(--secondary-color);
+        }
+
+        .invoice-total .total-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .invoice-total .total-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .invoice-footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-print {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-print:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-back {
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+
+        .btn-back:hover {
+            color: var(--text-dark);
+        }
+
+        .status-paid {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        @media print {
+            .btn-print, .btn-back {
+                display: none;
+            }
+            .invoice-container {
+                box-shadow: none;
+                padding: 1rem;
+            }
+            body {
+                background: white;
+                padding: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .invoice-container {
+                padding: 1.5rem;
+            }
+
+            .invoice-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+
+            .invoice-info {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container" th:if="${invoice != null}">
+        <!-- Header -->
+        <div class="invoice-header">
+            <div class="invoice-brand">
+                <i class="fas fa-leaf"></i> Scentify
+            </div>
+            <div class="invoice-title">
+                <i class="fas fa-file-invoice"></i> INVOICE
+            </div>
+        </div>
+
+        <!-- Invoice Info -->
+        <div class="invoice-info">
+            <div>
+                <h6>Invoice Number</h6>
+                <p th:text="${invoice.invoiceNumber}">INV-2026-001</p>
+            </div>
+            <div>
+                <h6>Date</h6>
+                <p th:text="${#temporals.format(invoice.invoiceDate, 'dd MMM yyyy, hh:mm a')}">18 Jun 2026</p>
+            </div>
+            <div>
+                <h6>Order Number</h6>
+                <p>#<span th:text="${invoice.order.orderId}">51</span></p>
+            </div>
+            <div>
+                <h6>Status</h6>
+                <p class="status-paid"><i class="fas fa-check-circle"></i> PAID</p>
+            </div>
+        </div>
+
+        <!-- Customer Info -->
+        <div class="invoice-info" style="margin-bottom: 2rem;">
+            <div>
+                <h6>Billed To</h6>
+                <p th:text="${invoice.order.customer.fullname}">Customer Name</p>
+                <p style="font-weight: 400; color: var(--text-muted); font-size: 0.9rem;" th:text="${invoice.order.shippingAddress}">Address</p>
+            </div>
+            <div>
+                <h6>Payment Method</h6>
+                <p th:text="${invoice.paymentMethod}">ToyyibPay</p>
+                <p style="font-weight: 400; color: var(--text-muted); font-size: 0.9rem;">Reference: <span th:text="${invoice.paymentReference}">REF-123</span></p>
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th style="text-align: center;">Quantity</th>
+                    <th style="text-align: right;">Unit Price</th>
+                    <th style="text-align: right;">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${invoice.order.orderItems}">
+                    <td th:text="${item.product.productName}">Product Name</td>
+                    <td style="text-align: center;" th:text="${item.quantity}">1</td>
+                    <td style="text-align: right;">RM <span th:text="${#numbers.formatDecimal(item.price, 1, 2)}">0.00</span></td>
+                    <td style="text-align: right;">RM <span th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}">0.00</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Totals -->
+        <div class="invoice-total">
+            <div style="display: flex; justify-content: flex-end; gap: 3rem; margin-bottom: 0.5rem;">
+                <span class="total-label">Subtotal</span>
+                <span style="font-weight: 600;">RM <span th:text="${#numbers.formatDecimal(invoice.subtotal, 1, 2)}">0.00</span></span>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 3rem; margin-bottom: 0.5rem;">
+                <span class="total-label">Tax (<span th:text="${invoice.taxRate}">0%</span>)</span>
+                <span style="font-weight: 600;">RM <span th:text="${#numbers.formatDecimal(invoice.tax, 1, 2)}">0.00</span></span>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 3rem;">
+                <span class="total-label" style="font-size: 1.2rem;">Total</span>
+                <span class="total-amount">RM <span th:text="${#numbers.formatDecimal(invoice.total, 1, 2)}">0.00</span></span>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="invoice-footer">
+            <a href="/customer/order-history" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Back to Orders
+            </a>
+            <button class="btn-print" onclick="window.print()">
+                <i class="fas fa-print"></i> Print Invoice
+            </button>
+        </div>
+    </div>
+
+    <div th:if="${invoice == null}" style="text-align: center; padding: 3rem;">
+        <h3>Invoice not found</h3>
+        <a href="/customer/order-history" class="btn-back">Back to Orders</a>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

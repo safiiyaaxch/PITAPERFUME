@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,631 +9,544 @@
     <style>
         :root {
             --primary-color: #C4A484;
+            --primary-dark: #B89673;
             --secondary-color: #E6D3C1;
             --accent-color: #FAF7F4;
             --text-dark: #3E3A36;
             --text-muted: #8A7F75;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            background-color: #FFFFFF;
+            background: #f8f5f2;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            color: var(--text-dark);
-        }
-
-        .navbar {
-            background: white;
-            border-bottom: 1px solid #f0f0f0;
-            padding: 1rem 0;
-        }
-
-        .navbar .container-fluid {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-dark) !important;
-        }
-
-        .nav-link {
-            color: var(--text-dark) !important;
-            font-weight: 500;
-            margin: 0 1rem;
-        }
-
-        .logout-btn {
-            background: var(--primary-color);
-            color: white;
-            padding: 0.6rem 1.5rem;
-            border-radius: 4px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .logout-btn:hover {
-            background: #B89673;
-            color: white;
-            text-decoration: none;
-        }
-
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
         }
 
         .checkout-container {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .checkout-section {
-            background: white;
-            border-radius: 8px;
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 2rem;
-            border: 1px solid #e0e0e0;
         }
 
-        .section-title {
-            font-size: 1.3rem;
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 0.7fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            margin-bottom: 0;
+            border: 1px solid #f0ece8;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
             font-weight: 700;
             color: var(--text-dark);
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .form-control {
-            border: 1px solid #d4c5bd;
-            border-radius: 4px;
-            padding: 0.75rem;
-            font-size: 0.95rem;
-            color: var(--text-dark);
-        }
-
-        .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(196, 164, 132, 0.25);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .voucher-section {
-            background: linear-gradient(135deg, #f0e8d8, #fdfcfa);
-            border-left: 4px solid var(--primary-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .voucher-title {
-            color: var(--text-dark);
-            font-weight: 600;
-            font-size: 0.95rem;
             margin-bottom: 1rem;
         }
 
-        .voucher-select {
-            border: 1px solid var(--primary-color);
-            border-radius: 4px;
-            padding: 0.7rem;
-            background: white;
+        .card-title i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 0.85rem;
             color: var(--text-dark);
-            cursor: pointer;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-group input {
             width: 100%;
-        }
-
-        .member-benefits {
-            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-            padding: 0.8rem;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid #e0d8d0;
             border-radius: 6px;
-            margin-bottom: 1.5rem;
-            border-left: 4px solid #4caf50;
+            font-size: 0.9rem;
+            transition: all 0.3s;
         }
 
-        .non-member-prompt {
-            background: linear-gradient(135deg, #f0e8d8, #fdfcfa);
-            padding: 1rem;
-            border-radius: 4px;
-            margin-bottom: 1.5rem;
-            border-left: 4px solid var(--primary-color);
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(196, 164, 132, 0.2);
+        }
+
+        /* Divider */
+        .section-divider {
+            border: none;
+            border-top: 1px solid #f0ece8;
+            margin: 1.2rem 0;
         }
 
         .order-item {
             display: flex;
-            gap: 1rem;
-            padding: 1rem;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            margin-bottom: 1rem;
-            background: var(--accent-color);
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f0ece8;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
         }
 
         .order-item-image {
-            width: 80px;
-            height: 80px;
+            width: 50px;
+            height: 50px;
             object-fit: cover;
-            border-radius: 4px;
+            border-radius: 6px;
+            border: 1px solid #f0ece8;
+            flex-shrink: 0;
         }
 
         .order-item-details {
             flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .order-item-name {
             font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 0.3rem;
+            font-size: 0.85rem;
         }
 
-        .order-item-qty {
-            font-size: 0.85rem;
+        .order-item-meta {
             color: var(--text-muted);
-            margin-bottom: 0.3rem;
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-
-        .qty-btn-small {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 3px;
-            padding: 0.2rem 0.5rem;
-            cursor: pointer;
-            font-size: 0.85rem;
-            min-width: 28px;
-        }
-
-        .qty-btn-small:hover {
-            background: #B89673;
-        }
-
-        .item-qty-input {
-            width: 50px;
-            padding: 0.3rem;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-            text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         .order-item-price {
             font-weight: 600;
             color: var(--primary-color);
-        }
-
-        .summary-box {
-            background: var(--accent-color);
-            border-radius: 8px;
-            padding: 1.5rem;
-            border: 1px solid #e0e0e0;
+            font-size: 0.85rem;
         }
 
         .summary-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 1rem;
-            color: var(--text-muted);
+            padding: 0.4rem 0;
         }
 
-        .summary-row.total {
-            border-top: 2px solid #e0e0e0;
-            padding-top: 1rem;
-            font-size: 1.1rem;
+        .summary-row .label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .summary-row .amount {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .summary-row.border-top {
+            border-top: 1px solid #f0ece8;
+            margin-top: 0.3rem;
+            padding-top: 0.5rem;
+        }
+
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
             font-weight: 700;
-            color: var(--text-dark);
+            font-size: 1rem;
+            border-top: 2px solid var(--secondary-color);
+            margin-top: 0.3rem;
         }
 
-        .summary-label {
-            font-weight: 500;
+        .order-total .amount {
+            color: var(--primary-color);
+            font-size: 1.2rem;
         }
 
-        .summary-value {
-            text-align: right;
-            font-weight: 600;
+        .voucher-section {
+            background: var(--accent-color);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin: 0.75rem 0;
+            border: 1px dashed var(--secondary-color);
         }
 
-        .delivery-free {
-            color: green;
-            font-weight: 600;
-        }
-
-        .delivery-strikethrough {
-            text-decoration: line-through;
-            color: #999;
+        .voucher-section select {
+            width: 100%;
+            padding: 0.4rem;
+            border: 1px solid #e0d8d0;
+            border-radius: 6px;
+            background: white;
+            margin-top: 0.3rem;
             font-size: 0.85rem;
-            margin-left: 0.3rem;
         }
 
-        .pay-btn {
+        .voucher-section .voucher-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        .voucher-section .voucher-info i {
+            color: var(--primary-color);
+            margin-right: 0.3rem;
+        }
+
+        .discount-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.3rem 0;
+            color: #28a745;
+        }
+
+        .discount-row .amount {
+            font-weight: 600;
+        }
+
+        .member-benefit {
+            background: linear-gradient(135deg, #f0e8d8, #fdfcfa);
+            border-left: 4px solid var(--primary-color);
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            margin: 0.75rem 0;
+            font-size: 0.85rem;
+        }
+
+        .member-benefit i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        .member-benefit-green {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-left: 4px solid #28a745;
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            margin: 0.75rem 0;
+            font-size: 0.85rem;
+            color: #155724;
+        }
+
+        .btn-place-order {
+            width: 100%;
             background: var(--primary-color);
             color: white;
-            padding: 1rem 2rem;
+            padding: 0.7rem;
             border: none;
-            border-radius: 4px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.3s;
-            margin-top: 1.5rem;
-        }
-
-        .pay-btn:hover {
-            background: #B89673;
-        }
-
-        .back-btn {
-            background: #E2D6CB;
-            color: var(--text-dark);
-            padding: 0.7rem 1.5rem;
-            border: none;
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: 600;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: all 0.3s;
+            margin-top: 0.75rem;
+        }
+
+        .btn-place-order:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.3);
+        }
+
+        .saved-amount {
+            color: #28a745;
+            font-weight: 700;
+        }
+
+        .no-vouchers {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding: 0.3rem 0;
+        }
+
+        .member-prompt {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin: 0.75rem 0;
+        }
+
+        .member-prompt i {
+            color: #856404;
+            margin-right: 0.5rem;
+        }
+
+        .member-prompt .text {
+            color: #856404;
+            font-size: 0.85rem;
+        }
+
+        .member-prompt .btn-join {
             display: inline-block;
-            margin-top: 1rem;
+            margin-top: 0.4rem;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
         }
 
-        .back-btn:hover {
-            background: #d4c2b0;
-            color: var(--text-dark);
-            text-decoration: none;
+        .member-prompt .btn-join:hover {
+            background: var(--primary-dark);
+            color: white;
         }
 
         @media (max-width: 768px) {
-            .checkout-container {
+            .checkout-grid {
                 grid-template-columns: 1fr;
+                gap: 1.5rem;
             }
 
-            .form-row {
-                grid-template-columns: 1fr;
+            .checkout-container {
+                padding: 1rem;
+            }
+
+            .order-item {
+                flex-wrap: wrap;
+            }
+
+            .order-item-details {
+                flex-wrap: wrap;
+                gap: 0.3rem;
             }
         }
     </style>
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/customer/dashboard">
-                <i class="fas fa-leaf"></i> Scentify
+    <nav class="navbar" style="background: white; border-bottom: 1px solid #f0f0f0; padding: 1rem 0;">
+        <div class="container-fluid" style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
+            <a class="navbar-brand" href="/customer/dashboard" style="font-size: 1.5rem; font-weight: 700; color: var(--text-dark) !important;">
+                <i class="fas fa-leaf" style="color: var(--primary-color);"></i> Scentify
             </a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="/customer/dashboard">
-                    <i class="fas fa-home"></i> Home
-                </a>
-                <a class="nav-link" href="/customer/cart">
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <a class="nav-link" href="/customer/dashboard" style="color: var(--text-dark) !important; font-weight: 500; margin: 0 1rem;">Home</a>
+                <a class="nav-link" href="/customer/cart" style="color: var(--text-dark) !important; font-weight: 500; margin: 0 1rem;">
                     <i class="fas fa-shopping-cart"></i> Cart
                 </a>
-                <a class="nav-link logout-btn" href="/logout">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                <a class="nav-link" href="/customer/order-history" style="color: var(--text-dark) !important; font-weight: 500; margin: 0 1rem;">Order History</a>
+                <a class="nav-link" href="#" style="color: var(--text-dark) !important; font-weight: 500; margin: 0 1rem;">About Us</a>
+                <span th:if="${customer.isMember == true}" style="background: var(--primary-color); color: white; padding: 0.6rem 1.5rem; border-radius: 20px; font-size: 0.9rem; font-weight: 600;">
+                    <i class="fas fa-crown"></i> Premium Member
+                </span>
+                <a href="/logout" style="background: var(--primary-color); color: white; padding: 0.6rem 1.5rem; border-radius: 4px; border: none; font-weight: 600; cursor: pointer; transition: all 0.3s; text-decoration: none;">
+                    <i class="fas fa-sign-out-alt"></i> Log Out
                 </a>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="main-container">
-        <h1 class="section-title" style="font-size: 1.8rem; margin-bottom: 2rem;">
-            <i class="fas fa-credit-card"></i> Checkout
-        </h1>
+    <div class="checkout-container">
+        <h2 style="margin-bottom: 2rem; font-weight: 700;">
+            <i class="fas fa-shopping-bag" style="color: var(--primary-color);"></i> Checkout
+        </h2>
+        
+        <form method="post" th:action="@{/customer/checkout-confirm}">
+            <!-- Hidden fields -->
+            <input type="hidden" name="cartId" th:value="${cartId}" />
+            <input type="hidden" name="directPurchase" th:value="${isDirectPurchase != null ? isDirectPurchase : false}" />
+            <input type="hidden" id="subtotalValue" th:value="${cart.totalPrice}" />
 
-        <div class="checkout-container">
-            <!-- Left Section: Delivery & Payment -->
-            <div class="checkout-section">
-                <!-- Delivery Address -->
-                <div class="section-title">
-                    <i class="fas fa-map-marker-alt"></i>
-                    Delivery Address
-                </div>
-
-                <form method="post" id="checkoutForm" th:action="@{/customer/checkout-confirm}">
-                    <div class="form-group">
-                        <label class="form-label">Recipient Name</label>
-                        <input type="text" class="form-control" name="recipientName" 
-                               th:value="${customer.fullname}" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Phone Number</label>
-                        <input type="tel" class="form-control" name="phoneNumber" 
-                               th:value="${customer.phone}" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Shipping Address</label>
-                        <textarea class="form-control" name="shippingAddress" rows="3" required th:text="${customer.address}"></textarea>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">City</label>
-                            <input type="text" class="form-control" name="city" 
-                                   th:value="${customer.city}" required>
+            <div class="checkout-grid">
+                <!-- LEFT: Delivery Address + Voucher Section (BIGGER) -->
+                <div>
+                    <!-- Delivery Address Card -->
+                    <div class="card">
+                        <div class="card-title">
+                            <i class="fas fa-map-marker-alt"></i> Delivery Address
                         </div>
+                        
                         <div class="form-group">
-                            <label class="form-label">Country</label>
-                            <input type="text" class="form-control" name="country" 
-                                   th:value="${customer.country}" required>
+                            <label>Recipient Name <span style="color: #e74c3c;">*</span></label>
+                            <input type="text" name="recipientName" th:value="${customer.fullname}" placeholder="Enter recipient name" required />
                         </div>
-                    </div>
+                        
+                        <div class="form-group">
+                            <label>Phone Number <span style="color: #e74c3c;">*</span></label>
+                            <input type="text" name="phoneNumber" th:value="${customer.phone}" placeholder="Enter phone number" required />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Shipping Address <span style="color: #e74c3c;">*</span></label>
+                            <input type="text" name="shippingAddress" th:value="${customer.address}" placeholder="Enter shipping address" required />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>City <span style="color: #e74c3c;">*</span></label>
+                            <input type="text" name="city" th:value="${customer.city}" placeholder="Enter city" required />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Country <span style="color: #e74c3c;">*</span></label>
+                            <input type="text" name="country" th:value="${customer.country}" placeholder="Enter country" required />
+                        </div>
+                        
 
-                    <!-- Member Benefits Banner -->
-                    <div th:if="${customer.isMember}" class="member-benefits">
-                        <i class="fas fa-truck" style="color: #4caf50;"></i> 
-                        <strong style="color: #2e7d32;">Member Benefit:</strong> 
-                        <span style="color: #1b5e20;">FREE Delivery on all orders!</span>
-                    </div>
-
-                    <!-- Voucher Section for Members -->
-                    <div th:if="${customer.isMember}">
-                        <div th:if="${availableVouchers != null and !availableVouchers.isEmpty()}" class="voucher-section">
-                            <div class="voucher-title">
-                                <i class="fas fa-ticket-alt"></i> Apply Voucher (Member Only)
+                        <!-- ===== VOUCHER & MEMBERSHIP SECTION (INSIDE THE CARD) ===== -->
+                        
+                        <!-- Member Benefits -->
+                        <div th:if="${customer.isMember == true}">
+                            <div class="member-benefit">
+                                <i class="fas fa-crown"></i> You saved <span class="saved-amount">RM4.90</span> on delivery with your membership!
                             </div>
-                            <select class="voucher-select" name="voucherId" id="voucherId" onchange="updateDiscount()">
-                                <option value="">-- Select a Voucher --</option>
-                                <option th:each="voucher : ${availableVouchers}" 
-                                        th:value="${voucher.voucherId}"
-                                        th:text="${voucher.voucherCode} + ' - ' + ${voucher.discountValue} + (${voucher.discountType == 'PERCENTAGE'} ? '%' : 'RM') + ' off'">
-                                    Voucher
-                                </option>
-                            </select>
+                            
+                            <div class="member-benefit-green">
+                                <i class="fas fa-truck"></i> <strong>Member Benefit:</strong> FREE Delivery on all orders!
+                            </div>
                         </div>
-                        <div th:if="${availableVouchers == null or availableVouchers.isEmpty()}" class="non-member-prompt">
-                            <i class="fas fa-ticket-alt"></i> 
-                            <strong>No vouchers available</strong> at the moment. 
-                            <br>Complete more purchases to earn vouchers!
+                        
+                        <!-- Voucher Section - Members -->
+                        <div th:if="${customer.isMember == true}" class="voucher-section">
+                            <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.3rem;">
+                                <i class="fas fa-ticket-alt"></i> Apply Voucher <span style="font-weight: 400; font-size: 0.8rem; color: var(--text-muted);">(Member Only)</span>
+                            </div>
+                            
+                            <!-- If vouchers exist -->
+                            <div th:if="${not #lists.isEmpty(availableVouchers)}">
+                                <select name="voucherId" id="voucherSelect" onchange="updateVoucher()">
+                                    <option value="">Select a voucher</option>
+                                    <option th:each="voucher : ${availableVouchers}" 
+                                            th:value="${voucher.voucherId}"
+                                            th:text="${voucher.voucherCode} + ' - ' + ${voucher.discountValue} + 'RM off'">
+                                    </option>
+                                </select>
+                                <div class="voucher-info">
+                                    <i class="fas fa-info-circle"></i> Apply your voucher to get discounts!
+                                </div>
+                            </div>
+                            
+                            <!-- If no vouchers -->
+                            <div th:unless="${not #lists.isEmpty(availableVouchers)}" class="no-vouchers">
+                                <i class="fas fa-info-circle"></i> No vouchers available at the moment.
+                            </div>
                         </div>
-                    </div>
-
-                    <!-- Non-Member Prompt -->
-                    <div th:unless="${customer.isMember}" class="non-member-prompt">
-                        <i class="fas fa-star"></i> 
-                        <strong>Become a member</strong> to unlock:
-                        <ul style="margin: 0.5rem 0 0 1rem; font-size: 0.85rem;">
-                            <li>✨ FREE delivery on all orders</li>
-                            <li>🎫 Exclusive voucher discounts</li>
-                            <li>⭐ Loyalty points program</li>
-                        </ul>
-                        <a href="/customer/apply-membership" style="color: var(--primary-color); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-top: 0.5rem;">
-                            Learn More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-
-                    <input type="hidden" name="cartId" th:value="${cart.cartId}">
-                    <input type="hidden" name="discountAmount" id="discountAmountInput" value="0.00">
-                    <input type="hidden" name="deliveryCost" id="deliveryCostInput" th:value="${customer.isMember ? 0 : 4.90}">
-                    
-                    <!-- Payment Button -->
-                    <button type="button" class="pay-btn" onclick="processCheckout()">
-                        <i class="fas fa-credit-card"></i> Proceed to Payment
-                    </button>
-                    
-                    <div style="font-size: 0.85rem; color: #8A7F75; margin-top: 1rem; text-align: center;">
-                        <i class="fas fa-lock"></i> Secure payment via ToyyibPay (Cards • FPX • E-Wallets)
-                    </div>
-                </form>
-            </div>
-
-            <!-- Right Section: Order Summary -->
-            <div class="checkout-section">
-                <div class="section-title">
-                    <i class="fas fa-box"></i>
-                    Order Summary
-                </div>
-
-                <!-- Stock Warning -->
-                <div th:each="item : ${cart.cartItems}" th:if="${item.product.stock < item.quantity}" style="background: #ffebee; border-left: 4px solid #c62828; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; color: #c62828;">
-                    <i class="fas fa-exclamation-triangle"></i> 
-                    <strong th:text="${item.product.productName}"></strong> has only 
-                    <strong th:text="${item.product.stock}"></strong> units available.
-                </div>
-
-                <!-- Order Items (Cart) -->
-                <div th:each="item : ${cart.cartItems}" class="order-item" th:data-item-id="${item.cartItemId}" th:data-price="${item.product.price}">
-                    <img th:src="${item.product.prodimage}" 
-                         th:alt="${item.product.productName}"
-                         class="order-item-image"
-                         onerror="this.src='https://via.placeholder.com/80x80?text=No+Image'">
-                    <div class="order-item-details">
-                        <div class="order-item-name" th:text="${item.product.productName}">Product</div>
-                        <div class="order-item-qty">
-                            <button type="button" class="qty-btn-small" onclick="decreaseItemQty(this)">−</button>
-                            <input type="number" class="item-qty-input" th:value="${item.quantity}" min="1" onchange="updateCheckoutTotal()">
-                            <button type="button" class="qty-btn-small" onclick="increaseItemQty(this)">+</button>
-                        </div>
-                        <div class="order-item-price">
-                            RM <span class="item-price-display" th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}">0.00</span>
+                        
+                        <!-- Membership Prompt - Non-Members -->
+                        <div th:unless="${customer.isMember == true}" class="member-prompt">
+                            <i class="fas fa-crown"></i>
+                            <span class="text">Become a member to unlock vouchers and free delivery!</span>
+                            <br>
+                            <a href="/customer/apply-membership" class="btn-join">
+                                <i class="fas fa-arrow-right"></i> Join Membership
+                            </a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Price Summary -->
-                <div class="summary-box">
-                    <div class="summary-row">
-                        <span class="summary-label">Subtotal</span>
-                        <span class="summary-value">RM <span id="subtotal" th:text="${#numbers.formatDecimal(cart.totalPrice, 1, 2)}">0.00</span></span>
-                    </div>
-
-                    <div class="summary-row">
-                        <span class="summary-label">Delivery Cost</span>
-                        <span class="summary-value" id="deliveryValue">
-                            <span th:if="${customer.isMember}">
-                                <span class="delivery-free">FREE</span>
-                                <span class="delivery-strikethrough">RM4.90</span>
+                <!-- RIGHT: Order Summary (SMALLER) -->
+                <div>
+                    <div class="card" style="padding: 1rem;">
+                        <div class="card-title" style="font-size: 1rem; margin-bottom: 0.75rem;">
+                            <i class="fas fa-receipt"></i> Order Summary
+                        </div>
+                        
+                        <!-- Cart Items WITH IMAGES -->
+                        <div th:each="item : ${cart.cartItems}" class="order-item">
+                            <img th:src="${item.product.prodimage}" 
+                                 alt="Product" 
+                                 class="order-item-image"
+                                 onerror="this.src='https://via.placeholder.com/50x50?text=No+Image'">
+                            <div class="order-item-details">
+                                <div>
+                                    <div class="order-item-name" th:text="${item.product.productName}">Product Name</div>
+                                    <div class="order-item-meta">Quantity: <span th:text="${item.quantity}">1</span></div>
+                                </div>
+                                <div class="order-item-price">RM <span th:text="${#numbers.formatDecimal(item.product.price * item.quantity, 1, 2)}">0.00</span></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Subtotal -->
+                        <div class="summary-row border-top">
+                            <span class="label">Subtotal</span>
+                            <span class="amount" id="subtotal" th:text="'RM ' + ${#numbers.formatDecimal(cart.totalPrice, 1, 2)}">RM 0.00</span>
+                        </div>
+                        
+                        <!-- Delivery Cost -->
+                        <div class="summary-row">
+                            <span class="label">Delivery Cost</span>
+                            <span class="amount">
+                                <span th:if="${customer.isMember == true}" style="color: #28a745;">
+                                    FREE <span style="color: #999; font-size: 0.8rem; text-decoration: line-through;">RM 4.90</span>
+                                </span>
+                                <span th:unless="${customer.isMember == true}">RM 4.90</span>
                             </span>
-                            <span th:unless="${customer.isMember}">
-                                RM <span id="delivery">4.90</span>
-                            </span>
-                        </span>
+                        </div>
+                        
+                        <!-- Voucher Discount (ON THE RIGHT SIDE, below delivery cost) -->
+                        <div id="discountDisplay" style="display: none;">
+                            <div class="discount-row">
+                                <span>Voucher Discount</span>
+                                <span class="amount">- RM <span id="discountAmount">0.00</span></span>
+                            </div>
+                        </div>
+                        
+                        <!-- Total -->
+                        <div class="order-total">
+                            <span><strong>Total</strong></span>
+                            <span class="amount">RM <span id="totalAmount" th:text="${#numbers.formatDecimal(cart.totalPrice, 1, 2)}">0.00</span></span>
+                        </div>
+                        
+                        <!-- Place Order Button -->
+                        <button type="submit" class="btn-place-order">
+                            <i class="fas fa-lock"></i> Place Order
+                        </button>
                     </div>
-
-                    <div class="summary-row">
-                        <span class="summary-label">Discount</span>
-                        <span class="summary-value">RM <span id="discount">0.00</span></span>
-                    </div>
-
-                    <div class="summary-row total">
-                        <span class="summary-label">Total</span>
-                        <span class="summary-value">RM <span id="total">0.00</span></span>
-                    </div>
-                </div>
-
-                <!-- Member Savings Note -->
-                <div th:if="${customer.isMember}" style="margin-top: 1rem; padding: 0.5rem; background: #e8f5e9; border-radius: 4px; text-align: center; font-size: 0.85rem; color: #2e7d32;">
-                    <i class="fas fa-tags"></i> You saved RM4.90 on delivery with your membership!
                 </div>
             </div>
-        </div>
+        </form>
     </div>
-
-    <div style="text-align: center; margin-top: 2rem; margin-bottom: 2rem;">
-        <a href="/customer/cart" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Cart
-        </a>
-    </div>
-
+    
     <script>
-        var deliveryCost = 4.90;
-        var isMember = false;
+        function updateVoucher() {
+        const select = document.getElementById('voucherSelect');
+        const discountDisplay = document.getElementById('discountDisplay');
+        const discountAmount = document.getElementById('discountAmount');
+        const totalAmount = document.getElementById('totalAmount');
+        const discountedTotalInput = document.getElementById('discountedTotal');
+        const voucherIdInput = document.getElementById('selectedVoucherId');
         
-        // Get member status from server
-        /*[/ th:inline="javascript" */
-            isMember = /*[[${customer.isMember}]]*/ false;
-        /*]*/
+        // Get subtotal from hidden field
+        const subtotal = parseFloat(document.getElementById('subtotalValue').value);
         
-        function updateCheckoutTotal() {
-            var subtotal = 0;
-            var items = document.querySelectorAll('.order-item');
-            items.forEach(function(item) {
-                var price = parseFloat(item.dataset.price) || 0;
-                var qty = parseInt(item.querySelector('.item-qty-input').value) || 1;
-                subtotal += price * qty;
-            });
-            
-            // Calculate delivery cost based on membership
-            var delivery = isMember ? 0 : deliveryCost;
-            
-            // Calculate discount from voucher
-            var voucherSelect = document.getElementById('voucherId');
-            var discount = 0;
-            
-            if (voucherSelect && voucherSelect.value) {
-                var selectedOption = voucherSelect.options[voucherSelect.selectedIndex];
-                var voucherText = selectedOption.text;
-                var discountMatch = voucherText.match(/(\d+(?:\.\d{2})?)\s*(?:%|RM)/);
-                if (discountMatch) {
-                    var amount = parseFloat(discountMatch[1]);
-                    if (voucherText.includes('%')) {
-                        discount = (subtotal * amount) / 100;
-                    } else {
-                        discount = amount;
-                    }
-                }
-            }
-            
-            var total = subtotal + delivery - discount;
-            
-            // Update display
-            document.getElementById('subtotal').textContent = subtotal.toFixed(2);
-            document.getElementById('discount').textContent = discount.toFixed(2);
-            document.getElementById('discountAmountInput').value = discount.toFixed(2);
-            document.getElementById('total').textContent = total.toFixed(2);
-            
-            // Update delivery display for non-members only
-            if (!isMember) {
-                var deliverySpan = document.getElementById('delivery');
-                if (deliverySpan) {
-                    deliverySpan.textContent = delivery.toFixed(2);
-                }
-            }
-            
-            // Update hidden delivery cost input
-            var deliveryCostInput = document.getElementById('deliveryCostInput');
-            if (deliveryCostInput) {
-                deliveryCostInput.value = delivery;
-            }
-        }
+        let total = subtotal;
         
-        function updateDiscount() {
-            updateCheckoutTotal();
-        }
-        
-        function increaseItemQty(btn) {
-            var input = btn.parentElement.querySelector('.item-qty-input');
-            var currentVal = parseInt(input.value);
-            if (!isNaN(currentVal)) {
-                input.value = currentVal + 1;
-                updateCheckoutTotal();
-            }
-        }
-
-        function decreaseItemQty(btn) {
-            var input = btn.parentElement.querySelector('.item-qty-input');
-            var currentVal = parseInt(input.value);
-            if (!isNaN(currentVal) && currentVal > 1) {
-                input.value = currentVal - 1;
-                updateCheckoutTotal();
-            }
-        }
-
-        function processCheckout() {
-            var form = document.getElementById('checkoutForm');
-            if (form) {
-                var recipientName = form.querySelector('[name="recipientName"]').value;
-                var phoneNumber = form.querySelector('[name="phoneNumber"]').value;
-                var shippingAddress = form.querySelector('[name="shippingAddress"]').value;
-                var city = form.querySelector('[name="city"]').value;
-                var country = form.querySelector('[name="country"]').value;
+        if (select.value && select.value !== '') {
+            const selectedOption = select.options[select.selectedIndex];
+            const voucherText = selectedOption.text;
+            
+            // Parse discount amount from text (e.g., "AAA - 30.00RM off" -> 30.00)
+            const match = voucherText.match(/(\d+\.?\d*)\s*RM/);
+            if (match) {
+                const discount = parseFloat(match[1]);
+                discountDisplay.style.display = 'block';
+                discountAmount.innerText = discount.toFixed(2);
+                total = subtotal - discount;
                 
-                if (!recipientName || !phoneNumber || !shippingAddress || !city || !country) {
-                    alert('Please fill in all delivery details before proceeding to payment.');
-                    return;
-                }
-                
-                form.submit();
+                // ✅ Set the discounted total and voucher ID
+                discountedTotalInput.value = total.toFixed(2);
+                voucherIdInput.value = select.value;
             }
+        } else {
+            discountDisplay.style.display = 'none';
+            discountAmount.innerText = '0.00';
+            
+            // ✅ Reset to original total
+            discountedTotalInput.value = subtotal.toFixed(2);
+            voucherIdInput.value = '';
         }
         
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            updateCheckoutTotal();
-        });
+        // Update total display
+        totalAmount.innerText = total.toFixed(2);
+    }
     </script>
 </body>
 </html>

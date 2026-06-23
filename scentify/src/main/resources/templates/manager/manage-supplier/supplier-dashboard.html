@@ -2,317 +2,590 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Suppliers - Scentify</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-    body {
-        font-family: 'Inter', sans-serif;
-        background: linear-gradient(135deg, #fdfcfa 0%, #f5ede6 100%);
-        min-height: 100vh;
-        padding: 30px 20px;
-    }
-
-    .navbar {
-        background: linear-gradient(135deg, #667eea, #764ba2) !important;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        margin-bottom: 30px;
-    }
-
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-    }
-
-    .page-title {
-        font-family: 'Playfair Display', serif;
-        font-size: 32px;
-        color: #5a4a42;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .page-title i {
-        color: #667eea;
-    }
-
-    .btn-back {
-        background: #667eea;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 10px;
-        text-decoration: none;
-        font-weight: 600;
-    }
-
-    .btn-back:hover {
-        background: #764ba2;
-        color: white;
-    }
-
-    .section {
-        background: white;
-        border-radius: 18px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.08);
-        padding: 30px;
-        margin-bottom: 30px;
-    }
-
-    .section h2 {
-        font-family: 'Playfair Display', serif;
-        font-size: 24px;
-        color: #5a4a42;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .section h2 i {
-        color: #667eea;
-    }
-
-    .supplier-card {
-        background: #f8f7f5;
-        border: 1px solid #e8ddd2;
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 15px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: all 0.3s ease;
-    }
-
-    .supplier-card:hover {
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        transform: translateX(5px);
-    }
-
-    .supplier-info h3 {
-        font-weight: 600;
-        color: #5a4a42;
-        margin-bottom: 8px;
-    }
-
-    .supplier-info p {
-        margin: 5px 0;
-        color: #8b7355;
-        font-size: 14px;
-    }
-
-    .supplier-actions {
-        display: flex;
-        gap: 10px;
-    }
-
-    .btn-view {
-        background: #667eea;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 13px;
-        transition: all 0.3s ease;
-    }
-
-    .btn-view:hover {
-        background: #764ba2;
-        color: white;
-    }
-
-    .empty-message {
-        text-align: center;
-        padding: 40px;
-        color: #999;
-    }
-
-    .empty-message i {
-        font-size: 48px;
-        margin-bottom: 20px;
-        display: block;
-        color: #ddd;
-    }
-
-    .status-badge {
-        display: inline-block;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-weight: 600;
-        font-size: 11px;
-        text-transform: uppercase;
-        margin-bottom: 8px;
-    }
-
-    .status-pending {
-        background: #fff3cd;
-        color: #856404;
-    }
-
-    .status-approved {
-        background: #d4edda;
-        color: #155724;
-    }
-
-    .status-rejected {
-        background: #f8d7da;
-        color: #721c24;
-    }
-
-    .alert {
-        border-radius: 12px;
-        margin-bottom: 25px;
-    }
-
-    @media (max-width: 768px) {
-        .supplier-card {
-            flex-direction: column;
-            align-items: flex-start;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .supplier-actions {
-            width: 100%;
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fdfcfa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(62, 58, 54, 0.06);
+            border: 1px solid #f0e8e0;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .header-left h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #3E3A36;
+        }
+
+        .header-left h1 i {
+            color: #C4A484;
+            margin-right: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-back {
+            background: #E6D3C1;
+            color: #3E3A36;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-back:hover {
+            background: #d4c4b0;
+            transform: translateY(-2px);
+        }
+
+        .logout-btn {
+            background: #2C2C2C;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logout-btn:hover {
+            background: #1a1a1a;
+            transform: translateY(-2px);
+        }
+
+        /* ===== ALERTS ===== */
+        .alerts {
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .alert-success {
+            background: #eef6f1;
+            color: #2f6b47;
+            border: 1px solid #d4e8dc;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .alert-error {
+            background: #f8ecec;
+            color: #8b2f2f;
+            border: 1px solid #f0d6d6;
+        }
+
+        /* ===== STATS ===== */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(62, 58, 54, 0.06);
+            border: 1px solid #f0e8e0;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(196, 164, 132, 0.12);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card.pending .stat-icon { color: #ff9800; }
+        .stat-card.approved .stat-icon { color: #4caf50; }
+        .stat-card.rejected .stat-icon { color: #f44336; }
+
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #C4A484;
+        }
+
+        .stat-label {
+            color: #8A7F75;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* ===== TABS ===== */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #f0e8e0;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 0.8rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #8A7F75;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-btn:hover {
+            color: #3E3A36;
+        }
+
+        .tab-btn.active {
+            border-bottom-color: #C4A484;
+            color: #C4A484;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ===== SUPPLIER CARDS ===== */
+        .supplier-card {
+            background: #f9f9f9;
+            border-left: 5px solid #c2a98d;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .supplier-card.approved {
+            border-left-color: #8b9d8b;
+        }
+
+        .supplier-card.rejected {
+            border-left-color: #a8796a;
+        }
+
+        .supplier-header {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .supplier-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .supplier-info h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .supplier-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 8px 15px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .supplier-details strong {
+            color: #333;
+        }
+
+        .supplier-status {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* ===== ACTIONS ===== */
+        .actions {
+            display: flex;
+            gap: 10px;
             margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .actions form {
+            margin: 0;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
         }
 
         .btn-view {
-            flex: 1;
-            text-align: center;
+            background: #C4A484;
+            color: white;
         }
-    }
+        .btn-view:hover {
+            background: #9d8970;
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.3);
+        }
+
+        .btn-approve {
+            background: #4caf50;
+            color: white;
+        }
+        .btn-approve:hover {
+            background: #45a049;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-reject {
+            background: #f44336;
+            color: white;
+        }
+        .btn-reject:hover {
+            background: #da190b;
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #8A7F75;
+            font-size: 1.05rem;
+        }
+
+        .empty-message i {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 1rem;
+            color: #E6D3C1;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+                padding: 20px;
+            }
+            .header-left h1 {
+                font-size: 1.3rem;
+            }
+            .supplier-header {
+                flex-direction: column;
+            }
+            .stats {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .actions {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            .stat-number {
+                font-size: 1.8rem;
+            }
+        }
     </style>
 </head>
 <body>
-
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid">
-        <span class="navbar-brand">Scentify Manager</span>
-        <div class="ms-auto">
-            <a href="/manager/dashboard" class="btn btn-sm btn-outline-light">Back to Dashboard</a>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1><i class="fas fa-store"></i> Supplier Management</h1>
+            </div>
+            <div class="header-actions">
+                <a href="/manager/dashboard" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+                <a href="/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Log Out
+                </a>
+            </div>
         </div>
-    </div>
-</nav>
 
-<div class="container">
-    <!-- Alerts -->
-    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fas fa-check-circle me-2"></i> <span th:text="${success}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+        <!-- Alerts -->
+        <div class="alerts">
+            <div th:if="${success}" class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${success}"></span>
+            </div>
+            <div th:if="${warning}" class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span th:text="${warning}"></span>
+            </div>
+            <div th:if="${error}" class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${error}"></span>
+            </div>
+        </div>
 
-    <div th:if="${warning}" class="alert alert-warning alert-dismissible fade show" role="alert">
-        <i class="fas fa-exclamation-circle me-2"></i> <span th:text="${warning}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+        <!-- Statistics -->
+        <div class="stats">
+            <div class="stat-card pending">
+                <span class="stat-icon"><i class="fas fa-hourglass-half"></i></span>
+                <div class="stat-number" th:text="${pendingSuppliers.size()}">0</div>
+                <div class="stat-label">Pending Approval</div>
+            </div>
+            <div class="stat-card approved">
+                <span class="stat-icon"><i class="fas fa-check-circle"></i></span>
+                <div class="stat-number" th:text="${approvedSuppliers.size()}">0</div>
+                <div class="stat-label">Approved Suppliers</div>
+            </div>
+            <div class="stat-card rejected">
+                <span class="stat-icon"><i class="fas fa-times-circle"></i></span>
+                <div class="stat-number" th:text="${rejectedSuppliers.size()}">0</div>
+                <div class="stat-label">Rejected Suppliers</div>
+            </div>
+        </div>
 
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="fas fa-times-circle me-2"></i> <span th:text="${error}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('pending')">
+                <i class="fas fa-hourglass-half"></i> Pending
+            </button>
+            <button class="tab-btn" onclick="switchTab('approved')">
+                <i class="fas fa-check-circle"></i> Approved
+            </button>
+            <button class="tab-btn" onclick="switchTab('rejected')">
+                <i class="fas fa-times-circle"></i> Rejected
+            </button>
+        </div>
 
-    <div class="page-header">
-        <h1 class="page-title">
-            <i class="fas fa-store"></i>
-            Supplier Management
-        </h1>
-        <a href="/manager/dashboard" class="btn-back">
-            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
-        </a>
-    </div>
-
-    <!-- Pending Suppliers -->
-    <div class="section">
-        <h2>
-            <i class="fas fa-clock"></i>
-            Pending Approvals
-        </h2>
-
-        <div th:if="${!pendingSuppliers.isEmpty()}">
-            <div th:each="supplier : ${pendingSuppliers}" class="supplier-card">
-                <div>
-                    <span class="status-badge status-pending">Pending</span>
-                    <h3 th:text="${supplier.brandName}"></h3>
-                    <p><strong>Email:</strong> <span th:text="${supplier.user.email}"></span></p>
-                    <p><strong>Applied:</strong> <span th:text="${#temporals.format(supplier.createdDate, 'MMM dd, yyyy')}"></span></p>
-                </div>
-                <div class="supplier-actions">
-                    <a th:href="@{/manager/suppliers/{id}(id=${supplier.supplierId})}" class="btn-view">
-                        <i class="fas fa-eye me-1"></i> Review
-                    </a>
+        <!-- Pending Suppliers -->
+        <div id="pending" class="tab-content active">
+            <div th:if="${pendingSuppliers.isEmpty()}" class="empty-message">
+                <i class="fas fa-inbox"></i>
+                No pending supplier approvals at the moment.
+            </div>
+            <div th:unless="${pendingSuppliers.isEmpty()}">
+                <div th:each="supplier : ${pendingSuppliers}" class="supplier-card">
+                    <div class="supplier-header">
+                        <div class="supplier-info">
+                            <h3 th:text="${supplier.brandName}"></h3>
+                            <div class="supplier-details">
+                                <p><strong>Supplier ID:</strong> <span th:text="${supplier.supplierId}"></span></p>
+                                <p><strong>User:</strong> <span th:text="${supplier.user.username}"></span></p>
+                                <p><strong>Email:</strong> <span th:text="${supplier.user.email}"></span></p>
+                                <p><strong>Applied:</strong> <span th:text="${#temporals.format(supplier.createdDate, 'yyyy-MM-dd HH:mm')}"></span></p>
+                            </div>
+                            <span class="supplier-status status-pending">PENDING</span>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <a th:href="@{/manager/suppliers/{id}(id=${supplier.supplierId})}" class="btn btn-view">
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
+                        <form th:action="@{/manager/suppliers/{id}/approve(id=${supplier.supplierId})}" method="POST">
+                            <button type="submit" class="btn btn-approve">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                        </form>
+                        <form th:action="@{/manager/suppliers/{id}/reject(id=${supplier.supplierId})}" method="POST">
+                            <button type="submit" class="btn btn-reject">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div th:if="${pendingSuppliers.isEmpty()}" class="empty-message">
-            <i class="fas fa-inbox"></i>
-            <p>No pending supplier approvals</p>
-        </div>
-    </div>
-
-    <!-- Approved Suppliers -->
-    <div class="section">
-        <h2>
-            <i class="fas fa-check-circle"></i>
-            Approved Suppliers
-        </h2>
-
-        <div th:if="${!approvedSuppliers.isEmpty()}">
-            <div th:each="supplier : ${approvedSuppliers}" class="supplier-card">
-                <div>
-                    <span class="status-badge status-approved">Approved</span>
-                    <h3 th:text="${supplier.brandName}"></h3>
-                    <p><strong>Email:</strong> <span th:text="${supplier.user.email}"></span></p>
-                    <p><strong>Approved:</strong> <span th:text="${#temporals.format(supplier.approvalDate, 'MMM dd, yyyy')}"></span></p>
-                </div>
-                <div class="supplier-actions">
-                    <a th:href="@{/manager/suppliers/{id}(id=${supplier.supplierId})}" class="btn-view">
-                        <i class="fas fa-eye me-1"></i> View
-                    </a>
+        <!-- Approved Suppliers -->
+        <div id="approved" class="tab-content">
+            <div th:if="${approvedSuppliers.isEmpty()}" class="empty-message">
+                <i class="fas fa-check-circle"></i>
+                No approved suppliers yet.
+            </div>
+            <div th:unless="${approvedSuppliers.isEmpty()}">
+                <div th:each="supplier : ${approvedSuppliers}" class="supplier-card approved">
+                    <div class="supplier-header">
+                        <div class="supplier-info">
+                            <h3 th:text="${supplier.brandName}"></h3>
+                            <div class="supplier-details">
+                                <p><strong>Supplier ID:</strong> <span th:text="${supplier.supplierId}"></span></p>
+                                <p><strong>User:</strong> <span th:text="${supplier.user.username}"></span></p>
+                                <p><strong>Email:</strong> <span th:text="${supplier.user.email}"></span></p>
+                                <p><strong>Approved:</strong> <span th:text="${#temporals.format(supplier.approvalDate, 'yyyy-MM-dd HH:mm')}"></span></p>
+                            </div>
+                            <span class="supplier-status status-approved">APPROVED</span>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <a th:href="@{/manager/suppliers/{id}(id=${supplier.supplierId})}" class="btn btn-view">
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div th:if="${approvedSuppliers.isEmpty()}" class="empty-message">
-            <i class="fas fa-inbox"></i>
-            <p>No approved suppliers</p>
-        </div>
-    </div>
-
-    <!-- Rejected Suppliers -->
-    <div class="section">
-        <h2>
-            <i class="fas fa-times-circle"></i>
-            Rejected Suppliers
-        </h2>
-
-        <div th:if="${!rejectedSuppliers.isEmpty()}">
-            <div th:each="supplier : ${rejectedSuppliers}" class="supplier-card">
-                <div>
-                    <span class="status-badge status-rejected">Rejected</span>
-                    <h3 th:text="${supplier.brandName}"></h3>
-                    <p><strong>Email:</strong> <span th:text="${supplier.user.email}"></span></p>
-                    <p><strong>Rejected:</strong> <span th:text="${#temporals.format(supplier.approvalDate, 'MMm dd, yyyy')}"></span></p>
-                </div>
-                <div class="supplier-actions">
-                    <a th:href="@{/manager/suppliers/{id}(id=${supplier.supplierId})}" class="btn-view">
-                        <i class="fas fa-eye me-1"></i> View
-                    </a>
+        <!-- Rejected Suppliers -->
+        <div id="rejected" class="tab-content">
+            <div th:if="${rejectedSuppliers.isEmpty()}" class="empty-message">
+                <i class="fas fa-times-circle"></i>
+                No rejected suppliers.
+            </div>
+            <div th:unless="${rejectedSuppliers.isEmpty()}">
+                <div th:each="supplier : ${rejectedSuppliers}" class="supplier-card rejected">
+                    <div class="supplier-header">
+                        <div class="supplier-info">
+                            <h3 th:text="${supplier.brandName}"></h3>
+                            <div class="supplier-details">
+                                <p><strong>Supplier ID:</strong> <span th:text="${supplier.supplierId}"></span></p>
+                                <p><strong>User:</strong> <span th:text="${supplier.user.username}"></span></p>
+                                <p><strong>Email:</strong> <span th:text="${supplier.user.email}"></span></p>
+                                <p><strong>Rejected:</strong> <span th:text="${#temporals.format(supplier.approvalDate, 'yyyy-MM-dd HH:mm')}"></span></p>
+                            </div>
+                            <span class="supplier-status status-rejected">REJECTED</span>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <a th:href="@{/manager/suppliers/{id}(id=${supplier.supplierId})}" class="btn btn-view">
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div th:if="${rejectedSuppliers.isEmpty()}" class="empty-message">
-            <i class="fas fa-inbox"></i>
-            <p>No rejected suppliers</p>
-        </div>
     </div>
-</div>
 
-<script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
+    <script>
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // Show the selected tab
+            document.getElementById(tabName).classList.add('active');
+            // Add active class to the clicked button
+            event.target.classList.add('active');
+        }
+    </script>
 </body>
 </html>

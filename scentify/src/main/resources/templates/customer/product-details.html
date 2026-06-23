@@ -14,11 +14,13 @@
         }
 
         :root {
-            --primary-color: #C4A484;      /* beige */
-            --secondary-color: #E6D3C1;    /* soft nude */
-            --accent-color: #FAF7F4;       /* cream */
+            --primary-color: #C4A484;
+            --primary-dark: #B89673;
+            --secondary-color: #E6D3C1;
+            --accent-color: #FAF7F4;
             --text-dark: #3E3A36;
             --text-muted: #8A7F75;
+            --gold: #DAA520;
         }
 
         body {
@@ -46,10 +48,19 @@
             color: var(--text-dark) !important;
         }
 
+        .navbar-brand i {
+            color: var(--primary-color);
+        }
+
         .nav-link {
             color: var(--text-dark) !important;
             font-weight: 500;
             margin: 0 1rem;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
         }
 
         .logout-btn {
@@ -61,10 +72,36 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            text-decoration: none;
         }
 
         .logout-btn:hover {
-            background: #B89673;
+            background: var(--primary-dark);
+            color: white;
+            text-decoration: none;
+        }
+
+        .membership-badge {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .btn-join-membership {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-join-membership:hover {
+            background: var(--primary-dark);
             color: white;
             text-decoration: none;
         }
@@ -76,24 +113,48 @@
             padding: 2rem;
         }
 
+        /* ================= BREADCRUMB ================= */
+        .breadcrumb-custom {
+            padding: 0.75rem 0;
+            margin-bottom: 2rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .breadcrumb-custom a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .breadcrumb-custom a:hover {
+            text-decoration: underline;
+        }
+
         /* ================= PRODUCT SECTION ================= */
         .product-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 3rem;
-            margin-bottom: 4rem;
+            margin-bottom: 3rem;
             align-items: start;
         }
 
+        /* ================= LEFT COLUMN ================= */
+        .product-left {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
         .product-image-wrapper {
-            background: #f9f9f9;
+            background: var(--accent-color);
             padding: 2rem;
-            border-radius: 8px;
-            border: 3px solid var(--primary-color);
+            border-radius: 12px;
+            border: 2px solid var(--secondary-color);
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 500px;
+            min-height: 400px;
         }
 
         .product-image {
@@ -103,263 +164,817 @@
             object-fit: contain;
         }
 
+        /* ================= FRAGRANCE PYRAMID ================= */
+        .pyramid-container {
+            background: var(--accent-color);
+            border-radius: 12px;
+            border: 1px solid var(--secondary-color);
+            padding: 1.25rem 1.5rem;
+        }
+
+        .pyramid-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .pyramid-title i {
+            color: var(--primary-color);
+            margin-right: 0.4rem;
+        }
+
+        .pyramid-horizontal {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            align-items: stretch;
+        }
+
+        .pyramid-level {
+            text-align: center;
+            padding: 0.75rem 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .pyramid-level:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .pyramid-level.top {
+            background: linear-gradient(180deg, #F5EDE4, #EDE0D4);
+            border-top: 3px solid #D4A574;
+        }
+
+        .pyramid-level.middle {
+            background: linear-gradient(180deg, #EDE5DC, #E0D5C8);
+            border-top: 3px solid #BFA58A;
+        }
+
+        .pyramid-level.base {
+            background: linear-gradient(180deg, #E0D5C8, #D0C0B0);
+            border-top: 3px solid #A88D73;
+        }
+
+        .pyramid-level .level-label {
+            font-size: 0.55rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+
+        .pyramid-level .level-notes {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .pyramid-level .note-tag {
+            display: inline-block;
+            background: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .pyramid-level .note-tag i {
+            margin-right: 0.2rem;
+            font-size: 0.6rem;
+        }
+
+        .pyramid-level.top .note-tag {
+            color: #8B6F4C;
+        }
+
+        .pyramid-level.middle .note-tag {
+            color: #6B5A4A;
+        }
+
+        .pyramid-level.base .note-tag {
+            color: #4A3F35;
+        }
+
+        .no-notes-message {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding: 0.5rem;
+        }
+
+        .no-notes-message i {
+            margin-right: 0.5rem;
+        }
+
+        /* ================= RIGHT COLUMN ================= */
         .product-info {
             display: flex;
             flex-direction: column;
+            gap: 0.75rem;
         }
 
         .product-category {
             display: inline-block;
             background: var(--secondary-color);
             color: var(--text-dark);
-            padding: 0.4rem 0.8rem;
+            padding: 0.3rem 0.8rem;
             border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: 0.7rem;
+            font-weight: 700;
             width: fit-content;
-            margin-bottom: 1rem;
             text-transform: uppercase;
+            letter-spacing: 0.08em;
         }
 
         .product-name {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 700;
             color: var(--text-dark);
-            margin-bottom: 1.5rem;
-            line-height: 1.3;
+            line-height: 1.2;
+            margin: 0;
         }
 
         .product-brand {
             color: var(--text-muted);
             font-size: 0.95rem;
-            margin-bottom: 2rem;
+            margin: 0;
+        }
+
+        .product-brand i {
+            color: var(--primary-color);
+            margin-right: 0.3rem;
         }
 
         .product-price {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 700;
             color: var(--text-dark);
-            margin-bottom: 2rem;
-            letter-spacing: -1px;
+            margin: 0.5rem 0;
         }
 
         .product-price .currency {
             font-size: 1.2rem;
             margin-right: 0.25rem;
+            color: var(--primary-color);
         }
 
-        /* ================= MEMBER DISCOUNT SECTION ================= */
-        .member-discount-section {
-            background: linear-gradient(135deg, #f0e8d8, #fdfcfa);
-            border-left: 4px solid #c2a98d;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 2rem;
+        /* ================= ACTION BUTTONS - SAME SIZE ================= */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin: 0.5rem 0;
         }
 
-        .member-discount-title {
-            color: #8b7355;
-            font-weight: 600;
+        .action-buttons form {
+            flex: 1;
+            margin: 0;
+        }
+
+        .btn-add-to-cart {
+            width: 100%;
+            background: var(--secondary-color);
+            color: var(--text-dark);
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
             font-size: 0.95rem;
-            margin-bottom: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
         }
 
-        .member-discount-value {
-            color: #c2a98d;
-            font-size: 1.8rem;
+        .btn-add-to-cart:hover {
+            background: #D4C0AE;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.3);
+            text-decoration: none;
+            color: var(--text-dark);
+        }
+
+        .btn-buy-now {
+            flex: 1;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-align: center;
+        }
+
+        .btn-buy-now:hover {
+            background: var(--primary-dark);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.4);
+        }
+
+        .btn-out-of-stock {
+            flex: 1;
+            background: #e0e0e0;
+            color: #999;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: not-allowed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-align: center;
+        }
+
+        /* ================= MEMBER DISCOUNT ================= */
+        .member-discount-section {
+            background: linear-gradient(135deg, #F5F0EB, #EDE5DC);
+            border-left: 4px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 0.5rem 0;
+        }
+
+        .member-discount-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .member-discount-icon {
+            font-size: 1.5rem;
+        }
+
+        .member-discount-text .title {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.85rem;
+        }
+
+        .member-discount-text .subtitle {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .member-discount-text .price {
+            color: var(--primary-color);
             font-weight: 700;
-        }
-
-        .member-unlock-text {
-            color: #8b7355;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-            padding: 1rem;
-            background: white;
-            border-radius: 6px;
+            font-size: 1.1rem;
         }
 
         .member-unlock-btn {
-            background: linear-gradient(135deg, #c2a98d, #b49374);
+            background: var(--primary-color);
             color: white;
-            padding: 0.7rem 1.5rem;
+            padding: 0.4rem 1.2rem;
             border-radius: 4px;
             border: none;
             font-weight: 600;
             cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
             text-decoration: none;
-            display: inline-block;
+            font-size: 0.8rem;
+            white-space: nowrap;
         }
 
         .member-unlock-btn:hover {
-            background: #9d8970;
+            background: var(--primary-dark);
             color: white;
             text-decoration: none;
         }
 
-        .buy-now-btn {
+        .member-badge {
             background: var(--primary-color);
             color: white;
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 4px;
-            font-size: 1rem;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
             font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.3s;
-            margin-bottom: 2rem;
-        }
-
-        .buy-now-btn:hover {
-            background: #B89673;
-        }
-
-        .buy-now-btn:disabled {
-            background: #E2D6CB;
-            cursor: not-allowed;
         }
 
         /* ================= DESCRIPTION ================= */
         .description-section {
-            border-top: 1px solid #e0e0e0;
-            padding-top: 1.5rem;
+            background: var(--accent-color);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            border: 1px solid var(--secondary-color);
+            margin: 0.5rem 0;
         }
 
-        .description-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
+        .description-section h3 {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
         }
 
-        .description-header h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
+        .description-section h3 i {
+            color: var(--primary-color);
+            margin-right: 0.4rem;
+        }
+
+        .description-section p {
             color: var(--text-dark);
+            line-height: 1.8;
+            font-size: 0.9rem;
             margin: 0;
-        }
-
-        .description-toggle {
-            font-size: 1.5rem;
-            color: var(--text-muted);
-        }
-
-        .description-content {
-            margin-top: 1rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-            display: none;
-        }
-
-        .description-content.show {
-            display: block;
         }
 
         /* ================= REVIEWS SECTION ================= */
         .reviews-section {
-            margin-top: 4rem;
+            margin-top: 3rem;
             padding-top: 2rem;
-            border-top: 1px solid #e0e0e0;
+            border-top: 2px solid var(--secondary-color);
         }
 
-        .reviews-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-dark);
+        .reviews-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
             margin-bottom: 2rem;
         }
 
+        .reviews-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .reviews-title i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        .btn-add-review {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-add-review:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.3);
+        }
+
+        .btn-add-review.cancel {
+            background: #e0e0e0;
+            color: var(--text-dark);
+        }
+
+        .btn-add-review.cancel:hover {
+            background: #d0d0d0;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* ================= REVIEW STATS ================= */
+        .review-stats {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .rating-summary {
+            background: var(--accent-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--secondary-color);
+        }
+
+        .rating-big {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .rating-stars-big {
+            color: var(--gold);
+            font-size: 1.1rem;
+            margin: 0.5rem 0;
+        }
+
+        .rating-count {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .rating-distribution {
+            background: var(--accent-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--secondary-color);
+        }
+
+        .distribution-row {
+            display: grid;
+            grid-template-columns: 50px 1fr 35px;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 0.4rem;
+        }
+
+        .distribution-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .distribution-bar {
+            height: 6px;
+            background: #f0f0f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .distribution-fill {
+            height: 100%;
+            background: var(--gold);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .distribution-count {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        /* ================= REVIEW FORM ================= */
+        #reviewFormSection {
+            background: var(--accent-color);
+            border: 1px solid var(--secondary-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        #reviewFormSection h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        #reviewFormSection h3 i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        .form-label-custom {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.8rem;
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        .star-rating-input {
+            display: flex;
+            gap: 0.3rem;
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+
+        .star-rating-input input[type="radio"] {
+            display: none;
+        }
+
+        .star-rating-input label {
+            cursor: pointer;
+            color: #ddd;
+            transition: all 0.2s;
+        }
+
+        .star-rating-input label:hover,
+        .star-rating-input label:hover ~ label {
+            color: var(--gold);
+        }
+
+        .star-rating-input input:checked ~ label {
+            color: var(--gold);
+        }
+
+        .form-control-custom {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d4c5bd;
+            border-radius: 4px;
+            font-family: inherit;
+            background: white;
+            resize: vertical;
+        }
+
+        .form-control-custom:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(196, 164, 132, 0.2);
+        }
+
+        .form-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn-cancel {
+            background: #e0e0e0;
+            color: var(--text-dark);
+            padding: 0.6rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background: #d0d0d0;
+        }
+
+        .btn-submit {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.6rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-dark);
+        }
+
+        /* ================= REVIEW CARDS ================= */
         .reviews-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
         }
 
         .review-card {
-            border: 1px solid #e0e0e0;
+            background: white;
+            border: 1px solid var(--secondary-color);
             border-radius: 8px;
-            padding: 1.5rem;
-            background: var(--accent-color);
+            padding: 1.25rem;
+            transition: all 0.3s;
         }
 
-        .review-rating {
-            color: #DAA520;
+        .review-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        .review-stars {
+            color: var(--gold);
             font-size: 0.9rem;
             margin-bottom: 0.5rem;
         }
 
-        .review-title {
-            font-size: 1.1rem;
-            font-weight: 600;
+        .review-text {
             color: var(--text-dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .review-body {
-            color: var(--text-muted);
             font-size: 0.9rem;
-            margin-bottom: 1rem;
-            line-height: 1.5;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
         }
 
         .review-footer {
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--secondary-color);
         }
 
-        .reviewer-avatar {
-            width: 40px;
-            height: 40px;
+        .review-avatar {
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: var(--secondary-color);
             display: flex;
             align-items: center;
             justify-content: center;
+            color: var(--primary-color);
+            font-size: 1rem;
             flex-shrink: 0;
         }
 
-        .reviewer-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .reviewer-name {
+        .review-name {
             font-weight: 600;
             color: var(--text-dark);
+            font-size: 0.85rem;
+        }
+
+        .review-date {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .review-reply {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: var(--accent-color);
+            border-left: 3px solid var(--primary-color);
+            border-radius: 4px;
+        }
+
+        .review-reply .reply-header {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .review-reply .reply-text {
+            color: var(--text-dark);
+            font-size: 0.85rem;
+            margin: 0.3rem 0;
+        }
+
+        .review-reply .reply-date {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .no-reviews {
+            text-align: center;
+            padding: 2.5rem;
+            background: var(--accent-color);
+            border-radius: 12px;
+            border: 1px solid var(--secondary-color);
+        }
+
+        .no-reviews-icon {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 0.75rem;
+        }
+
+        .no-reviews-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .blocked-message {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            color: #856404;
             font-size: 0.9rem;
         }
 
-        .reviewer-date {
-            color: var(--text-muted);
-            font-size: 0.8rem;
+        .blocked-message a {
+            color: #856404;
+            font-weight: 600;
+            text-decoration: underline;
         }
 
         /* ================= RESPONSIVE ================= */
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
             .product-section {
                 grid-template-columns: 1fr;
-                gap: 1.5rem;
+                gap: 2rem;
             }
 
             .product-image-wrapper {
                 min-height: 300px;
             }
 
+            .review-stats {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .pyramid-horizontal {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+
             .product-name {
-                font-size: 1.5rem;
+                font-size: 1.7rem;
             }
 
             .product-price {
-                font-size: 2rem;
+                font-size: 1.8rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons form {
+                width: 100%;
+            }
+
+            .btn-add-to-cart,
+            .btn-buy-now,
+            .btn-out-of-stock {
+                width: 100%;
+            }
+
+            .pyramid-horizontal {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            .member-discount-section {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            .member-discount-left {
+                flex-direction: column;
+                text-align: center;
             }
 
             .reviews-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar .container-fluid {
+                padding: 0 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .product-image-wrapper {
+                min-height: 200px;
+                padding: 1rem;
+            }
+
+            .rating-summary {
+                padding: 1rem;
+            }
+
+            .rating-big {
+                font-size: 2.2rem;
+            }
+
+            .rating-distribution {
+                padding: 1rem;
             }
         }
     </style>
@@ -368,441 +983,341 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">Scentify</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/customer/dashboard">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/customer/cart">
-                            <i class="fas fa-shopping-cart"></i> Cart
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/customer/order-history">Order History</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About Us</a>
-                    </li>
-                    <li class="nav-item ms-2">
-                        <a href="/logout" class="logout-btn">Log Out</a>
-                    </li>
-                </ul>
+            <a class="navbar-brand" href="/customer/dashboard">
+                <i class="fas fa-leaf"></i> Scentify
+            </a>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <a class="nav-link" href="/customer/dashboard">Home</a>
+                <a class="nav-link" href="/customer/cart">
+                    <i class="fas fa-shopping-cart"></i> Cart
+                </a>
+                <a class="nav-link" href="/customer/order-history">Order History</a>
+                <a class="nav-link" href="#">About Us</a>
+                <a th:if="${customer != null and customer.isMember == false}" 
+                   href="/customer/apply-membership" 
+                   class="btn-join-membership">
+                    <i class="fas fa-crown"></i> Join Membership
+                </a>
+                <span th:if="${customer != null and customer.isMember == true}" class="membership-badge">
+                    <i class="fas fa-crown"></i> Premium Member
+                </span>
+                <a href="/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Log Out
+                </a>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
     <div class="main-container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb-custom">
+            <a href="/customer/dashboard">Home</a> 
+            <span style="margin: 0 0.5rem;">›</span> 
+            <a href="/customer/dashboard">Products</a> 
+            <span style="margin: 0 0.5rem;">›</span> 
+            <span th:text="${product.productName}">Product Name</span>
+        </div>
+
         <!-- Product Section -->
         <div class="product-section">
-            <!-- Product Image -->
-            <div class="product-image-wrapper">
-                <img 
-                    th:src="${product.prodimage}" 
-                    th:alt="${product.productName}"
-                    class="product-image"
-                    onerror="this.src='https://via.placeholder.com/400x400?text=No+Image'">
+            <!-- ===== LEFT COLUMN ===== -->
+            <div class="product-left">
+                <!-- Product Image -->
+                <div class="product-image-wrapper">
+                    <img 
+                        th:src="${product.prodimage}" 
+                        th:alt="${product.productName}"
+                        class="product-image"
+                        onerror="this.src='https://via.placeholder.com/400x400?text=No+Image'">
+                </div>
+
+                <!-- Fragrance Pyramid (Below Image) -->
+                <div class="pyramid-container">
+                    <div class="pyramid-title">
+                        <i class="fas fa-layer-group"></i> Fragrance Pyramid
+                    </div>
+                    
+                    <div th:if="${product.topNotes != null or product.middleNotes != null or product.baseNotes != null}">
+                        <div class="pyramid-horizontal">
+                            <!-- Top Notes -->
+                            <div class="pyramid-level top">
+                                <span class="level-label"><i class="fas fa-arrow-up"></i> Top Notes</span>
+                                <div class="level-notes">
+                                    <!-- ✅ Split by comma and trim each note -->
+                                    <span th:each="note : ${#strings.arraySplit(product.topNotes, ',')}" 
+                                          class="note-tag">
+                                        <i class="fas fa-leaf"></i> <span th:text="${#strings.trim(note)}">Citrus</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Middle Notes -->
+                            <div class="pyramid-level middle">
+                                <span class="level-label"><i class="fas fa-arrows-alt-h"></i> Heart Notes</span>
+                                <div class="level-notes">
+                                    <span th:each="note : ${#strings.arraySplit(product.middleNotes, ',')}" 
+                                          class="note-tag">
+                                        <i class="fas fa-flower"></i> <span th:text="${#strings.trim(note)}">Rose</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Base Notes -->
+                            <div class="pyramid-level base">
+                                <span class="level-label"><i class="fas fa-arrow-down"></i> Base Notes</span>
+                                <div class="level-notes">
+                                    <span th:each="note : ${#strings.arraySplit(product.baseNotes, ',')}" 
+                                          class="note-tag">
+                                        <i class="fas fa-tree"></i> <span th:text="${#strings.trim(note)}">Woody</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div th:if="${product.topNotes == null and product.middleNotes == null and product.baseNotes == null}" 
+                         class="no-notes-message">
+                        <i class="fas fa-info-circle"></i> No fragrance notes available for this product.
+                    </div>
+                </div>
             </div>
 
-            <!-- Product Info -->
+            <!-- ===== RIGHT COLUMN ===== -->
             <div class="product-info">
                 <span class="product-category" th:text="${product.category}">Category</span>
                 
                 <h1 class="product-name" th:text="${product.productName}">Perfume Name</h1>
                 
-                <p class="product-brand" th:text="${supplierUsername}">Brand Name (Supplier)</p>
+                <p class="product-brand">
+                    <i class="fas fa-store"></i> 
+                    <span th:text="${supplierUsername}">Brand Name</span>
+                </p>
                 
                 <div class="product-price">
                     <span class="currency">RM</span><span th:text="${#numbers.formatDecimal(product.price, 1, 0)}">290</span>
                 </div>
-                
-                <!-- Action Buttons -->
-                <div style="display: flex; gap: 1rem; margin-bottom: 2rem; width: 100%;">
-                    <!-- Add to Cart Button -->
-                    <form th:if="${product.stock > 0}" method="post" th:action="@{/customer/cart/add}" style="flex: 1; width: 100%; margin: 0;">
+
+                <!-- Action Buttons - Same Size -->
+                <div class="action-buttons">
+                    <form th:if="${product.stock > 0}" method="post" th:action="@{/customer/cart/add}">
                         <input type="hidden" name="productId" th:value="${product.productId}">
                         <input type="hidden" name="quantity" value="1">
-                        <button type="submit" class="buy-now-btn" style="background-color: #E6D3C1; color: #6b5b58; width: 100%; margin-bottom: 0;">
+                        <button type="submit" class="btn-add-to-cart">
                             <i class="fas fa-shopping-cart"></i> Add to Cart
                         </button>
                     </form>
 
-                    <!-- Buy Now Button -->
                     <a th:if="${product.stock > 0}"
                        th:href="'/customer/checkout-product?productId=' + ${product.productId}"
-                       class="buy-now-btn"
-                       style="text-decoration: none; display: flex; align-items: center; justify-content: center; flex: 1; margin-bottom: 0; background: var(--primary-color); color: white;">
-                        <i class="fas fa-creditcard" style="margin-right: 0.5rem;"></i> Buy Now
+                       class="btn-buy-now">
+                        <i class="fas fa-bolt"></i> Buy Now
                     </a>
-                </div>
-                
-                <!-- Out of Stock Button -->
-                <button 
-                    class="buy-now-btn"
-                    disabled
-                    th:if="${product.stock <= 0}"
-                    style="margin-bottom: 2rem;">
-                    Out of Stock
-                </button>
 
-                <!-- Description Section -->
+                    <div th:if="${product.stock <= 0}" class="btn-out-of-stock">
+                        <i class="fas fa-times-circle"></i> Out of Stock
+                    </div>
+                </div>
+
+                <!-- Description -->
                 <div class="description-section">
-                    <div class="description-header" onclick="toggleDescription(this)">
-                        <h3>Product Description</h3>
-                        <span class="description-toggle">▼</span>
-                    </div>
-                    <div class="description-content">
-                        <p th:text="${product.description}">Introduce product</p>
-                    </div>
+                    <h3><i class="fas fa-align-left"></i> Product Description</h3>
+                    <p th:text="${product.description}">Product description goes here...</p>
                 </div>
             </div>
         </div>
 
         <!-- Reviews Section -->
         <div class="reviews-section">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
-                <h2 class="reviews-title" style="margin: 0;">Customer Reviews</h2>
-                <button th:if="${canWriteReview}" type="button" id="toggleReviewBtn" onclick="toggleReviewForm()" 
-                        style="background: var(--primary-color); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-                    <i class="fas fa-plus" style="margin-right: 0.5rem;"></i> Add Your Review
+            <div class="reviews-header">
+                <h2 class="reviews-title">
+                    <i class="fas fa-star"></i> Customer Reviews
+                    <span style="font-size: 0.9rem; font-weight: 400; color: var(--text-muted); margin-left: 0.5rem;">
+                        (<span th:text="${reviews != null ? reviews.size() : 0}">0</span> reviews)
+                    </span>
+                </h2>
+                <button th:if="${canWriteReview}" type="button" id="toggleReviewBtn" 
+                        onclick="toggleReviewForm()" class="btn-add-review">
+                    <i class="fas fa-plus"></i> Write a Review
                 </button>
             </div>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 2rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                Verified Impressions and Aromatherapy Critiques
-            </p>
 
-            <!-- Reviews Overview -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-bottom: 3rem;">
-                <!-- Overall Rating -->
-                <div style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 2rem; text-align: center;">
-                    <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; font-weight: 600;">
-                        Ratings
-                    </div>
-                    <div style="font-size: 3.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem;">
-                        <th:block th:if="${averageRating != null && averageRating > 0}">
-                            <span th:text="${#numbers.formatDecimal(averageRating, 1, 1)}">4.7</span>
-                        </th:block>
-                        <th:block th:if="${averageRating == null || averageRating == 0}">
-                            <span>0.0</span>
-                        </th:block>
-                    </div>
-                    <div style="color: #DAA520; margin-bottom: 1rem;">
-                        <span th:each="i : ${#numbers.sequence(1, 5)}" style="font-size: 1.2rem;">★</span>
-                    </div>
-                    <div style="font-size: 0.9rem; color: var(--text-muted);">
-                        Based on <span th:text="${reviews != null ? reviews.size() : 0}">0</span> community audits
-                    </div>
-                </div>
-
-                <!-- Star Distribution -->
-                <div style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 2rem;">
-                    <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.5rem; font-weight: 600;">
-                        Metric Distribution
-                    </div>
-                    <th:block th:each="stars : ${#numbers.sequence(5, 1, -1)}">
-                        <div style="display: grid; grid-template-columns: 50px 1fr 40px; gap: 1rem; align-items: center; margin-bottom: 1rem;">
-                            <div style="font-size: 0.9rem; color: var(--text-muted);">
-                                <span th:text="${stars}">5</span> Stars
-                            </div>
-                            <div style="height: 8px; background: #f0f0f0; border-radius: 4px; overflow: hidden;">
-                                <th:block th:with="count = ${starDistribution != null ? starDistribution.get(stars) : 0}, total = ${reviews != null ? reviews.size() : 1}, percentage = ${total > 0 ? (count * 100 / total) : 0}">
-                                    <div style="height: 100%; background: #DAA520; transition: width 0.3s ease;" 
-                                         th:style="'width: ' + ${percentage} + '%;'"></div>
-                                </th:block>
-                            </div>
-                            <div style="font-size: 0.9rem; color: var(--text-muted); text-align: right;">
-                                <th:block th:with="count = ${starDistribution != null ? starDistribution.get(stars) : 0}">
-                                    <span th:text="${count}">0</span>
-                                </th:block>
-                            </div>
-                        </div>
-                    </th:block>
-                </div>
-            </div>
-
-            <!-- Compose Review Section (Initially Hidden) -->
-            <div id="reviewFormSection" style="background: #faf8f6; border: 1px solid #e8dfd6; border-radius: 8px; padding: 2.5rem; margin-bottom: 3rem; display: none;">
-                <div style="display: flex; align-items: center; margin-bottom: 2rem;">
-                    <i class="fas fa-pen" style="color: var(--primary-color); margin-right: 0.75rem; font-size: 1.1rem;"></i>
-                    <h3 style="margin: 0; color: var(--text-dark); font-weight: 700; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                        Compose Your Audral Impression
-                    </h3>
-                </div>
-
-                <form method="post" th:action="'/review/submit'" style="display: grid; gap: 1.5rem;">
-                    <!-- Hidden Product ID -->
+            <!-- Review Form -->
+            <div id="reviewFormSection">
+                <h3><i class="fas fa-pen"></i> Write Your Review</h3>
+                <form method="post" th:action="'/review/submit'">
                     <input type="hidden" name="productId" th:value="${product.productId}">
 
-                    <!-- Rating Selection -->
-                    <div>
-                        <label style="color: var(--text-dark); font-weight: 600; margin-bottom: 1rem; display: block; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                            Critique Appraisal <span style="color: #e74c3c;">*</span>
-                        </label>
-                        <div style="display: flex; gap: 1rem; font-size: 2.5rem;">
-                            <input type="radio" name="rating" value="1" id="star1" style="display: none;">
-                            <label for="star1" style="cursor: pointer; color: #ddd; transition: all 0.2s; transform: scale(1);">★</label>
-                            
-                            <input type="radio" name="rating" value="2" id="star2" style="display: none;">
-                            <label for="star2" style="cursor: pointer; color: #ddd; transition: all 0.2s; transform: scale(1);">★</label>
-                            
-                            <input type="radio" name="rating" value="3" id="star3" style="display: none;">
-                            <label for="star3" style="cursor: pointer; color: #ddd; transition: all 0.2s; transform: scale(1);">★</label>
-                            
-                            <input type="radio" name="rating" value="4" id="star4" style="display: none;">
-                            <label for="star4" style="cursor: pointer; color: #ddd; transition: all 0.2s; transform: scale(1);">★</label>
-                            
-                            <input type="radio" name="rating" value="5" id="star5" style="display: none;">
-                            <label for="star5" style="cursor: pointer; color: #ddd; transition: all 0.2s; transform: scale(1);">★</label>
+                    <div style="margin-bottom: 1rem;">
+                        <label class="form-label-custom">Your Rating <span style="color: #e74c3c;">*</span></label>
+                        <div class="star-rating-input" id="starContainer">
+                            <input type="radio" name="rating" value="5" id="star5">
+                            <label for="star5">★</label>
+                            <input type="radio" name="rating" value="4" id="star4">
+                            <label for="star4">★</label>
+                            <input type="radio" name="rating" value="3" id="star3">
+                            <label for="star3">★</label>
+                            <input type="radio" name="rating" value="2" id="star2">
+                            <label for="star2">★</label>
+                            <input type="radio" name="rating" value="1" id="star1">
+                            <label for="star1">★</label>
                         </div>
                     </div>
 
-                    <!-- Review Text -->
-                    <div>
-                        <label for="reviewText" style="color: var(--text-dark); font-weight: 600; margin-bottom: 0.75rem; display: block; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                            Your Olfactory Description Review <span style="color: #e74c3c;">*</span>
-                        </label>
-                        <textarea name="reviewText" id="reviewText" class="form-control" rows="5" 
-                                  placeholder="Detail the timeline of drydown, sillage presence, and packaging impressions..."
-                                  style="border: 1px solid #d4c5bd; border-radius: 4px; padding: 0.75rem; font-family: inherit; background: white; resize: vertical;" required></textarea>
+                    <div style="margin-bottom: 1rem;">
+                        <label for="reviewText" class="form-label-custom">Your Review <span style="color: #e74c3c;">*</span></label>
+                        <textarea name="reviewText" id="reviewText" class="form-control-custom" rows="4" 
+                                  placeholder="Share your experience with this fragrance..." required></textarea>
                     </div>
 
-                    <!-- Action Buttons -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;">
-                        <button type="button" onclick="toggleReviewForm()" class="btn" 
-                                style="background: #e0e0e0; color: var(--text-dark); border: none; padding: 0.75rem 1.5rem; border-radius: 4px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-                            Cancel
-                        </button>
-                        <button type="submit" class="btn" 
-                                style="background: var(--primary-color); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-                            Submit Review
-                        </button>
+                    <div class="form-actions">
+                        <button type="button" onclick="toggleReviewForm()" class="btn-cancel">Cancel</button>
+                        <button type="submit" class="btn-submit">Submit Review</button>
                     </div>
                 </form>
             </div>
 
-            <!-- Message if user cannot review -->
-            <div th:if="${!canWriteReview}" style="background: #fff3cd; border: 1px solid #ffc107; padding: 1.5rem; border-radius: 8px; margin-bottom: 3rem; color: #856404;">
+            <!-- Blocked Message -->
+            <div th:if="${!canWriteReview}" class="blocked-message">
                 <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>
                 <span th:text="${reviewBlockReason}">You cannot write reviews</span>
-                <span th:if="${reviewBlockReason != null && reviewBlockReason.contains('membership')}">
-                    - <a href="/customer/apply-membership" style="color: #856404; font-weight: 600; text-decoration: underline;">Upgrade Membership</a>
+                <span th:if="${reviewBlockReason != null and reviewBlockReason.contains('membership')}">
+                    - <a href="/customer/apply-membership">Upgrade Membership</a>
                 </span>
             </div>
 
-            <!-- Reviews List -->
-            <div class="reviews-grid" th:if="${reviews != null && !reviews.isEmpty()}">
-                <div th:each="review : ${reviews}" class="review-card">
-                    <!-- Rating Stars -->
-                    <div class="review-rating">
-                        <span th:each="i : ${#numbers.sequence(1, review.rating)}" style="color: #DAA520;">★</span>
-                        <span th:if="${review.rating < 5}" th:each="i : ${#numbers.sequence(1, 5 - review.rating)}" style="color: #ddd;">★</span>
+            <!-- Review Stats -->
+            <div th:if="${reviews != null and !reviews.isEmpty()}" class="review-stats">
+                <div class="rating-summary">
+                    <div class="rating-big">
+                        <th:block th:if="${averageRating != null and averageRating > 0}">
+                            <span th:text="${#numbers.formatDecimal(averageRating, 1, 1)}">4.7</span>
+                        </th:block>
+                        <th:block th:if="${averageRating == null or averageRating == 0}">
+                            <span>0.0</span>
+                        </th:block>
                     </div>
-                    
-                    <!-- Review Text -->
-                    <p class="review-body" th:text="${review.reviewText}" style="margin: 0.75rem 0; color: var(--text-muted); line-height: 1.6;">Review text here</p>
-                    
-                    <!-- Reviewer Info -->
-                    <div class="review-footer" style="display: flex; align-items: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
-                        <div class="reviewer-avatar" style="width: 40px; height: 40px; background: var(--secondary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
-                            <i class="fas fa-user" style="color: var(--primary-color); font-size: 1.2rem;"></i>
-                        </div>
-                        <div class="reviewer-info">
-                            <div class="reviewer-name" style="font-weight: 600; color: var(--text-dark);" th:text="${review.customer.user.username}">Customer Name</div>
-                            <div class="reviewer-date" style="font-size: 0.85rem; color: var(--text-muted);" th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy')}">Date</div>
-                        </div>
+                    <div class="rating-stars-big">
+                        <span th:each="i : ${#numbers.sequence(1, 5)}" 
+                              th:style="'color: ' + (i <= averageRating ? '#DAA520' : '#ddd')">★</span>
                     </div>
+                    <div class="rating-count">
+                        Based on <span th:text="${reviews.size()}">0</span> reviews
+                    </div>
+                </div>
 
-                    <!-- Supplier Reply Section -->
-                    <div th:if="${review.reply != null}" style="margin-top: 1.5rem; padding: 1rem; background: #f9f9f9; border-left: 3px solid var(--primary-color); border-radius: 4px;">
-                        <div style="font-weight: 600; color: var(--primary-color); margin-bottom: 0.5rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
-                            <i class="fas fa-reply"></i> Supplier Response
+                <div class="rating-distribution">
+                    <th:block th:each="stars : ${#numbers.sequence(5, 1, -1)}">
+                        <th:block th:with="count = ${starDistribution != null ? starDistribution.get(stars) : 0}, 
+                                              total = ${reviews != null ? reviews.size() : 1}, 
+                                              percentage = ${total > 0 ? (count * 100 / total) : 0}">
+                            <div class="distribution-row">
+                                <span class="distribution-label"><span th:text="${stars}">5</span> ★</span>
+                                <div class="distribution-bar">
+                                    <div class="distribution-fill" 
+                                         th:style="'width: ' + ${percentage} + '%;'"></div>
+                                </div>
+                                <span class="distribution-count" th:text="${count}">0</span>
+                            </div>
+                        </th:block>
+                    </th:block>
+                </div>
+            </div>
+
+            <!-- Reviews Grid -->
+            <div th:if="${reviews != null and !reviews.isEmpty()}" class="reviews-grid">
+                <div th:each="review : ${reviews}" class="review-card">
+                    <div class="review-stars">
+                        <span th:each="i : ${#numbers.sequence(1, review.rating)}" style="color: #DAA520;">★</span>
+                        <span th:each="i : ${#numbers.sequence(1, 5 - review.rating)}" style="color: #ddd;">★</span>
+                    </div>
+                    <p class="review-text" th:text="${review.reviewText}">Review text here</p>
+                    <div class="review-footer">
+                        <div class="review-avatar">
+                            <i class="fas fa-user"></i>
                         </div>
-                        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.5rem 0; line-height: 1.5;">
-                            <span style="font-weight: 600; color: var(--text-dark);" th:text="${review.reply.supplier.brandName}">Supplier Name</span>
-                            <br>
-                            <span th:text="${review.reply.replyText}">Reply text here</span>
-                        </p>
-                        <div style="font-size: 0.8rem; color: #999; margin-top: 0.5rem;">
-                            <span th:text="${#temporals.format(review.reply.createdAt, 'dd MMM yyyy')}">Date</span>
+                        <div>
+                            <div class="review-name" th:text="${review.customer.user.username}">Customer</div>
+                            <div class="review-date" th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy')}">Date</div>
                         </div>
+                    </div>
+                    <div th:if="${review.reply != null}" class="review-reply">
+                        <div class="reply-header"><i class="fas fa-reply"></i> Supplier Response</div>
+                        <div class="reply-text" th:text="${review.reply.replyText}">Reply text</div>
+                        <div class="reply-date" th:text="${#temporals.format(review.reply.createdAt, 'dd MMM yyyy')}">Date</div>
                     </div>
                 </div>
             </div>
 
-            <!-- No Reviews Message -->
-            <div th:if="${reviews == null || reviews.isEmpty()}" style="text-align: center; padding: 3rem 2rem; background: var(--accent-color); border-radius: 8px; color: var(--text-muted);">
-                <p><i class="fas fa-comment-slash" style="font-size: 2.5rem; margin-bottom: 1rem; display: block; color: #d4c5bd;"></i></p>
-                <p style="font-weight: 600;">No reviews yet. Be the first to review this product!</p>
+            <div th:if="${reviews == null or reviews.isEmpty()}" class="no-reviews">
+                <div class="no-reviews-icon"><i class="fas fa-comment-slash"></i></div>
+                <p class="no-reviews-text">No reviews yet. Be the first to review this fragrance!</p>
             </div>
         </div>
-
-        <style>
-            /* Star Rating Styles */
-            input[type="radio"] {
-                display: none !important;
-            }
-
-            input[type="radio"]:checked + label {
-                color: #DAA520 !important;
-            }
-
-            label[for^="star"]:hover,
-            label[for^="star"]:hover ~ label[for^="star"] {
-                color: #DAA520;
-            }
-
-            label[for^="star"] {
-                cursor: pointer;
-                transition: all 0.2s;
-            }
-
-            label[for^="star"]:hover {
-                transform: scale(1.1);
-            }
-
-            /* Review Cards */
-            .reviews-grid {
-                display: grid;
-                gap: 2rem;
-            }
-
-            .review-card {
-                background: white;
-                border: 1px solid #e0e0e0;
-                border-radius: 8px;
-                padding: 1.5rem;
-                transition: all 0.3s;
-            }
-
-            .review-card:hover {
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            }
-
-            .review-rating {
-                font-size: 1.2rem;
-                margin-bottom: 0.75rem;
-            }
-
-            .review-body {
-                line-height: 1.6;
-            }
-
-            .review-footer {
-                display: flex;
-                align-items: center;
-                gap: 1rem;
-            }
-
-            .reviewer-avatar {
-                width: 40px;
-                height: 40px;
-                background: var(--secondary-color);
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
-            }
-
-            .reviewer-info {
-                flex: 1;
-            }
-
-            .reviewer-name {
-                font-weight: 600;
-                color: var(--text-dark);
-                font-size: 0.95rem;
-            }
-
-            .reviewer-date {
-                font-size: 0.85rem;
-                color: var(--text-muted);
-            }
-        </style>
-
-        <script>
-            function toggleReviewForm() {
-                const formSection = document.getElementById('reviewFormSection');
-                const toggleBtn = document.getElementById('toggleReviewBtn');
-                
-                if (formSection.style.display === 'none') {
-                    formSection.style.display = 'grid';
-                    toggleBtn.innerHTML = '<i class="fas fa-times" style="margin-right: 0.5rem;"></i> Cancel Review';
-                } else {
-                    formSection.style.display = 'none';
-                    toggleBtn.innerHTML = '<i class="fas fa-plus" style="margin-right: 0.5rem;"></i> Add Your Review';
-                    // Reset form
-                    formSection.querySelector('form').reset();
-                    // Reset star colors
-                    document.querySelectorAll('label[for^="star"]').forEach(label => {
-                        label.style.color = '#ddd';
-                    });
-                }
-            }
-
-            // Star rating animation
-            document.querySelectorAll('input[type="radio"][name="rating"]').forEach((star, index) => {
-                star.addEventListener('change', function() {
-                    const rating = parseInt(this.value);
-                    document.querySelectorAll('label[for^="star"]').forEach((label, idx) => {
-                        if (idx < rating) {
-                            label.style.color = '#DAA520';
-                        } else {
-                            label.style.color = '#ddd';
-                        }
-                    });
-                });
-
-                // Hover effect
-                const label = document.querySelector(`label[for="star${index + 1}"]`);
-                if (label) {
-                    label.addEventListener('mouseenter', function() {
-                        document.querySelectorAll('label[for^="star"]').forEach((l, idx) => {
-                            if (idx <= index) {
-                                l.style.color = '#DAA520';
-                            } else {
-                                l.style.color = '#ddd';
-                            }
-                        });
-                    });
-                }
-            });
-
-            // Reset stars on mouse leave
-            const starsContainer = document.querySelector('div[style*="display: flex; gap: 1rem; font-size: 2.5rem"]');
-            if (starsContainer) {
-                starsContainer.addEventListener('mouseleave', function() {
-                    const checked = document.querySelector('input[type="radio"][name="rating"]:checked');
-                    if (checked) {
-                        const rating = parseInt(checked.value);
-                        document.querySelectorAll('label[for^="star"]').forEach((label, idx) => {
-                            label.style.color = idx < rating ? '#DAA520' : '#ddd';
-                        });
-                    } else {
-                        document.querySelectorAll('label[for^="star"]').forEach(label => {
-                            label.style.color = '#ddd';
-                        });
-                    }
-                });
-            }
-        </script>
-    </div>
-    </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
-        function toggleDescription(header) {
-            const toggle = header.querySelector('.description-toggle');
-            const content = header.nextElementSibling;
-            content.classList.toggle('show');
-            toggle.style.transform = content.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
-            toggle.style.transition = 'transform 0.3s ease';
+        document.addEventListener('DOMContentLoaded', function() {
+            const stars = document.querySelectorAll('.star-rating-input label');
+            const inputs = document.querySelectorAll('.star-rating-input input');
+
+            stars.forEach((star) => {
+                star.addEventListener('mouseenter', function() {
+                    const allLabels = document.querySelectorAll('.star-rating-input label');
+                    let found = false;
+                    allLabels.forEach((label) => {
+                        if (label === this) {
+                            found = true;
+                        }
+                        label.style.color = found ? '#DAA520' : '#ddd';
+                    });
+                });
+
+                star.addEventListener('mouseleave', function() {
+                    const checked = document.querySelector('.star-rating-input input:checked');
+                    const allLabels = document.querySelectorAll('.star-rating-input label');
+                    if (checked) {
+                        const checkedValue = parseInt(checked.value);
+                        allLabels.forEach((label, index) => {
+                            const starValue = 5 - index;
+                            label.style.color = starValue <= checkedValue ? '#DAA520' : '#ddd';
+                        });
+                    } else {
+                        allLabels.forEach(label => label.style.color = '#ddd');
+                    }
+                });
+            });
+
+            inputs.forEach((input) => {
+                input.addEventListener('change', function() {
+                    const allLabels = document.querySelectorAll('.star-rating-input label');
+                    const value = parseInt(this.value);
+                    allLabels.forEach((label, index) => {
+                        const starValue = 5 - index;
+                        label.style.color = starValue <= value ? '#DAA520' : '#ddd';
+                    });
+                });
+            });
+        });
+
+        function toggleReviewForm() {
+            const formSection = document.getElementById('reviewFormSection');
+            const toggleBtn = document.getElementById('toggleReviewBtn');
+            
+            if (formSection.style.display === 'none' || formSection.style.display === '') {
+                formSection.style.display = 'block';
+                toggleBtn.innerHTML = '<i class="fas fa-times"></i> Cancel Review';
+                toggleBtn.classList.add('cancel');
+            } else {
+                formSection.style.display = 'none';
+                toggleBtn.innerHTML = '<i class="fas fa-plus"></i> Write a Review';
+                toggleBtn.classList.remove('cancel');
+                formSection.querySelector('form').reset();
+                document.querySelectorAll('.star-rating-input label').forEach(label => {
+                    label.style.color = '#ddd';
+                });
+            }
         }
     </script>
 </body>

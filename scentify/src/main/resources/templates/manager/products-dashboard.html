@@ -4,298 +4,423 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Approvals - Manager Dashboard</title>
+    <!-- Google Fonts: Playfair Display + Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-            * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: 'Inter', sans-serif;
-        background: linear-gradient(135deg, #fdfcfa, #f5ede6);
-        min-height: 100vh;
-        padding: 20px;
-    }
-
-    /* Layout */
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    /* Header */
-    .header {
-        background: #fff;
-        padding: 20px 25px;
-        border-radius: 12px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-        margin-bottom: 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-
-    .header h1 {
-        color: #5a4a42;
-        font-size: 26px;
-        font-family: 'Playfair Display', serif;
-    }
-
-    .logout-btn {
-        background: #a8796a;
-        color: #fff;
-        padding: 10px 18px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-size: 14px;
-        transition: background 0.2s ease;
-    }
-
-    .logout-btn:hover {
-        background: #956253;
-    }
-
-    /* Alerts */
-    .alerts {
-        margin-bottom: 20px;
-    }
-
-    .alert {
-        padding: 14px 18px;
-        border-radius: 8px;
-        margin-bottom: 10px;
-        font-weight: 500;
-    }
-
-    .alert-success {
-        background: #d8ebd8;
-        color: #5a7a5a;
-    }
-
-    .alert-warning {
-        background: #f0e8d8;
-        color: #8b7355;
-    }
-
-    .alert-error {
-        background: #e8d0cc;
-        color: #8b5a52;
-    }
-
-    /* Sections */
-    .section {
-        background: #fff;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-        margin-bottom: 30px;
-    }
-
-    .section h2 {
-        color: #5a4a42;
-        font-size: 22px;
-        margin-bottom: 20px;
-        border-bottom: 2px solid #c2a98d;
-        padding-bottom: 10px;
-        font-family: 'Playfair Display', serif;
-    }
-
-    /* Stats */
-    .stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-    }
-
-    .stat-box {
-        background: linear-gradient(135deg, #c2a98d, #b49374);
-        color: #fff;
-        padding: 20px;
-        border-radius: 12px;
-        text-align: center;
-    }
-
-    .stat-box h3 {
-        font-size: 32px;
-        margin-bottom: 5px;
-    }
-
-    /* Product Cards */
-    .product-card {
-        background: #f9f9f9;
-        border-left: 5px solid #c2a98d;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-    }
-
-    .product-card.approved { border-left-color: #8b9d8b; }
-    .product-card.rejected { border-left-color: #a8796a; }
-
-    /* Product Header */
-    .product-header {
-        display: flex;
-        gap: 20px;
-        align-items: flex-start;
-        flex-wrap: wrap;
-    }
-
-    /* Image */
-    .product-image {
-        width: 100px;
-        height: 100px;
-        border-radius: 8px;
-        object-fit: cover;
-        background: #eee;
-        flex-shrink: 0;
-    }
-
-    /* Product Info */
-    .product-info {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .product-info h3 {
-        font-size: 18px;
-        color: #333;
-        margin-bottom: 8px;
-    }
-
-    /* Details */
-    .product-details {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 8px 15px;
-        font-size: 13px;
-        color: #555;
-    }
-
-    .product-details strong {
-        color: #333;
-    }
-
-    .supplier-info {
-        color: #8b7355;
-        font-weight: 600;
-    }
-
-    .membership-discount {
-        color: #8b7355;
-        font-weight: 600;
-        background: #f0e8d8;
-        padding: 4px 8px;
-        border-radius: 4px;
-        display: inline-block;
-    }
-
-    /* Status */
-    .product-status {
-        display: inline-block;
-        margin-top: 10px;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: bold;
-    }
-
-    .status-pending {
-        background: #f0e8d8;
-        color: #8b7355;
-    }
-
-    .status-approved {
-        background: #d8ebd8;
-        color: #5a7a5a;
-    }
-
-    .status-rejected {
-        background: #e8d0cc;
-        color: #8b5a52;
-    }
-
-    /* Actions */
-    .actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-        flex-wrap: wrap;
-    }
-
-    .actions form {
-        margin: 0;
-    }
-
-    /* Buttons */
-    .btn {
-        padding: 10px 16px;
-        border-radius: 6px;
-        font-size: 13px;
-        font-weight: bold;
-        cursor: pointer;
-        border: none;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-    }
-
-    .btn-view {
-        background: #b8a084;
-        color: #fff;
-    }
-
-    .btn-approve {
-        background: #8b9d8b;
-        color: #fff;
-    }
-
-    .btn-reject {
-        background: #a8796a;
-        color: #fff;
-    }
-
-    .btn:hover {
-        transform: translateY(-1px);
-        opacity: 0.95;
-    }
-
-    /* Empty */
-    .empty-message {
-        text-align: center;
-        color: #999;
-        font-style: italic;
-        padding: 30px;
-        font-size: 15px;
-    }
-
-    /* Mobile tweaks */
-    @media (max-width: 768px) {
-        .header {
-            gap: 15px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fdfcfa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(62, 58, 54, 0.06);
+            border: 1px solid #f0e8e0;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .header-left h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #3E3A36;
+        }
+
+        .header-left h1 i {
+            color: #C4A484;
+            margin-right: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-back {
+            background: #E6D3C1;
+            color: #3E3A36;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-back:hover {
+            background: #d4c4b0;
+            transform: translateY(-2px);
+        }
+
+        .logout-btn {
+            background: #2C2C2C;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #1a1a1a;
+        }
+
+        /* ===== ALERTS ===== */
+        .alerts {
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .alert-success {
+            background: #eef6f1;
+            color: #2f6b47;
+            border: 1px solid #d4e8dc;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .alert-error {
+            background: #f8ecec;
+            color: #8b2f2f;
+            border: 1px solid #f0d6d6;
+        }
+
+        /* ===== STATS ===== */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(62, 58, 54, 0.06);
+            border: 1px solid #f0e8e0;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(196, 164, 132, 0.12);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card.pending .stat-icon { color: #ff9800; }
+        .stat-card.approved .stat-icon { color: #4caf50; }
+        .stat-card.rejected .stat-icon { color: #f44336; }
+
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #C4A484;
+        }
+
+        .stat-label {
+            color: #8A7F75;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* ===== TABS (same as membership page) ===== */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #f0e8e0;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 0.8rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #8A7F75;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .tab-btn:hover {
+            color: #3E3A36;
+        }
+
+        .tab-btn.active {
+            border-bottom-color: #C4A484;
+            color: #C4A484;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ===== PRODUCT CARDS ===== */
+        .product-card {
+            background: #f9f9f9;
+            border-left: 5px solid #c2a98d;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .product-card.approved { border-left-color: #8b9d8b; }
+        .product-card.rejected { border-left-color: #a8796a; }
+
         .product-header {
-            flex-direction: column;
+            display: flex;
+            gap: 20px;
             align-items: flex-start;
+            flex-wrap: wrap;
         }
 
         .product-image {
-            width: 100%;
-            height: 180px;
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #eee;
+            flex-shrink: 0;
         }
-    }
 
+        .product-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .product-info h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .product-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 8px 15px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .product-details strong {
+            color: #333;
+        }
+
+        .product-status {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* ===== ACTIONS ===== */
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .actions form {
+            margin: 0;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-view {
+            background: #C4A484;
+            color: white;
+        }
+        .btn-view:hover {
+            background: #9d8970;
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.3);
+        }
+
+        .btn-approve {
+            background: #4caf50;
+            color: white;
+        }
+        .btn-approve:hover {
+            background: #45a049;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-reject {
+            background: #f44336;
+            color: white;
+        }
+        .btn-reject:hover {
+            background: #da190b;
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #8A7F75;
+            font-size: 1.05rem;
+        }
+
+        .empty-message i {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 1rem;
+            color: #E6D3C1;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+                padding: 20px;
+            }
+            .header-left h1 {
+                font-size: 1.3rem;
+            }
+            .product-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .product-image {
+                width: 100%;
+                height: 180px;
+            }
+            .stats {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .actions {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            .stat-number {
+                font-size: 1.8rem;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <div class="header">
-            <h1>📦 Product Approval Management</h1>
-            <a href="/logout" class="logout-btn">Logout</a>
+            <div class="header-left">
+                <h1><i class="fas fa-boxes"></i> Product Approval Management</h1>
+            </div>
+            <div class="header-actions">
+                <a href="/manager/dashboard" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+                <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+            </div>
         </div>
 
         <!-- Alerts -->
@@ -306,32 +431,48 @@
         </div>
 
         <!-- Statistics -->
-        <div class="section">
-            <div class="stats">
-                <div class="stat-box">
-                    <h3 th:text="${pendingProducts.size()}">0</h3>
-                    <p>Pending Approval</p>
-                </div>
-                <div class="stat-box">
-                    <h3 th:text="${approvedProducts.size()}">0</h3>
-                    <p>Approved Products</p>
-                </div>
-                <div class="stat-box">
-                    <h3 th:text="${rejectedProducts.size()}">0</h3>
-                    <p>Rejected Products</p>
-                </div>
+        <div class="stats">
+            <div class="stat-card pending">
+                <span class="stat-icon"><i class="fas fa-hourglass-half"></i></span>
+                <div class="stat-number" th:text="${pendingProducts.size()}">0</div>
+                <div class="stat-label">Pending Approval</div>
+            </div>
+            <div class="stat-card approved">
+                <span class="stat-icon"><i class="fas fa-check-circle"></i></span>
+                <div class="stat-number" th:text="${approvedProducts.size()}">0</div>
+                <div class="stat-label">Approved Products</div>
+            </div>
+            <div class="stat-card rejected">
+                <span class="stat-icon"><i class="fas fa-times-circle"></i></span>
+                <div class="stat-number" th:text="${rejectedProducts.size()}">0</div>
+                <div class="stat-label">Rejected Products</div>
             </div>
         </div>
 
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('pending')">
+                <i class="fas fa-hourglass-half"></i> Pending
+            </button>
+            <button class="tab-btn" onclick="switchTab('approved')">
+                <i class="fas fa-check-circle"></i> Approved
+            </button>
+            <button class="tab-btn" onclick="switchTab('rejected')">
+                <i class="fas fa-times-circle"></i> Rejected
+            </button>
+        </div>
+
         <!-- Pending Products -->
-        <div class="section">
-            <h2>Pending Product Approvals</h2>
-            <div th:if="${!pendingProducts.isEmpty()}">
+        <div id="pending" class="tab-content active">
+            <div th:if="${pendingProducts.isEmpty()}" class="empty-message">
+                <i class="fas fa-inbox"></i>
+                No pending product approvals at the moment.
+            </div>
+            <div th:unless="${pendingProducts.isEmpty()}">
                 <div th:each="product : ${pendingProducts}" class="product-card">
                     <div class="product-header">
                         <img th:if="${product.prodimage}" th:src="${product.prodimage}" alt="Product Image" class="product-image">
                         <div th:if="!${product.prodimage}" class="product-image" style="display: flex; align-items: center; justify-content: center; color: #ccc;">No Image</div>
-                        
                         <div class="product-info">
                             <h3 th:text="${product.productName}"></h3>
                             <div class="product-details">
@@ -346,32 +487,30 @@
                             <span class="product-status status-pending">PENDING</span>
                         </div>
                     </div>
-                    
                     <div class="actions">
-                        <a th:href="@{/manager/products/view/{id}(id=${product.productId})}" class="btn btn-view">View Details</a>
+                        <a th:href="@{/manager/products/view/{id}(id=${product.productId})}" class="btn btn-view"><i class="fas fa-eye"></i> View Details</a>
                         <form th:action="@{/manager/products/approve/{id}(id=${product.productId})}" method="POST">
-                            <button type="submit" class="btn btn-approve">✓ Approve</button>
+                            <button type="submit" class="btn btn-approve"><i class="fas fa-check"></i> Approve</button>
                         </form>
                         <form th:action="@{/manager/products/reject/{id}(id=${product.productId})}" method="POST">
-                            <button type="submit" class="btn btn-reject">✗ Reject</button>
+                            <button type="submit" class="btn btn-reject"><i class="fas fa-times"></i> Reject</button>
                         </form>
                     </div>
                 </div>
             </div>
-            <div th:if="${pendingProducts.isEmpty()}" class="empty-message">
-                ✓ No pending product approvals
-            </div>
         </div>
 
         <!-- Approved Products -->
-        <div class="section">
-            <h2>✓ Approved Products</h2>
-            <div th:if="${!approvedProducts.isEmpty()}">
+        <div id="approved" class="tab-content">
+            <div th:if="${approvedProducts.isEmpty()}" class="empty-message">
+                <i class="fas fa-check-circle"></i>
+                No approved products yet.
+            </div>
+            <div th:unless="${approvedProducts.isEmpty()}">
                 <div th:each="product : ${approvedProducts}" class="product-card approved">
                     <div class="product-header">
                         <img th:if="${product.prodimage}" th:src="${product.prodimage}" alt="Product Image" class="product-image">
                         <div th:if="!${product.prodimage}" class="product-image" style="display: flex; align-items: center; justify-content: center; color: #ccc;">No Image</div>
-                        
                         <div class="product-info">
                             <h3 th:text="${product.productName}"></h3>
                             <div class="product-details">
@@ -379,32 +518,30 @@
                                 <p><strong>Category:</strong> <span th:text="${product.category}"></span></p>
                                 <p><strong>Price:</strong> RM<span th:text="${#numbers.formatDecimal(product.price, 1, 2)}"></span></p>
                                 <p><strong>Stock:</strong> <span th:text="${product.stock}"></span> units</p>
-                                <p class="supplier-info"><strong>Supplier:</strong> <span th:text="${product.supplierName != null ? product.supplierName : 'Unknown'}"></span></p>
+                                <p><strong>Supplier:</strong> <span th:text="${product.supplierName != null ? product.supplierName : 'Unknown'}"></span></p>
                                 <p><strong>Approved:</strong> <span th:text="${#temporals.format(product.updatedAt, 'yyyy-MM-dd HH:mm')}"></span></p>
                             </div>
                             <span class="product-status status-approved">APPROVED</span>
                         </div>
                     </div>
-                    
                     <div class="actions">
-                        <a th:href="@{/manager/products/view/{id}(id=${product.productId})}" class="btn btn-view">View Details</a>
+                        <a th:href="@{/manager/products/view/{id}(id=${product.productId})}" class="btn btn-view"><i class="fas fa-eye"></i> View Details</a>
                     </div>
                 </div>
-            </div>
-            <div th:if="${approvedProducts.isEmpty()}" class="empty-message">
-                No approved products yet
             </div>
         </div>
 
         <!-- Rejected Products -->
-        <div class="section">
-            <h2>✗ Rejected Products</h2>
-            <div th:if="${!rejectedProducts.isEmpty()}">
+        <div id="rejected" class="tab-content">
+            <div th:if="${rejectedProducts.isEmpty()}" class="empty-message">
+                <i class="fas fa-times-circle"></i>
+                No rejected products.
+            </div>
+            <div th:unless="${rejectedProducts.isEmpty()}">
                 <div th:each="product : ${rejectedProducts}" class="product-card rejected">
                     <div class="product-header">
                         <img th:if="${product.prodimage}" th:src="${product.prodimage}" alt="Product Image" class="product-image">
                         <div th:if="!${product.prodimage}" class="product-image" style="display: flex; align-items: center; justify-content: center; color: #ccc;">No Image</div>
-                        
                         <div class="product-info">
                             <h3 th:text="${product.productName}"></h3>
                             <div class="product-details">
@@ -412,22 +549,35 @@
                                 <p><strong>Category:</strong> <span th:text="${product.category}"></span></p>
                                 <p><strong>Price:</strong> RM<span th:text="${#numbers.formatDecimal(product.price, 1, 2)}"></span></p>
                                 <p><strong>Stock:</strong> <span th:text="${product.stock}"></span> units</p>
-                                <p class="supplier-info"><strong>Supplier:</strong> <span th:text="${product.supplierName != null ? product.supplierName : 'Unknown'}"></span></p>
+                                <p><strong>Supplier:</strong> <span th:text="${product.supplierName != null ? product.supplierName : 'Unknown'}"></span></p>
                                 <p><strong>Rejected:</strong> <span th:text="${#temporals.format(product.updatedAt, 'yyyy-MM-dd HH:mm')}"></span></p>
                             </div>
                             <span class="product-status status-rejected">REJECTED</span>
                         </div>
                     </div>
-                    
                     <div class="actions">
-                        <a th:href="@{/manager/products/view/{id}(id=${product.productId})}" class="btn btn-view">View Details</a>
+                        <a th:href="@{/manager/products/view/{id}(id=${product.productId})}" class="btn btn-view"><i class="fas fa-eye"></i> View Details</a>
                     </div>
                 </div>
             </div>
-            <div th:if="${rejectedProducts.isEmpty()}" class="empty-message">
-                No rejected products
-            </div>
         </div>
     </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // Show the selected tab
+            document.getElementById(tabName).classList.add('active');
+            // Add active class to the clicked button
+            event.target.classList.add('active');
+        }
+    </script>
 </body>
 </html>

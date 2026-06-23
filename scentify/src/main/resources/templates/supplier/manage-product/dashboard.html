@@ -2,261 +2,544 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Supplier Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet"
-          th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Products - Supplier Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-    body {
-        font-family: 'Inter', sans-serif;
-        background: #fdfcfa;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    /* Navbar */
-    .navbar {
-        background: linear-gradient(135deg, #c2a98d, #b49374) !important;
-    }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fdfcfa;
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-    .navbar-brand {
-        font-family: 'Playfair Display', serif;
-        letter-spacing: 1px;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-    /* Cards */
-    .card {
-        border-radius: 18px;
-        box-shadow: 0 25px 60px rgba(0,0,0,0.08);
-        border: none;
-    }
+        /* ===== HEADER ===== */
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(62, 58, 54, 0.06);
+            border: 1px solid #f0e8e0;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
 
-    .card-title {
-        font-weight: 500;
-    }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
 
-    /* Buttons */
-    .btn-primary {
-        background: linear-gradient(135deg, #c2a98d, #b49374);
-        border: none;
-        border-radius: 14px;
-    }
+        .header-left h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #3E3A36;
+        }
 
-    .btn-primary:hover {
-        opacity: 0.9;
-    }
+        .header-left h1 i {
+            color: #C4A484;
+            margin-right: 0.5rem;
+        }
 
-    .btn-info,
-    .btn-warning,
-    .btn-danger {
-        border-radius: 12px;
-    }
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
 
-    .btn-info {
-        background: #b8a084;
-        border: none;
-    }
+        .welcome-text {
+            color: #3E3A36;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
 
-    .btn-info:hover {
-        background: #9d8970;
-    }
+        .logout-btn {
+            background: #2C2C2C;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-    .btn-warning {
-        background: #d4a574;
-        border: none;
-        color: white;
-    }
+        .logout-btn:hover {
+            background: #1a1a1a;
+            transform: translateY(-2px);
+        }
 
-    .btn-warning:hover {
-        background: #c2945f;
-        color: white;
-    }
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
 
-    .btn-danger {
-        background: #a8796a;
-        border: none;
-    }
+        .page-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #3E3A36;
+        }
 
-    .btn-danger:hover {
-        background: #956253;
-    }
+        .btn-add {
+            background: #C4A484;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-    /* Status badges */
-    .status-badge {
-        font-weight: 500;
-        padding: 6px 12px;
-        border-radius: 12px;
-        font-size: 0.85rem;
-    }
+        .btn-add:hover {
+            background: #9d8970;
+            transform: translateY(-2px);
+            color: white;
+        }
 
-    .status-pending {
-        background: #f0e8d8;
-        color: #8b7355;
-    }
+        /* ===== ALERTS ===== */
+        .alerts {
+            margin-bottom: 20px;
+        }
 
-    .status-approved {
-        background: #d8ebd8;
-        color: #5a7a5a;
-    }
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
 
-    .status-rejected {
-        background: #e8d0cc;
-        color: #8b5a52;
-    }
+        .alert-success {
+            background: #eef6f1;
+            color: #2f6b47;
+            border: 1px solid #d4e8dc;
+        }
 
-    /* Table */
-    .table {
-        margin-bottom: 0;
-    }
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
 
-    .table thead {
-        background: #e8dfd0;
-        color: #5a4a42;
-    }
+        .alert-error {
+            background: #f8ecec;
+            color: #8b2f2f;
+            border: 1px solid #f0d6d6;
+        }
 
-    .table thead th {
-        border-bottom: none;
-        font-weight: 500;
-        color: #5a4a42;
-    }
+        .alert-note {
+            background: #f5f0eb;
+            border: 1px solid #e8ddd2;
+            color: #5a4a42;
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
 
-    .table-hover tbody tr:hover {
-        background-color: #f5ede6;
-    }
+        .alert-note i {
+            color: #C4A484;
+            font-size: 1.2rem;
+        }
 
-    /* Alerts */
-    .alert {
-        border-radius: 14px;
-    }
+        /* ===== STATS ===== */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
 
-</style>
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(62, 58, 54, 0.06);
+            border: 1px solid #f0e8e0;
+            transition: all 0.3s ease;
+        }
 
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(196, 164, 132, 0.12);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card.pending .stat-icon { color: #ff9800; }
+        .stat-card.approved .stat-icon { color: #4caf50; }
+        .stat-card.rejected .stat-icon { color: #f44336; }
+
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #C4A484;
+        }
+
+        .stat-label {
+            color: #8A7F75;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* ===== TABLE ===== */
+        .table-wrapper {
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(62, 58, 54, 0.06);
+            border: 1px solid #f0e8e0;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table thead {
+            background: #f5f0eb;
+        }
+
+        .table th {
+            padding: 1rem 1.2rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #3E3A36;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table td {
+            padding: 1rem 1.2rem;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.9rem;
+        }
+
+        .table tbody tr:hover {
+            background: #faf7f5;
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ===== STATUS BADGES ===== */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* ===== ACTIONS ===== */
+        .actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-view {
+            background: #C4A484;
+            color: white;
+        }
+        .btn-view:hover {
+            background: #9d8970;
+            color: white;
+        }
+
+        .btn-edit {
+            background: #d4a574;
+            color: white;
+        }
+        .btn-edit:hover {
+            background: #c2936b;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #a8796a;
+            color: white;
+        }
+        .btn-delete:hover {
+            background: #956253;
+            color: white;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-message {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #8A7F75;
+            font-size: 1.05rem;
+        }
+
+        .empty-message i {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 1rem;
+            color: #E6D3C1;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+                padding: 16px 20px;
+            }
+            .header-left h1 {
+                font-size: 1.2rem;
+            }
+            .header-actions {
+                flex-wrap: wrap;
+            }
+            .page-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .stats {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .table {
+                font-size: 0.8rem;
+            }
+            .table th, .table td {
+                padding: 0.7rem;
+            }
+            .actions {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            .stat-number {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
 </head>
-<body class="bg-light">
-
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid">
-        <span class="navbar-brand">Scentify - Supplier Dashboard</span>
-        <div class="ms-auto">
-            <span class="text-light me-3" th:text="'Welcome, ' + ${user?.username}"></span>
-            <a class="btn btn-sm btn-outline-light" href="/logout">Logout</a>
-        </div>
-    </div>
-</nav>
-
-<div class="container mt-4">
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <h2>My Products</h2>
-        </div>
-        <div class="col-md-6 text-end">
-            <a class="btn btn-primary" th:href="@{/supplier/products/add}">+ Add New Product</a>
-        </div>
-    </div>
-
-    <!-- Flash messages -->
-    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
-        <strong>Success!</strong> <span th:text="${success}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <strong>Error!</strong> <span th:text="${error}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-
-    <!-- Approval Status Info -->
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Pending Approval</h5>
-                    <h3 th:text="${pendingProducts.size()}" 
-                        style="color: #c2a98d;"></h3>
-                    <p class="text-muted small" th:text="${pendingProducts.size() == 1 ? 'product' : 'products'}"></p>
-                </div>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1><i class="fas fa-store"></i> Supplier Dashboard</h1>
+            </div>
+            <div class="header-actions">
+                <span class="welcome-text">
+                    <i class="fas fa-user-circle"></i> Welcome, <span th:text="${user?.username}"></span>
+                </span>
+                <a href="/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Approved</h5>
-                    <h3 th:text="${approvedProducts.size()}" style="color: #8b9d8b;"></h3>
-                    <p class="text-muted small" th:text="${approvedProducts.size() == 1 ? 'product' : 'products'}"></p>
-                </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h2><i class="fas fa-box" style="color: #C4A484; margin-right: 0.5rem;"></i> My Products</h2>
+            <a class="btn-add" th:href="@{/supplier/products/add}">
+                <i class="fas fa-plus"></i> Add New Product
+            </a>
+        </div>
+
+        <!-- Alerts -->
+        <div class="alerts">
+            <div th:if="${success}" class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${success}"></span>
+            </div>
+            <div th:if="${warning}" class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span th:text="${warning}"></span>
+            </div>
+            <div th:if="${error}" class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${error}"></span>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Rejected</h5>
-                    <h3 th:text="${rejectedProducts.size()}" style="color: #a8796a;"></h3>
-                    <p class="text-muted small" th:text="${rejectedProducts.size() == 1 ? 'product' : 'products'}"></p>
-                </div>
+
+        <!-- Statistics -->
+        <div class="stats">
+            <div class="stat-card pending">
+                <span class="stat-icon"><i class="fas fa-hourglass-half"></i></span>
+                <div class="stat-number" th:text="${pendingProducts.size()}">0</div>
+                <div class="stat-label">Pending Approval</div>
+            </div>
+            <div class="stat-card approved">
+                <span class="stat-icon"><i class="fas fa-check-circle"></i></span>
+                <div class="stat-number" th:text="${approvedProducts.size()}">0</div>
+                <div class="stat-label">Approved</div>
+            </div>
+            <div class="stat-card rejected">
+                <span class="stat-icon"><i class="fas fa-times-circle"></i></span>
+                <div class="stat-number" th:text="${rejectedProducts.size()}">0</div>
+                <div class="stat-label">Rejected</div>
+            </div>
+        </div>
+
+        <!-- Products Table -->
+        <div class="table-wrapper">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Product Name</th>
+                            <th>Price (RM)</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                            <th>Added Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${products}">
+                            <td><strong th:text="${p.productId}"></strong></td>
+                            <td th:text="${p.productName}"></td>
+                            <td th:text="'RM ' + ${#numbers.formatDecimal(p.price, 1, 2)}"></td>
+                            <td th:text="${p.stock}"></td>
+                            <td>
+                                <span class="status-badge" 
+                                      th:classappend="${'status-' + p.approvalStatus.toLowerCase()}"
+                                      th:text="${#strings.capitalize(p.approvalStatus)}"></span>
+                            </td>
+                            <td th:text="${p.createdAt} ? ${#temporals.format(p.createdAt, 'dd MMM yyyy')} : 'N/A'"></td>
+                            <td>
+                                <div class="actions">
+                                    <a class="btn btn-view"
+                                       th:href="@{/supplier/products/view/{id}(id=${p.productId})}"
+                                       title="View Details">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <a class="btn btn-edit"
+                                       th:href="@{/supplier/products/edit/{id}(id=${p.productId})}"
+                                       title="Edit Product">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <a class="btn btn-delete"
+                                       th:href="@{/supplier/products/delete/{id}(id=${p.productId})}"
+                                       onclick="return confirm('Are you sure you want to delete this product?');"
+                                       title="Delete Product">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(products)}">
+                            <td colspan="7">
+                                <div class="empty-message">
+                                    <i class="fas fa-box-open"></i>
+                                    No products added yet.
+                                    <a th:href="@{/supplier/products/add}" style="color: #C4A484; font-weight: 600; text-decoration: none; display: inline-block; margin-top: 0.5rem;">
+                                        <i class="fas fa-plus"></i> Add your first product
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Note -->
+        <div class="alert-note">
+            <i class="fas fa-info-circle"></i>
+            <div>
+                <strong>Note:</strong> Products are displayed to customers only after being 
+                <strong>approved by a system manager</strong>. You can track the approval status 
+                of each product in the table above.
             </div>
         </div>
     </div>
-
-    <!-- Products Table -->
-    <div class="card">
-        <div class="table-responsive">
-            <table class="table table-striped table-hover align-middle mb-0">
-                <thead style="background: #e8dfd0; color: #5a4a42;">
-                <tr>
-                    <th>ID</th>
-                    <th>Product Name</th>
-                    <th>Price (RM)</th>
-                    <th>Stock</th>
-                    <th>Status</th>
-                    <th>Added Date</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="p : ${products}">
-                    <td><strong th:text="${p.productId}"></strong></td>
-                    <td th:text="${p.productName}"></td>
-                    <td th:text="'RM ' + ${#numbers.formatDecimal(p.price, 1, 2)}"></td>
-                    <td th:text="${p.stock}"></td>
-                    <td>
-                        <span class="status-badge" 
-                              th:classappend="${'status-' + p.approvalStatus.toLowerCase()}"
-                              th:text="${#strings.capitalize(p.approvalStatus)}"></span>
-                    </td>
-                    <td th:text="${p.createdAt} ? ${#temporals.format(p.createdAt, 'dd MMM yyyy')} : 'N/A'"></td>
-                    <td>
-                        <a class="btn btn-sm btn-info text-white"
-                           th:href="@{/supplier/products/view/{id}(id=${p.productId})}"
-                           title="View Details">
-                            <i class="fas fa-eye"></i> View
-                        </a>
-                        <a class="btn btn-sm btn-warning text-white"
-                           th:href="@{/supplier/products/edit/{id}(id=${p.productId})}"
-                           title="Edit Product">
-                            <i class="fas fa-edit"></i> Edit
-                        </a>
-                        <a class="btn btn-sm btn-danger"
-                           th:href="@{/supplier/products/delete/{id}(id=${p.productId})}"
-                           onclick="return confirm('Are you sure you want to delete this product?');"
-                           title="Delete Product">
-                            <i class="fas fa-trash"></i> Delete
-                        </a>
-                    </td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(products)}">
-                    <td colspan="7" class="text-center py-5">
-                        <p class="text-muted mb-3">No products added yet.</p>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="alert mt-4" style="background: #e8dfd0; border: 1px solid #d4c4b0; color: #5a4a42; border-radius: 14px;" role="alert">
-        <strong>Note:</strong> Products are displayed to customers only after being <strong>approved by a system manager</strong>. 
-        You can track the approval status of each product in the table above.
-    </div>
-</div>
-
-<script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

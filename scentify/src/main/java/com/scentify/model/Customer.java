@@ -40,9 +40,6 @@ public class Customer {
     @Column(name = "preferred_scent_type", length = 100)
     private String preferredScentType;
     
-    @Column(name = "loyalty_points")
-    private Integer loyaltyPoints = 0;
-    
     @Column(name = "is_member")
     private Boolean isMember = false;  // false = non-member, true = member
     
