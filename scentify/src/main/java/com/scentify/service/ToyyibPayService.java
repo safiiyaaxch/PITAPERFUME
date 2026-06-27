@@ -73,6 +73,11 @@ public class ToyyibPayService {
     public Payment createPaymentBill(Order order, String returnUrl) {
         try {
             String createBillUrl = getCreateBillUrl();
+            System.out.println("=== TOYYIBPAY URL CONFIGURATION ===");
+            System.out.println("Base URL: " + baseUrl);
+            System.out.println("Configured Return URL: " + configuredReturnUrl);
+            System.out.println("Configured Callback URL: " + configuredCallbackUrl);
+            System.out.println("Passed Return URL: " + returnUrl);
             System.out.println("=== CREATING TOYYIBPAY BILL ===");
             System.out.println("Environment: " + (sandboxMode ? "SANDBOX (Testing)" : "PRODUCTION"));
             System.out.println("Base URL: " + baseUrl);
