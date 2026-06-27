@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details - Manager</title>
+    <title>Supplier Details - Scentify</title>
     <style>
         * {
             margin: 0;
@@ -70,32 +70,6 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .product-image-container {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .product-image {
-            max-width: 100%;
-            height: auto;
-            max-height: 400px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .product-image-placeholder {
-            display: inline-block;
-            width: 300px;
-            height: 300px;
-            background: #f0f0f0;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #999;
-            font-size: 16px;
-        }
-
         h2 {
             color: #8B6F47;
             margin-bottom: 20px;
@@ -133,51 +107,6 @@
             word-break: break-word;
         }
 
-        .description-section {
-            background: #F5F1ED;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid #D4A574;
-        }
-
-        .description-section label {
-            color: #8B6F47;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 8px;
-            font-size: 12px;
-            text-transform: uppercase;
-        }
-
-        .description-section p {
-            color: #333;
-            line-height: 1.6;
-            white-space: pre-wrap;
-        }
-
-        .supplier-section {
-            background: #F5F1ED;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid #A0826D;
-        }
-
-        .supplier-section label {
-            color: #A0826D;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 8px;
-            font-size: 12px;
-            text-transform: uppercase;
-        }
-
-        .supplier-section p {
-            color: #333;
-            margin: 5px 0;
-        }
-
         .status-badge {
             display: inline-block;
             padding: 8px 16px;
@@ -202,6 +131,44 @@
             color: #721c24;
         }
 
+        .document-section {
+            background: #F5F1ED;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #A0826D;
+        }
+
+        .document-section label {
+            color: #A0826D;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .document-link {
+            display: inline-block;
+            background: #8B6F47;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .document-link:hover {
+            background: #6B5438;
+            transform: translateY(-2px);
+        }
+
+        .no-document {
+            color: #999;
+            font-style: italic;
+        }
+
         .actions {
             display: flex;
             gap: 10px;
@@ -220,6 +187,8 @@
             display: inline-block;
             text-align: center;
             transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
         }
 
         .btn-approve {
@@ -258,88 +227,99 @@
 
         .status-actions.show {
             display: flex;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .info-note {
+            background: #e8f4f8;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border-left: 4px solid #2196F3;
+            margin-bottom: 20px;
+            color: #0c5460;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📦 Product Details</h1>
+            <h1>Supplier Details</h1>
             <div>
-                <a href="/manager/dashboard" class="back-btn">← Back</a>
+                <a href="/manager/dashboard" class="back-btn">Back</a>
                 <a href="/logout" class="logout-btn">Logout</a>
             </div>
         </div>
 
         <div class="content">
-            <!-- Product Image -->
-            <div class="product-image-container">
-                <img th:if="${product.prodimage}" th:src="${product.prodimage}" alt="Product Image" class="product-image">
-                <div th:if="!${product.prodimage}" class="product-image-placeholder">No Image Available</div>
-            </div>
-
-            <!-- Product Name and Status -->
-            <h2 th:text="${product.productName}"></h2>
-            <span th:class="'status-badge ' + 'status-' + ${product.approvalStatus}" th:text="${product.approvalStatus.toUpperCase()}"></span>
+            <!-- Supplier Name -->
+            <h2 th:text="${supplier.brandName}"></h2>
+            
+            <!-- Status Badge -->
+            <span th:class="'status-badge status-' + ${supplier.approvalStatus.toLowerCase()}" 
+                  th:text="${supplier.approvalStatus.toUpperCase()}"></span>
 
             <!-- Main Details -->
             <div class="details-grid">
                 <div class="detail-item">
-                    <label>Product ID</label>
-                    <p th:text="${product.productId}"></p>
+                    <label>Brand Name</label>
+                    <p th:text="${supplier.brandName}"></p>
                 </div>
                 <div class="detail-item">
-                    <label>Category</label>
-                    <p th:text="${product.category}"></p>
+                    <label>Username</label>
+                    <p th:text="${supplier.user.username}"></p>
                 </div>
                 <div class="detail-item">
-                    <label>Price</label>
-                    <p th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 2)}"></p>
+                    <label>Email Address</label>
+                    <p th:text="${supplier.user.email}"></p>
                 </div>
                 <div class="detail-item">
-                    <label>Stock Available</label>
-                    <p th:text="${product.stock} + ' units'"></p>
+                    <label>Applied Date</label>
+                    <p th:text="${#temporals.format(supplier.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></p>
+                </div>
+                <div class="detail-item" th:if="${supplier.approvalDate != null}">
+                    <label>Approval Date</label>
+                    <p th:text="${#temporals.format(supplier.approvalDate, 'yyyy-MM-dd HH:mm:ss')}"></p>
                 </div>
             </div>
 
-            <!-- Description -->
-            <div class="description-section">
-                <label>Description</label>
-                <p th:text="${product.description}"></p>
-            </div>
-
-            <!-- Supplier Information -->
-            <div class="supplier-section" th:if="${supplier}">
-                <label>Supplier Information</label>
-                <p><strong>Username:</strong> <span th:text="${supplier.username}"></span></p>
-                <p><strong>Email:</strong> <span th:text="${supplier.email}"></span></p>
-                <p><strong>Full Name:</strong> <span th:text="${supplier.brandName}"></span></p>
-            </div>
-
-            <!-- Timeline -->
-            <div class="detail-item">
-                <label>Submitted Date</label>
-                <p th:text="${#temporals.format(product.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></p>
-            </div>
-
-            <div th:if="${product.updatedAt}" class="detail-item">
-                <label>Last Updated</label>
-                <p th:text="${#temporals.format(product.updatedAt, 'yyyy-MM-dd HH:mm:ss')}"></p>
+            <!-- Business Documentation -->
+            <div class="document-section">
+                <label>Business Documentation</label>
+                <div th:if="${supplier.businessRegistration}">
+                    <p style="color: #333; margin-bottom: 10px;">
+                        <strong>File:</strong> <span th:text="${supplier.businessRegistration}"></span>
+                    </p>
+                    <a th:href="@{/uploads/business-docs/{file}(file=${supplier.businessRegistration})}" 
+                       class="document-link" target="_blank">
+                        Download PDF
+                    </a>
+                </div>
+                <p th:if="!${supplier.businessRegistration}" class="no-document">
+                    No business documentation provided
+                </p>
             </div>
 
             <!-- Actions -->
             <div class="actions">
-                <a href="/manager/dashboard" class="btn btn-back">← Back to Dashboard</a>
+                <a href="/manager/dashboard" class="btn btn-back">Back to Dashboard</a>
                 
-                <!-- Show approve/reject buttons only for pending products -->
-                <div th:if="${product.approvalStatus == 'pending'}" class="status-actions show">
-                    <form th:action="@{/manager/products/approve/{id}(id=${product.productId})}" method="POST" style="display: inline;">
-                        <button type="submit" class="btn btn-approve">✓ Approve Product</button>
+                <!-- Show approve/reject buttons only for pending suppliers -->
+                <div th:if="${supplier.approvalStatus.toLowerCase() == 'pending'}" class="status-actions show">
+                    <form th:action="@{/manager/approve/{id}(id=${supplier.supplierId})}" method="POST" style="flex: 1;">
+                        <button type="submit" class="btn btn-approve">Approve Supplier</button>
                     </form>
-                    <form th:action="@{/manager/products/reject/{id}(id=${product.productId})}" method="POST" style="display: inline;">
-                        <button type="submit" class="btn btn-reject">✗ Reject Product</button>
+                    <form th:action="@{/manager/reject/{id}(id=${supplier.supplierId})}" method="POST" style="flex: 1;">
+                        <button type="submit" class="btn btn-reject">Reject Supplier</button>
                     </form>
                 </div>
+            </div>
+
+            <!-- Info Note for Non-Pending Suppliers -->
+            <div th:if="${supplier.approvalStatus.toLowerCase() != 'pending'}" class="info-note">
+                This supplier has been <strong th:text="${supplier.approvalStatus.toLowerCase()}"></strong>. 
+                No further actions are required at this time.
             </div>
         </div>
     </div>

@@ -2,660 +2,797 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
     <title>Your Fragrance Persona - Scentify</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-beige: #D4C4B8;
-            --light-beige: #E8D8CC;
-            --accent-brown: #C4A484;
-            --dark-brown: #3E3A36;
-            --muted-brown: #8A7F75;
+            --primary-color: #C4A484;
+            --primary-dark: #B89673;
+            --secondary-color: #E6D3C1;
+            --accent-color: #FAF7F4;
+            --text-dark: #3E3A36;
+            --text-muted: #8A7F75;
             --hover-brown: #9d8970;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            background: linear-gradient(135deg, var(--primary-beige) 0%, var(--light-beige) 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 40px 20px;
+            background: #FFFFFF;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            color: var(--text-dark);
+            overflow-x: hidden;
         }
-        
-        /* ========== NAVIGATION ========== */
+
+        /* ================= NAVBAR ================= */
         .navbar {
-            background-color: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 1rem 0;
-            margin-bottom: 40px;
+            background: white;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 0.75rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
-        
+
+        .navbar .container-fluid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            flex-wrap: wrap;
+        }
+
         .navbar-brand {
+            font-size: 1.2rem;
             font-weight: 700;
-            color: var(--dark-brown) !important;
-            font-size: 1.5rem;
+            color: var(--text-dark) !important;
         }
-        
-        /* ========== MAIN CONTAINER ========== */
+
+        .navbar .ms-auto {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .nav-link {
+            color: var(--text-dark) !important;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.4rem 0.6rem;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        .logout-btn {
+            background: #2C2C2C;
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 4px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .logout-btn:hover {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .membership-badge {
+            background: linear-gradient(135deg, #c2a98d, #b49374);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+
+        .join-membership-btn {
+            background: linear-gradient(135deg, #c2a98d, #b49374);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .pending-badge {
+            background: #fff3cd;
+            color: #856404;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* ================= MAIN CONTAINER ================= */
         .main-container {
             max-width: 900px;
             margin: 0 auto;
+            padding: 1rem 1rem 2rem 1rem;
         }
-        
-        /* ========== SCENT PORTRAIT CARD ========== */
+
+        /* ================= SCENT PORTRAIT CARD ================= */
         .scent-portrait-card {
             background: white;
-            border-radius: 20px;
-            padding: 50px 40px;
-            margin-bottom: 40px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            padding: 40px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--secondary-color);
             text-align: center;
         }
-        
+
         .scent-label {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             letter-spacing: 2px;
-            color: var(--accent-brown);
+            color: var(--primary-color);
             font-weight: 600;
             text-transform: uppercase;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
-        
+
         .persona-emoji-large {
-            font-size: 80px;
-            margin-bottom: 20px;
+            font-size: 64px;
+            margin-bottom: 15px;
             display: inline-block;
         }
-        
+
         .persona-title {
-            font-size: 2.8rem;
+            font-size: 2.2rem;
             font-weight: 700;
-            color: var(--dark-brown);
-            margin-bottom: 10px;
+            color: var(--text-dark);
+            margin-bottom: 8px;
             letter-spacing: 0.5px;
         }
-        
+
         .persona-tagline {
-            font-size: 1rem;
-            letter-spacing: 2px;
-            color: var(--accent-brown);
+            font-size: 0.9rem;
+            letter-spacing: 1.5px;
+            color: var(--primary-color);
             font-weight: 600;
             text-transform: uppercase;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
-        
+
         .divider {
-            width: 60px;
+            width: 50px;
             height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent-brown), transparent);
-            margin: 25px auto;
+            background: var(--primary-color);
+            margin: 20px auto;
+            opacity: 0.4;
         }
-        
+
         .persona-quote {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-style: italic;
-            color: var(--muted-brown);
-            margin-bottom: 30px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
             line-height: 1.6;
         }
-        
+
         .persona-full-description {
-            font-size: 1rem;
-            color: var(--dark-brown);
+            font-size: 0.95rem;
+            color: var(--text-dark);
             line-height: 1.8;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
-        
-        /* ========== ACCORDS & VIBES GRID ========== */
+
+        /* ================= ACCORDS & VIBES GRID ================= */
         .accords-vibes-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-top: 30px;
+            gap: 16px;
+            margin-top: 25px;
         }
-        
+
         .accord-card {
-            background: linear-gradient(135deg, #f8f5f1 0%, #faf7f3 100%);
-            border-radius: 15px;
-            padding: 25px;
+            background: var(--accent-color);
+            border-radius: 12px;
+            padding: 20px;
             text-align: left;
-            border: 1px solid #ebe5df;
+            border: 1px solid var(--secondary-color);
         }
-        
+
         .accord-title {
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
-            color: var(--dark-brown);
-            margin-bottom: 15px;
+            color: var(--text-dark);
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
-        
+
         .accord-icon {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
-        
+
         .accord-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
         }
-        
+
         .accord-tag {
             background: white;
-            border: 1px solid var(--primary-beige);
+            border: 1px solid var(--secondary-color);
             border-radius: 20px;
-            padding: 6px 12px;
-            font-size: 0.85rem;
-            color: var(--dark-brown);
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            color: var(--text-dark);
             font-weight: 500;
         }
-        
-        /* Note tag specific colors */
-        .accord-tag.top-tag { border-color: #f5cba7; background: #fef9f4; }
-        .accord-tag.middle-tag { border-color: #d7bde2; background: #faf5ff; }
-        .accord-tag.base-tag { border-color: #aeb6bf; background: #f4f6f7; }
-        
+
         .vibe-description {
-            font-size: 0.95rem;
-            color: var(--muted-brown);
+            font-size: 0.9rem;
+            color: var(--text-muted);
             line-height: 1.6;
+            margin: 0;
         }
-        
-        /* ========== SPECTRUM CARD ========== */
+
+        /* ================= SPECTRUM CARD ================= */
         .spectrum-card {
             background: white;
-            border-radius: 20px;
-            padding: 50px 40px;
-            margin-bottom: 40px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            padding: 40px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--secondary-color);
         }
-        
+
         .spectrum-label {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             letter-spacing: 2px;
-            color: var(--accent-brown);
+            color: var(--primary-color);
             font-weight: 600;
             text-transform: uppercase;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
-        
+
         .spectrum-title {
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: 700;
-            color: var(--dark-brown);
-            margin-bottom: 30px;
+            color: var(--text-dark);
+            margin-bottom: 25px;
         }
-        
+
         .persona-list {
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 20px;
         }
-        
+
         .persona-list-item {
             display: flex;
             align-items: flex-start;
-            gap: 15px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #ebe5df;
+            gap: 14px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--secondary-color);
         }
-        
+
         .persona-list-item:last-child {
             border-bottom: none;
         }
-        
+
         .persona-list-emoji {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             margin-top: 2px;
         }
-        
+
         .persona-list-content {
             flex: 1;
         }
-        
+
         .persona-list-name {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
-            color: var(--dark-brown);
-            margin-bottom: 5px;
+            color: var(--text-dark);
+            margin-bottom: 3px;
         }
-        
+
         .persona-list-subtitle {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-style: italic;
-            color: var(--muted-brown);
+            color: var(--text-muted);
         }
-        
+
         .persona-list-percentage {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 700;
-            color: var(--accent-brown);
-            min-width: 60px;
+            color: var(--primary-color);
+            min-width: 50px;
             text-align: right;
         }
-        
-        /* ========== PRIMARY PERSONA HIGHLIGHT ========== */
+
         .persona-list-item.primary {
-            background: linear-gradient(135deg, #faf7f3 0%, #f5f0eb 100%);
-            padding: 15px;
+            background: var(--accent-color);
+            padding: 14px 16px;
             border-radius: 10px;
             border-bottom: none;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            border: 1px solid var(--secondary-color);
         }
-        
+
         .persona-list-item.primary .persona-list-name {
-            color: var(--dark-brown);
-            font-size: 1.15rem;
+            color: var(--text-dark);
+            font-size: 1.05rem;
         }
-        
-        /* ========== THINKING / WAITING ANIMATION ========== */
+
+        /* ================= WAITING / THINKING ANIMATION ================= */
         .waiting-container {
             background: white;
-            border-radius: 20px;
-            padding: 60px 40px;
+            border-radius: 16px;
+            padding: 50px 30px;
             text-align: center;
             margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--secondary-color);
             display: none;
         }
-        
+
         .waiting-container.active {
             display: block;
             animation: fadeInUp 0.5s ease;
         }
-        
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        
+
         .waiting-emoji {
-            font-size: 64px;
+            font-size: 52px;
             display: block;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             animation: pulse 1.5s ease-in-out infinite;
         }
-        
+
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
         }
-        
+
         .waiting-title {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            color: var(--dark-brown);
-            margin-bottom: 10px;
+            color: var(--text-dark);
+            margin-bottom: 8px;
         }
-        
+
         .waiting-subtitle {
-            font-size: 1rem;
-            color: var(--muted-brown);
-            margin-bottom: 25px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
         }
-        
+
         .waiting-dots {
             display: flex;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
         }
-        
+
         .waiting-dot {
-            width: 14px;
-            height: 14px;
-            background: linear-gradient(135deg, var(--accent-brown), var(--hover-brown));
+            width: 12px;
+            height: 12px;
+            background: var(--primary-color);
             border-radius: 50%;
             animation: dotBounce 1.4s infinite;
         }
-        
+
         .waiting-dot:nth-child(1) { animation-delay: 0s; }
         .waiting-dot:nth-child(2) { animation-delay: 0.2s; }
         .waiting-dot:nth-child(3) { animation-delay: 0.4s; }
-        
+
         @keyframes dotBounce {
             0%, 80%, 100% {
                 transform: translateY(0);
                 opacity: 0.4;
             }
             40% {
-                transform: translateY(-15px);
+                transform: translateY(-12px);
                 opacity: 1;
             }
         }
-        
-        /* ========== RECOMMENDATIONS SECTION ========== */
+
+        /* ================= RECOMMENDATIONS SECTION ================= */
         .recommendations-section {
             display: none;
         }
-        
+
         .recommendations-section.active {
             display: block;
             animation: fadeInUp 0.6s ease;
         }
-        
+
         .recommendations-title {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 700;
-            color: var(--dark-brown);
+            color: var(--text-dark);
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
-        
+
+        .recommendations-title i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
         .recommendations-subtitle {
-            font-size: 0.95rem;
-            color: var(--muted-brown);
+            font-size: 0.9rem;
+            color: var(--text-muted);
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             line-height: 1.6;
         }
-        
-        /* ===== RECOMMENDATION GRID - FIXED FOR EQUAL HEIGHT ===== */
+
+        .recommendations-subtitle strong {
+            color: var(--primary-color);
+        }
+
+        /* ================= RECOMMENDATION GRID ================= */
         .recommendations-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
-            margin-bottom: 30px;
+            gap: 20px;
+            margin-bottom: 25px;
         }
-        
+
         .recommendation-card {
             background: white;
-            border-radius: 15px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
             transition: all 0.3s ease;
-            border: 1px solid #f0e8e0;
+            border: 1px solid var(--secondary-color);
             display: flex;
             flex-direction: column;
             height: 100%;
         }
-        
+
         .recommendation-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(196, 164, 132, 0.2);
+            transform: translateY(-6px);
+            box-shadow: 0 8px 25px rgba(196, 164, 132, 0.15);
+            border-color: var(--primary-color);
         }
-        
+
         .card-header {
             display: flex;
             align-items: flex-start;
-            padding: 25px 20px 15px;
-            border-bottom: 1px solid #f0e8e0;
+            padding: 20px 18px 12px;
+            border-bottom: 1px solid var(--secondary-color);
             flex-shrink: 0;
         }
-        
+
         .card-number {
-            background: linear-gradient(135deg, var(--accent-brown), var(--hover-brown));
+            background: var(--primary-color);
             color: white;
-            width: 50px;
-            height: 50px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: 700;
-            margin-right: 15px;
+            margin-right: 12px;
             flex-shrink: 0;
         }
-        
+
         .card-content {
             flex: 1;
             min-width: 0;
         }
-        
+
         .product-name {
-            font-size: 1.2rem;
+            font-size: 1.05rem;
             font-weight: 700;
-            color: var(--dark-brown);
-            margin-bottom: 5px;
+            color: var(--text-dark);
+            margin-bottom: 3px;
         }
-        
+
         .product-brand {
-            font-size: 0.85rem;
-            color: var(--accent-brown);
+            font-size: 0.75rem;
+            color: var(--primary-color);
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
-        
+
         .price-badge {
             display: inline-block;
-            background: var(--light-beige);
-            border: 1px solid var(--primary-beige);
+            background: var(--accent-color);
+            border: 1px solid var(--secondary-color);
             border-radius: 15px;
-            padding: 5px 12px;
-            font-size: 0.75rem;
-            color: var(--muted-brown);
+            padding: 3px 10px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
             font-weight: 600;
         }
-        
+
         .card-body {
-            padding: 15px 20px 20px;
+            padding: 12px 18px 18px;
             flex: 1;
             display: flex;
             flex-direction: column;
         }
-        
+
         .product-description {
-            font-size: 0.9rem;
-            color: var(--dark-brown);
+            font-size: 0.85rem;
+            color: var(--text-dark);
             line-height: 1.6;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        /* ================= NOTES SECTION ================= */
+        .notes-section {
+            background: var(--accent-color);
+            border-radius: 10px;
+            padding: 10px 14px;
             margin-bottom: 12px;
             flex-shrink: 0;
         }
-        
-        /* ===== NOTES SECTION - FIXED ===== */
-        .notes-section {
-            background: #f8f5f1;
-            border-radius: 12px;
-            padding: 12px 15px;
-            margin-bottom: 15px;
-            flex-shrink: 0;
-        }
-        
+
         .notes-section .notes-title {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 700;
-            color: #8A7F75;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
-        
+
+        .notes-section .notes-title i {
+            margin-right: 0.3rem;
+        }
+
         .note-row {
             display: flex;
             align-items: flex-start;
-            margin-bottom: 4px;
-            font-size: 0.8rem;
+            margin-bottom: 3px;
+            font-size: 0.75rem;
         }
-        
+
         .note-row:last-child {
             margin-bottom: 0;
         }
-        
+
         .note-label {
-            min-width: 50px;
+            min-width: 40px;
             font-weight: 700;
-            color: #3E3A36;
-            font-size: 0.7rem;
+            color: var(--text-dark);
+            font-size: 0.65rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             flex-shrink: 0;
         }
-        
+
         .note-label.top { color: #e67e22; }
         .note-label.middle { color: #8e44ad; }
         .note-label.base { color: #2c3e50; }
-        
+
         .note-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 4px;
+            gap: 3px;
         }
-        
+
         .note-tag {
             display: inline-block;
             background: white;
-            border: 1px solid #e6d3c1;
+            border: 1px solid var(--secondary-color);
             border-radius: 12px;
-            padding: 1px 10px;
-            font-size: 0.7rem;
-            color: #3E3A36;
+            padding: 1px 8px;
+            font-size: 0.65rem;
+            color: var(--text-dark);
         }
-        
+
         .note-tag.top-tag { border-color: #f5cba7; background: #fef9f4; }
         .note-tag.middle-tag { border-color: #d7bde2; background: #faf5ff; }
         .note-tag.base-tag { border-color: #aeb6bf; background: #f4f6f7; }
-        
+
         .no-notes {
-            color: #8A7F75;
-            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-size: 0.7rem;
             font-style: italic;
         }
-        
-        /* ===== VIEW DETAILS BUTTON - ALWAYS AT BOTTOM ===== */
+
+        /* ================= VIEW DETAILS BUTTON ================= */
         .btn-view-wrapper {
             margin-top: auto;
-            padding-top: 10px;
+            padding-top: 8px;
         }
-        
+
         .btn-view-details {
             display: block;
             width: 100%;
-            background: linear-gradient(135deg, var(--accent-brown), var(--hover-brown));
+            background: var(--primary-color);
             color: white;
             border: none;
-            padding: 12px;
-            border-radius: 10px;
+            padding: 10px;
+            border-radius: 8px;
             font-weight: 600;
             text-decoration: none;
             text-align: center;
             transition: all 0.3s ease;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
-        
+
         .btn-view-details:hover {
+            background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(196, 164, 132, 0.3);
+            box-shadow: 0 4px 15px rgba(196, 164, 132, 0.3);
             color: white;
         }
-        
-        /* ========== ACTION BUTTONS ========== */
+
+        .btn-view-details i {
+            margin-left: 0.4rem;
+        }
+
+        /* ================= ACTION BUTTONS ================= */
         .action-buttons {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             justify-content: center;
             flex-wrap: wrap;
-            margin-top: 40px;
+            margin-top: 30px;
         }
-        
+
         .btn-action {
-            padding: 12px 30px;
-            border-radius: 25px;
+            padding: 10px 25px;
+            border-radius: 8px;
             font-weight: 600;
             text-decoration: none;
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
-        
+
         .btn-primary-action {
-            background: linear-gradient(135deg, var(--accent-brown), var(--hover-brown));
+            background: var(--primary-color);
             color: white;
         }
-        
+
         .btn-primary-action:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 20px rgba(196, 164, 132, 0.4);
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(196, 164, 132, 0.3);
             color: white;
         }
-        
+
         .btn-secondary-action {
             background: white;
-            color: var(--accent-brown);
-            border: 2px solid var(--accent-brown);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
         }
-        
+
         .btn-secondary-action:hover {
-            background: var(--light-beige);
-            transform: translateY(-3px);
+            background: var(--accent-color);
+            transform: translateY(-2px);
+            color: var(--primary-color);
         }
-        
+
         .btn-tertiary-action {
             background: transparent;
-            color: var(--muted-brown);
-            border: 2px solid var(--muted-brown);
+            color: var(--text-muted);
+            border: 2px solid var(--text-muted);
         }
-        
+
         .btn-tertiary-action:hover {
-            background: var(--muted-brown);
+            background: var(--text-muted);
             color: white;
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
-        
+
+        .btn-action i {
+            margin-right: 0.4rem;
+        }
+
+        /* ================= NO RECOMMENDATIONS ================= */
         .no-recommendations {
             background: white;
-            border-radius: 20px;
-            padding: 60px 40px;
+            border-radius: 16px;
+            padding: 50px 30px;
             text-align: center;
             margin-bottom: 30px;
+            border: 1px solid var(--secondary-color);
         }
-        
-        /* ========== FOOTER ========== */
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--muted-brown);
+
+        .no-recommendations .emoji {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .no-recommendations h3 {
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+        }
+
+        .no-recommendations p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
             font-size: 0.95rem;
         }
-        
-        /* ========== RESPONSIVE ========== */
-        @media (max-width: 992px) {
-            .recommendations-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+
+        .no-recommendations .waiting-dots {
+            margin-bottom: 15px;
         }
-        
+
+        .no-recommendations .retake-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+
+        .no-recommendations .retake-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ================= FOOTER ================= */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--secondary-color);
+            margin-top: 20px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+        @media (min-width: 992px) {
+            .navbar .container-fluid { padding: 0 2rem; }
+            .main-container { padding: 1.5rem 2rem 3rem 2rem; }
+            .scent-portrait-card { padding: 50px 40px; }
+            .spectrum-card { padding: 50px 40px; }
+            .persona-title { font-size: 2.8rem; }
+        }
+
         @media (max-width: 768px) {
-            .scent-portrait-card,
-            .spectrum-card {
-                padding: 30px 20px;
-            }
+            .navbar .container-fluid { padding: 0 0.75rem; }
+            .nav-link { font-size: 0.75rem; padding: 0.3rem 0.4rem; }
+            .logout-btn { font-size: 0.75rem; padding: 0.3rem 0.7rem; }
+            .membership-badge, .join-membership-btn, .pending-badge { font-size: 0.65rem; padding: 0.2rem 0.6rem; }
             
-            .persona-title {
-                font-size: 2rem;
-            }
+            .main-container { padding: 0.75rem; }
+            .scent-portrait-card { padding: 25px 18px; }
+            .spectrum-card { padding: 25px 18px; }
+            .waiting-container { padding: 30px 18px; }
             
-            .spectrum-title {
-                font-size: 1.8rem;
-            }
+            .persona-title { font-size: 1.8rem; }
+            .persona-emoji-large { font-size: 50px; }
+            .spectrum-title { font-size: 1.4rem; }
             
             .accords-vibes-grid {
                 grid-template-columns: 1fr;
-            }
-            
-            .persona-emoji-large {
-                font-size: 60px;
-            }
-            
-            .btn-action {
-                padding: 10px 20px;
-                font-size: 0.85rem;
             }
             
             .recommendations-grid {
@@ -664,42 +801,67 @@
                 margin: 0 auto;
             }
             
-            .waiting-container {
-                padding: 40px 20px;
+            .recommendations-title { font-size: 1.4rem; }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
             }
             
-            .waiting-title {
-                font-size: 1.4rem;
+            .btn-action {
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
             }
+        }
+
+        @media (max-width: 576px) {
+            .persona-title { font-size: 1.5rem; }
+            .persona-tagline { font-size: 0.75rem; }
+            .persona-quote { font-size: 0.9rem; }
+            .persona-full-description { font-size: 0.85rem; }
+            .persona-list-item { flex-wrap: wrap; }
+            .persona-list-percentage { width: 100%; text-align: left; padding-left: 46px; }
+            .card-header { flex-wrap: wrap; }
+            .card-number { width: 36px; height: 36px; font-size: 0.9rem; }
         }
     </style>
 </head>
 <body>
-    <!-- NAVIGATION -->
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand" href="/customer/dashboard">✨ Scentify</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <span class="nav-link" th:text="'Welcome, ' + ${user.username}"></span>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/logout">Logout</a>
-                    </li>
-                </ul>
+    <!-- ================= NAVBAR ================= -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/customer/dashboard">
+                <i class="fas fa-leaf"></i> Scentify
+            </a>
+            <div class="ms-auto d-flex align-items-center gap-1 gap-sm-2 flex-wrap">
+                <a class="nav-link" href="/customer/dashboard"><i class="fas fa-home"></i> <span class="d-none d-sm-inline">Home</span></a>
+                <a class="nav-link" href="/customer/cart"><i class="fas fa-shopping-cart"></i> <span class="d-none d-sm-inline">Cart</span></a>
+                <a class="nav-link" href="/customer/order-history"><i class="fas fa-list"></i> <span class="d-none d-sm-inline">Orders</span></a>
+                <a class="nav-link" href="/customer/about"><i class="fas fa-info-circle"></i> <span class="d-none d-sm-inline">About</span></a>
+                
+                <!-- Membership / Premium -->
+                <span th:if="${customer != null and customer.isMember == true}" class="membership-badge">
+                    <i class="fas fa-crown"></i> Premium
+                </span>
+                <a th:if="${customer != null and customer.isMember == false and membershipApplication == null}" 
+                   href="/customer/apply-membership" class="join-membership-btn">
+                    <i class="fas fa-crown"></i> Join
+                </a>
+                <span th:if="${membershipApplication != null and membershipApplication.status == 'PENDING'}" 
+                      class="pending-badge">
+                    <i class="fas fa-hourglass-half"></i> Pending
+                </span>
+                <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
             </div>
         </div>
     </nav>
 
-    <!-- MAIN CONTENT -->
+    <!-- ================= MAIN CONTENT ================= -->
     <div class="main-container">
         <!-- SCENT PORTRAIT CARD -->
         <div class="scent-portrait-card">
-            <div class="scent-label">Your Scent Portrait Matches</div>
+            <div class="scent-label"><i class="fas fa-star" style="margin-right: 0.4rem;"></i> Your Scent Portrait Matches</div>
             
             <div class="persona-emoji-large" th:text="${primaryPersona == 'Fresh & Airy' ? '🌬️' : primaryPersona == 'Warm & Cozy' ? '☕' : primaryPersona == 'Floral & Romantic' ? '🌸' : primaryPersona == 'Woody & Earthy' ? '🌲' : primaryPersona == 'Bold & Spicy' ? '🔥' : '✨'}"></div>
             
@@ -709,7 +871,7 @@
             
             <div class="divider"></div>
             
-            <p class="persona-quote" th:text="${primaryPersona == 'Fresh & Airy' ? '&quot;Like a sunrise breeze over ocean waves, awakening and alive.&quot;' : primaryPersona == 'Warm & Cozy' ? '&quot;Like the warmth of a cozy fireside with hot spiced tea.&quot;' : primaryPersona == 'Floral & Romantic' ? '&quot;Like a garden of blooming roses at twilight.&quot;' : primaryPersona == 'Woody & Earthy' ? '&quot;Like the calm essence of a peaceful forest sanctuary.&quot;' : primaryPersona == 'Bold & Spicy' ? '&quot;Like the warm, rich complexity of an exotic marketplace at sundown.&quot;' : '&quot;Your unique scent signature.&quot;'}"></p>
+            <p class="persona-quote" th:text="${primaryPersona == 'Fresh & Airy' ? '"Like a sunrise breeze over ocean waves, awakening and alive."' : primaryPersona == 'Warm & Cozy' ? '"Like the warmth of a cozy fireside with hot spiced tea."' : primaryPersona == 'Floral & Romantic' ? '"Like a garden of blooming roses at twilight."' : primaryPersona == 'Woody & Earthy' ? '"Like the calm essence of a peaceful forest sanctuary."' : primaryPersona == 'Bold & Spicy' ? '"Like the warm, rich complexity of an exotic marketplace at sundown."' : '"Your unique scent signature."'}"></p>
             
             <p class="persona-full-description" th:text="${primaryPersona == 'Fresh & Airy' ? 'You love the feeling of freshness and vitality. Crisp citrus notes, aquatic accords, and green scents invigorate your senses. You prefer fragrances that feel light, refreshing, and energizing—perfect for daytime wear and making a bright impression.' : primaryPersona == 'Warm & Cozy' ? 'You seek comfort and warmth in your fragrances. Amber, vanilla, and woody notes wrap around you like a cozy blanket. You appreciate gourmand scents that feel indulgent, creamy, and perfect for intimate moments and evening wear.' : primaryPersona == 'Floral & Romantic' ? 'You celebrate the beauty of flowers in all their forms. Rose, jasmine, peony, and other floral notes speak to your romantic spirit. You prefer sophisticated, feminine fragrances that feel timeless and eternally elegant.' : primaryPersona == 'Woody & Earthy' ? 'You connect with nature through scent. Cedarwood, sandalwood, patchouli, and vetiver ground you. You appreciate organic, natural-feeling fragrances that have depth, complexity, and a sense of peace.' : primaryPersona == 'Bold & Spicy' ? 'You make a statement with fragrance. Spicy notes like cardamom, pepper, and cinnamon excite you. You love bold, intense, and memorable scents that showcase your confident and adventurous personality.' : 'Discover your unique fragrance journey.'}"></p>
             
@@ -760,7 +922,7 @@
 
         <!-- SPECTRUM CARD -->
         <div class="spectrum-card">
-            <div class="spectrum-label">The Scent Canvas</div>
+            <div class="spectrum-label"><i class="fas fa-palette" style="margin-right: 0.4rem;"></i> The Scent Canvas</div>
             <h2 class="spectrum-title">Your Fragrance Harmony Spectrum</h2>
             
             <div class="persona-list">
@@ -822,7 +984,7 @@
             </div>
         </div>
 
-        <!-- ===== WAITING / THINKING ANIMATION ===== -->
+        <!-- WAITING / THINKING ANIMATION -->
         <div class="waiting-container active" id="waitingContainer">
             <span class="waiting-emoji">🔍</span>
             <h2 class="waiting-title">Finding Your Perfect Scents...</h2>
@@ -834,9 +996,11 @@
             </div>
         </div>
 
-        <!-- ===== RECOMMENDATIONS SECTION ===== -->
+        <!-- RECOMMENDATIONS SECTION -->
         <div class="recommendations-section" id="recommendationsSection" th:if="${recommendations != null and recommendations.size() > 0}">
-            <div class="recommendations-title">✨ Your Perfect Fragrance Matches</div>
+            <div class="recommendations-title">
+                <i class="fas fa-magic"></i> Your Perfect Fragrance Matches
+            </div>
             <div class="recommendations-subtitle">
                 Based on your <strong th:text="${primaryPersona}"></strong> persona and personal preferences,
                 these fragrances are perfectly tailored for you.
@@ -862,7 +1026,7 @@
                         
                         <!-- Notes Section -->
                         <div class="notes-section">
-                            <div class="notes-title">📋 Fragrance Notes</div>
+                            <div class="notes-title"><i class="fas fa-list-ul"></i> Fragrance Notes</div>
                             
                             <!-- Top Notes -->
                             <div class="note-row" th:if="${recommendation.topNotes != null and recommendation.topNotes != ''}">
@@ -900,10 +1064,10 @@
                             </div>
                         </div>
                         
-                        <!-- View Details Button - Always at bottom -->
+                        <!-- View Details Button -->
                         <div class="btn-view-wrapper">
                             <a th:href="'/customer/product/' + ${recommendation.productId}" class="btn-view-details">
-                                View Details 🛒
+                                View Details <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
                     </div>
@@ -913,9 +1077,9 @@
 
         <!-- NO RECOMMENDATIONS MESSAGE -->
         <div th:if="${recommendations == null or recommendations.size() == 0}" class="no-recommendations">
-            <div style="font-size: 3em; margin-bottom: 20px;">🤔</div>
-            <h3 style="color: var(--dark-brown); margin-bottom: 15px;">Finding Your Perfect Scents...</h3>
-            <p style="color: var(--muted-brown); margin-bottom: 25px;">
+            <span class="emoji">🤔</span>
+            <h3>Finding Your Perfect Scents...</h3>
+            <p>
                 We're curating personalized recommendations based on your unique profile.
                 <br>This may take a moment.
             </p>
@@ -924,22 +1088,30 @@
                 <div class="waiting-dot"></div>
                 <div class="waiting-dot"></div>
             </div>
-            <p style="color: var(--muted-brown); margin-top: 25px; font-size: 0.85rem;">
-                <a href="/customer/quiz/start" style="color: var(--accent-brown);">← Retake Quiz</a> if this takes too long
+            <p style="margin-top: 20px; font-size: 0.85rem;">
+                <a href="/customer/quiz/start" class="retake-link">
+                    <i class="fas fa-arrow-left"></i> Retake Quiz
+                </a> if this takes too long
             </p>
         </div>
 
         <!-- ACTION BUTTONS -->
         <div class="action-buttons">
-            <a href="/customer/quiz/start" class="btn-action btn-secondary-action">🔄 Retake Quiz</a>
-            <a href="/customer/dashboard" class="btn-action btn-primary-action">🛍️ Browse Perfumes</a>
-            <a href="/customer/dashboard" class="btn-action btn-tertiary-action">← Back to Dashboard</a>
+            <a href="/customer/quiz/start" class="btn-action btn-secondary-action">
+                <i class="fas fa-redo"></i> Retake Quiz
+            </a>
+            <a href="/customer/dashboard" class="btn-action btn-primary-action">
+                <i class="fas fa-shopping-bag"></i> Browse Perfumes
+            </a>
+            <a href="/customer/dashboard" class="btn-action btn-tertiary-action">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
         </div>
     </div>
 
     <!-- FOOTER -->
     <footer>
-        <p>&copy; 2026 Scentify. Discover Your Signature Scent. ✨</p>
+        <p>&copy; 2026 Scentify. Discover Your Signature Scent. <i class="fas fa-star" style="color: var(--primary-color);"></i></p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -961,11 +1133,6 @@
                     recommendationsSection.classList.add('active');
                 }, 2500);
             }
-            
-            console.log("=== Persona Results Page Loaded ===");
-            console.log("Primary Persona:", /*[[${primaryPersona}]]*/ null);
-            console.log("Persona Scores:", /*[[${personaScores}]]*/ null);
-            console.log("Recommendations Count:", /*[[${recommendations != null ? recommendations.size() : 0}]]*/ 0);
         });
     </script>
 </body>

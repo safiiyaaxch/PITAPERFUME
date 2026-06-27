@@ -34,6 +34,15 @@ public class ToyyibPayService {
 
     @Value("${toyyibpay.sandbox-mode:false}")
     private boolean sandboxMode;
+
+    @Value("${app.base-url:http://localhost:8080}")
+    private String baseUrl;
+
+    @Value("${app.payment.return-url:${app.base-url}/payment/return}")
+    private String configuredReturnUrl;
+
+    @Value("${app.payment.callback-url:${app.base-url}/payment/callback}")
+    private String configuredCallbackUrl;
     
     @Autowired
     private PaymentRepository paymentRepository;
@@ -62,180 +71,230 @@ public class ToyyibPayService {
      * Reference: https://toyyibpay.com/apireference/
      */
     public Payment createPaymentBill(Order order, String returnUrl) {
-    try {
-        String createBillUrl = getCreateBillUrl();
-        System.out.println("=== CREATING TOYYIBPAY BILL ===");
-        System.out.println("🌐 Environment: " + (sandboxMode ? "SANDBOX (Testing)" : "PRODUCTION"));
-        System.out.println("🌐 API Secret Key: " + (apiSecretKey != null ? apiSecretKey.substring(0, Math.min(10, apiSecretKey.length())) + "..." : "NULL"));
-        System.out.println("🌐 Category Code: " + categoryCode);
-        
-        // Create payment record
-        Payment payment = new Payment(order, order.getTotalPrice());
-        
-        // Convert amount to cents
-        long amountInCents = order.getTotalPrice().multiply(new BigDecimal("100")).longValue();
-        System.out.println("💰 Amount: RM " + order.getTotalPrice() + " = " + amountInCents + " cents");
-        
-        // ===== BUILD BILL DESCRIPTION WITH ALL ITEMS =====
-        String billDescription = buildBillDescription(order);
-        System.out.println("📝 Bill Description: " + billDescription);
-        
-        // ===== BUILD BILL NAME =====
-        String billName = "Scentify Order #" + order.getOrderId();
-        if (order.getOrderItems() != null && !order.getOrderItems().isEmpty()) {
-            int itemCount = order.getOrderItems().size();
-            billName += " (" + itemCount + " item" + (itemCount > 1 ? "s" : "") + ")";
-        }
-        
-        // ✅ FIX: Get phone number with fallback
-        String phone = "";
-        if (order.getCustomer() != null && order.getCustomer().getPhone() != null 
-            && !order.getCustomer().getPhone().isEmpty()) {
-            phone = order.getCustomer().getPhone();
-        }
-        
-        // If phone is still empty, use a default
-        if (phone == null || phone.isEmpty()) {
-            System.out.println("⚠️ Customer phone is empty, using default: 0123456789");
-            phone = "0123456789";
-        }
-        System.out.println("📞 Phone: " + phone);
-        
-        // Prepare ToyyibPay request
-        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
-        requestBody.add("userSecretKey", apiSecretKey);
-        requestBody.add("categoryCode", categoryCode);
-        requestBody.add("billName", billName);
-        requestBody.add("billDescription", billDescription);
-        requestBody.add("billPriceSetting", "1");
-        requestBody.add("billPayorInfo", "1");
-        requestBody.add("billAmount", String.valueOf(amountInCents));
-        requestBody.add("billReturnUrl", returnUrl);
-        requestBody.add("billCallbackUrl", "http://localhost:8080/payment/callback");
-        requestBody.add("billExternalReferenceNo", "ORDER-" + order.getOrderId());
-        requestBody.add("billTo", order.getCustomer().getFullname());
-        requestBody.add("billEmail", order.getCustomer().getUser().getEmail());
-        requestBody.add("billPhone", phone); // ✅ Now phone is never empty
-        requestBody.add("billPaymentChannel", "2");
-        
-        // Build email content
-        String emailContent = buildEmailContent(order);
-        requestBody.add("billContentEmail", emailContent);
-        
-        System.out.println("📤 Sending request to ToyyibPay...");
-        System.out.println("📤 URL: " + createBillUrl);
-        System.out.println("📤 Bill Name: " + billName);
-        System.out.println("📤 Bill Description: " + billDescription);
-        System.out.println("📤 Phone: " + phone);
-        
-        // Send request to ToyyibPay
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(requestBody, headers);
-        
-        // Get response as String first to handle HTML error responses
-        String responseBody = restTemplate.postForObject(createBillUrl, request, String.class);
-        
-        System.out.println("📦 Raw response received (length: " + (responseBody != null ? responseBody.length() : "NULL") + ")");
-        if (responseBody != null && responseBody.length() > 0) {
-            System.out.println("📦 Response preview: " + responseBody.substring(0, Math.min(500, responseBody.length())));
-        }
-        
-        if (responseBody == null || responseBody.trim().isEmpty()) {
-            System.err.println("❌ Response body is null or empty!");
-            return null;
-        }
-        
-        // Try to parse as JSON
-        Map<String, Object> response = null;
-        ObjectMapper objectMapper = new ObjectMapper();
-        
         try {
-            response = objectMapper.readValue(responseBody, new TypeReference<Map<String, Object>>() {});
-            System.out.println("✅ Successfully parsed response as JSON Object");
-        } catch (Exception e1) {
-            try {
-                java.util.List<Map<String, Object>> responseArray = objectMapper.readValue(responseBody, new TypeReference<java.util.List<Map<String, Object>>>() {});
-                System.out.println("⚠️ Response is a JSON array - extracting first element");
-                
-                if (responseArray != null && !responseArray.isEmpty()) {
-                    response = responseArray.get(0);
-                    System.out.println("✅ Extracted first element from array: " + response);
-                } else {
-                    System.err.println("❌ Response array is empty!");
-                    return null;
-                }
-            } catch (Exception e2) {
-                System.err.println("⚠️ Failed to parse response as JSON: " + e1.getMessage());
-                System.err.println("📝 Raw response body: " + responseBody);
+            String createBillUrl = getCreateBillUrl();
+            System.out.println("=== CREATING TOYYIBPAY BILL ===");
+            System.out.println("Environment: " + (sandboxMode ? "SANDBOX (Testing)" : "PRODUCTION"));
+            System.out.println("Base URL: " + baseUrl);
+            System.out.println("Callback URL: " + configuredCallbackUrl);
+            
+            // Create payment record
+            Payment payment = new Payment(order, order.getTotalPrice());
+            
+            // Convert amount to cents
+            long amountInCents = order.getTotalPrice().multiply(new BigDecimal("100")).longValue();
+            System.out.println("Amount: RM " + order.getTotalPrice() + " = " + amountInCents + " cents");
+            
+            // Build bill description with all items
+            String billDescription = buildBillDescription(order);
+            System.out.println("Bill Description: " + billDescription);
+            
+            // Build bill name
+            String billName = "Scentify Order #" + order.getOrderId();
+            if (order.getOrderItems() != null && !order.getOrderItems().isEmpty()) {
+                int itemCount = order.getOrderItems().size();
+                billName += " (" + itemCount + " item" + (itemCount > 1 ? "s" : "") + ")";
+            }
+            
+            // Get validated phone number
+            String phone = getValidPhoneNumber(order);
+            System.out.println("Phone: " + phone);
+            
+            // Determine final return URL
+            String finalReturnUrl = (returnUrl != null && !returnUrl.isEmpty()) 
+                ? returnUrl 
+                : configuredReturnUrl;
+            
+            // Prepare ToyyibPay request
+            MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+            requestBody.add("userSecretKey", apiSecretKey);
+            requestBody.add("categoryCode", categoryCode);
+            requestBody.add("billName", billName);
+            requestBody.add("billDescription", billDescription);
+            requestBody.add("billPriceSetting", "1");
+            requestBody.add("billPayorInfo", "1");
+            requestBody.add("billAmount", String.valueOf(amountInCents));
+            requestBody.add("billReturnUrl", finalReturnUrl);
+            requestBody.add("billCallbackUrl", configuredCallbackUrl);
+            requestBody.add("billExternalReferenceNo", "ORDER-" + order.getOrderId());
+            requestBody.add("billTo", order.getCustomer().getFullname());
+            requestBody.add("billEmail", order.getCustomer().getUser().getEmail());
+            requestBody.add("billPhone", phone);
+            requestBody.add("billPaymentChannel", "2");
+            
+            // Build email content
+            String emailContent = buildEmailContent(order);
+            requestBody.add("billContentEmail", emailContent);
+            
+            System.out.println("Sending request to ToyyibPay...");
+            System.out.println("URL: " + createBillUrl);
+            System.out.println("Bill Name: " + billName);
+            System.out.println("Bill Description: " + billDescription);
+            System.out.println("Return URL: " + finalReturnUrl);
+            System.out.println("Callback URL: " + configuredCallbackUrl);
+            System.out.println("Phone: " + phone);
+            
+            // Send request to ToyyibPay
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(requestBody, headers);
+            
+            // Get response as String first to handle HTML error responses
+            String responseBody = restTemplate.postForObject(createBillUrl, request, String.class);
+            
+            System.out.println("Raw response received (length: " + (responseBody != null ? responseBody.length() : "NULL") + ")");
+            if (responseBody != null && responseBody.length() > 0) {
+                System.out.println("Response preview: " + responseBody.substring(0, Math.min(500, responseBody.length())));
+            }
+            
+            if (responseBody == null || responseBody.trim().isEmpty()) {
+                System.err.println("Response body is null or empty!");
                 return null;
             }
-        }
             
-        if (response == null) {
-            System.err.println("❌ Response is null");
-            return null;
-        }
-        
-        System.out.println("📊 Full response: " + response);
-        
-        // Check for error status
-        if (response.containsKey("status") && "error".equals(response.get("status"))) {
-            String errorMsg = response.containsKey("msg") ? (String) response.get("msg") : "Unknown error";
-            System.err.println("❌ ToyyibPay error: " + errorMsg);
-            return null;
-        }
-        
-        // Try different possible response formats
-        String billCode = null;
-        if (response.containsKey("BillCode")) {
-            billCode = (String) response.get("BillCode");
-        } else if (response.containsKey("billcode")) {
-            billCode = (String) response.get("billcode");
-        } else if (response.containsKey("data")) {
-            Object dataObj = response.get("data");
-            if (dataObj instanceof Map) {
-                Map<String, Object> dataMap = (Map<String, Object>) dataObj;
-                if (dataMap.containsKey("BillCode")) {
-                    billCode = (String) dataMap.get("BillCode");
-                } else if (dataMap.containsKey("billcode")) {
-                    billCode = (String) dataMap.get("billcode");
+            // Try to parse as JSON
+            Map<String, Object> response = null;
+            ObjectMapper objectMapper = new ObjectMapper();
+            
+            try {
+                response = objectMapper.readValue(responseBody, new TypeReference<Map<String, Object>>() {});
+                System.out.println("Successfully parsed response as JSON Object");
+            } catch (Exception e1) {
+                try {
+                    java.util.List<Map<String, Object>> responseArray = objectMapper.readValue(responseBody, new TypeReference<java.util.List<Map<String, Object>>>() {});
+                    System.out.println("Response is a JSON array - extracting first element");
+                    
+                    if (responseArray != null && !responseArray.isEmpty()) {
+                        response = responseArray.get(0);
+                        System.out.println("Extracted first element from array: " + response);
+                    } else {
+                        System.err.println("Response array is empty!");
+                        return null;
+                    }
+                } catch (Exception e2) {
+                    System.err.println("Failed to parse response as JSON: " + e1.getMessage());
+                    System.err.println("Raw response body: " + responseBody);
+                    return null;
                 }
             }
+                
+            if (response == null) {
+                System.err.println("Response is null");
+                return null;
+            }
+            
+            System.out.println("Full response: " + response);
+            
+            // Check for error status
+            if (response.containsKey("status") && "error".equals(response.get("status"))) {
+                String errorMsg = response.containsKey("msg") ? (String) response.get("msg") : "Unknown error";
+                System.err.println("ToyyibPay error: " + errorMsg);
+                return null;
+            }
+            
+            // Try different possible response formats
+            String billCode = null;
+            if (response.containsKey("BillCode")) {
+                billCode = (String) response.get("BillCode");
+            } else if (response.containsKey("billcode")) {
+                billCode = (String) response.get("billcode");
+            } else if (response.containsKey("data")) {
+                Object dataObj = response.get("data");
+                if (dataObj instanceof Map) {
+                    Map<String, Object> dataMap = (Map<String, Object>) dataObj;
+                    if (dataMap.containsKey("BillCode")) {
+                        billCode = (String) dataMap.get("BillCode");
+                    } else if (dataMap.containsKey("billcode")) {
+                        billCode = (String) dataMap.get("billcode");
+                    }
+                }
+            }
+            
+            if (billCode != null && !billCode.isEmpty()) {
+                payment.setBillCode(billCode);
+                String paymentUrl = (sandboxMode ? "https://dev.toyyibpay.com/bill/?billCode=" : "https://toyyibpay.com/bill/?billCode=") + billCode;
+                payment.setPaymentUrl(paymentUrl);
+                payment = paymentRepository.save(payment);
+                
+                order.setToyyibPayBillCode(billCode);
+                order.setPaymentStatus("PENDING");
+                orderRepository.save(order);
+                
+                System.out.println("ToyyibPay bill created successfully!");
+                System.out.println("Bill Code: " + billCode);
+                System.out.println("Payment URL: " + paymentUrl);
+                System.out.println("Order saved with bill code: " + order.getOrderId());
+                return payment;
+            } else {
+                System.err.println("Failed to extract BillCode from ToyyibPay response");
+                System.err.println("Response: " + response);
+                if (response.containsKey("status")) {
+                    System.err.println("Response status: " + response.get("status"));
+                }
+                if (response.containsKey("msg")) {
+                    System.err.println("Response message: " + response.get("msg"));
+                }
+                return null;
+            }
+        } catch (Exception e) {
+            System.err.println("Error creating ToyyibPay bill: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    /**
+     * Get and validate phone number from order
+     */
+    private String getValidPhoneNumber(Order order) {
+        String phone = "";
+        
+        try {
+            // Try to get phone from customer
+            if (order.getCustomer() != null) {
+                if (order.getCustomer().getPhone() != null && !order.getCustomer().getPhone().isEmpty()) {
+                    phone = order.getCustomer().getPhone();
+                    System.out.println("Phone from customer: " + phone);
+                }
+            }
+            
+            // If phone is empty, try to get from shipping address if available
+            if (phone.isEmpty() && order.getShippingAddress() != null) {
+                // You might have phone in shipping address
+                // phone = order.getShippingPhone();
+            }
+            
+            // Clean the phone number
+            if (!phone.isEmpty()) {
+                // Remove all non-digit characters
+                phone = phone.replaceAll("[^0-9]", "");
+                
+                // Validate Malaysian phone number
+                if (phone.startsWith("0") && phone.length() >= 10 && phone.length() <= 11) {
+                    System.out.println("Valid Malaysian phone number: " + phone);
+                } else if (phone.length() == 10 && !phone.startsWith("0")) {
+                    // If no leading 0, add it
+                    phone = "0" + phone;
+                    System.out.println("Added leading 0: " + phone);
+                } else if (phone.length() == 9 && phone.startsWith("1")) {
+                    // For numbers like 123456789 -> 0123456789
+                    phone = "0" + phone;
+                    System.out.println("Added leading 0: " + phone);
+                } else {
+                    System.out.println("Invalid phone format: " + phone + ", using default");
+                    phone = "0123456789";
+                }
+            } else {
+                System.out.println("No phone found, using default");
+                phone = "0123456789";
+            }
+        } catch (Exception e) {
+            System.err.println("Error getting phone: " + e.getMessage());
+            phone = "0123456789";
         }
         
-        if (billCode != null && !billCode.isEmpty()) {
-            payment.setBillCode(billCode);
-            String paymentUrl = (sandboxMode ? "https://dev.toyyibpay.com/bill/?billCode=" : "https://toyyibpay.com/bill/?billCode=") + billCode;
-            payment.setPaymentUrl(paymentUrl);
-            payment = paymentRepository.save(payment);
-            
-            order.setToyyibPayBillCode(billCode);
-            order.setPaymentStatus("PENDING");
-            orderRepository.save(order);
-            
-            System.out.println("✅ ToyyibPay bill created successfully!");
-            System.out.println("✅ Bill Code: " + billCode);
-            System.out.println("✅ Payment URL: " + paymentUrl);
-            System.out.println("✅ Order saved with bill code: " + order.getOrderId());
-            return payment;
-        } else {
-            System.err.println("❌ Failed to extract BillCode from ToyyibPay response");
-            System.err.println("❌ Response: " + response);
-            if (response.containsKey("status")) {
-                System.err.println("❌ Response status: " + response.get("status"));
-            }
-            if (response.containsKey("msg")) {
-                System.err.println("❌ Response message: " + response.get("msg"));
-            }
-            return null;
-        }
-    } catch (Exception e) {
-        System.err.println("❌ Error creating ToyyibPay bill: " + e.getMessage());
-        e.printStackTrace();
+        return phone;
     }
-    return null;
-}
     
     /**
      * Build bill description with all items in the order

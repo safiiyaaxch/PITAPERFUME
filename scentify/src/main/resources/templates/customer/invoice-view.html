@@ -2,23 +2,132 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
     <title>Invoice - Scentify</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #C4A484;
+            --primary-dark: #B89673;
             --secondary-color: #E6D3C1;
             --accent-color: #FAF7F4;
             --text-dark: #3E3A36;
             --text-muted: #8A7F75;
+            --gold: #DAA520;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            background: var(--accent-color);
+            background: #FFFFFF;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            padding: 2rem;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 0.75rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar .container-fluid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            flex-wrap: wrap;
+        }
+
+        .navbar-brand {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark) !important;
+        }
+
+        .navbar .ms-auto {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .nav-link {
+            color: var(--text-dark) !important;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.4rem 0.6rem;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        .logout-btn {
+            background: #2C2C2C;
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 4px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .logout-btn:hover {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .membership-badge {
+            background: linear-gradient(135deg, #c2a98d, #b49374);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+
+        .join-membership-btn {
+            background: linear-gradient(135deg, #c2a98d, #b49374);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .pending-badge {
+            background: #fff3cd;
+            color: #856404;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* ================= INVOICE CONTAINER ================= */
+        .invoice-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem 2rem 1rem;
         }
 
         .invoice-container {
@@ -26,21 +135,23 @@
             margin: 0 auto;
             background: white;
             border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            padding: 2.5rem;
+            border: 1px solid var(--secondary-color);
         }
 
+        /* ================= INVOICE HEADER ================= */
         .invoice-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 2px solid var(--secondary-color);
             padding-bottom: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .invoice-brand {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--text-dark);
         }
@@ -50,71 +161,169 @@
         }
 
         .invoice-title {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 700;
             color: var(--primary-color);
         }
 
+        .invoice-title i {
+            margin-right: 0.5rem;
+        }
+
+        /* ================= INVOICE INFO ================= */
         .invoice-info {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .invoice-info h6 {
             color: var(--text-muted);
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.2rem;
+            font-weight: 700;
         }
 
         .invoice-info p {
             font-weight: 600;
             margin: 0;
+            font-size: 0.95rem;
         }
 
+        .invoice-info .text-muted-detail {
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ================= CUSTOMER INFO ================= */
+        .customer-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding: 1rem 1.25rem;
+            background: var(--accent-color);
+            border-radius: 8px;
+            border: 1px solid var(--secondary-color);
+        }
+
+        .customer-section h6 {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.2rem;
+            font-weight: 700;
+        }
+
+        .customer-section p {
+            font-weight: 600;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .customer-section .text-muted-detail {
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* ================= INVOICE TABLE ================= */
         .invoice-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 2rem 0;
+            margin: 1.5rem 0;
         }
 
         .invoice-table th {
             background: var(--accent-color);
             color: var(--text-dark);
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            padding: 0.75rem 1rem;
+            letter-spacing: 0.05em;
+            padding: 0.6rem 1rem;
             text-align: left;
             border-bottom: 2px solid var(--secondary-color);
         }
 
         .invoice-table td {
-            padding: 0.75rem 1rem;
+            padding: 0.6rem 1rem;
             border-bottom: 1px solid #f0f0f0;
+            font-size: 0.9rem;
         }
 
+        .invoice-table td:last-child,
+        .invoice-table th:last-child {
+            text-align: right;
+        }
+
+        .invoice-table td:nth-child(2),
+        .invoice-table th:nth-child(2) {
+            text-align: center;
+        }
+
+        /* ================= TOTALS ================= */
         .invoice-total {
             text-align: right;
-            padding: 1.5rem 0;
+            padding: 1.5rem 0 0.5rem 0;
             border-top: 2px solid var(--secondary-color);
+            margin-top: 0.5rem;
         }
 
-        .invoice-total .total-label {
-            font-size: 1.1rem;
+        .total-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 3rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .total-label {
+            font-size: 0.9rem;
             font-weight: 600;
             color: var(--text-muted);
         }
 
-        .invoice-total .total-amount {
-            font-size: 2rem;
+        .total-amount {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            min-width: 100px;
+            text-align: right;
+        }
+
+        .total-row.grand-total {
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 2px solid var(--secondary-color);
+        }
+
+        .total-row.grand-total .total-label {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+        }
+
+        .total-row.grand-total .total-amount {
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--primary-color);
         }
 
+        /* ================= STATUS BADGE ================= */
+        .status-paid {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .status-paid i {
+            margin-right: 0.3rem;
+        }
+
+        /* ================= INVOICE FOOTER ================= */
         .invoice-footer {
             margin-top: 2rem;
             padding-top: 1.5rem;
@@ -122,49 +331,99 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
         }
 
         .btn-print {
             background: var(--primary-color);
             color: white;
-            padding: 0.6rem 1.5rem;
+            padding: 0.5rem 1.5rem;
             border: none;
             border-radius: 4px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 0.9rem;
         }
 
         .btn-print:hover {
             background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.3);
         }
 
         .btn-back {
             color: var(--text-muted);
             text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
         }
 
         .btn-back:hover {
             color: var(--text-dark);
+            text-decoration: none;
         }
 
-        .status-paid {
-            color: #28a745;
-            font-weight: 600;
+        .btn-back i {
+            font-size: 0.8rem;
         }
 
+        /* ================= NOT FOUND ================= */
+        .not-found {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+
+        .not-found-icon {
+            font-size: 3rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+
+        .not-found h3 {
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .not-found p {
+            color: var(--text-muted);
+        }
+
+        /* ================= PRINT ================= */
         @media print {
-            .btn-print, .btn-back {
-                display: none;
+            .navbar {
+                display: none !important;
+            }
+            .btn-print, .btn-back, .invoice-footer .btn-back {
+                display: none !important;
             }
             .invoice-container {
-                box-shadow: none;
-                padding: 1rem;
+                box-shadow: none !important;
+                padding: 1rem !important;
+                border: none !important;
+            }
+            .invoice-wrapper {
+                padding: 0 !important;
             }
             body {
-                background: white;
-                padding: 0;
+                background: white !important;
+                padding: 0 !important;
             }
+            .invoice-footer {
+                border-top: none !important;
+            }
+        }
+
+        /* ================= RESPONSIVE ================= */
+        @media (min-width: 992px) {
+            .navbar .container-fluid { padding: 0 2rem; }
+            .invoice-wrapper { padding: 2rem 2rem 3rem 2rem; }
+            .invoice-container { padding: 3rem; }
         }
 
         @media (max-width: 768px) {
@@ -179,108 +438,213 @@
             }
 
             .invoice-info {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.75rem;
+            }
+
+            .customer-section {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            .invoice-table th,
+            .invoice-table td {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.8rem;
+            }
+
+            .total-row {
+                gap: 1.5rem;
+            }
+
+            .total-row.grand-total .total-amount {
+                font-size: 1.2rem;
+            }
+
+            .invoice-footer {
+                flex-direction: column-reverse;
+                align-items: stretch;
+            }
+
+            .btn-print {
+                width: 100%;
+                text-align: center;
+            }
+
+            .navbar .container-fluid { padding: 0 0.75rem; }
+            .nav-link { font-size: 0.75rem; padding: 0.3rem 0.4rem; }
+            .logout-btn { font-size: 0.75rem; padding: 0.3rem 0.7rem; }
+            .membership-badge, .join-membership-btn, .pending-badge { font-size: 0.65rem; padding: 0.2rem 0.6rem; }
+        }
+
+        @media (max-width: 576px) {
+            .invoice-info {
                 grid-template-columns: 1fr;
                 gap: 0.5rem;
+            }
+
+            .invoice-container {
+                padding: 1rem;
+            }
+
+            .invoice-brand {
+                font-size: 1.2rem;
+            }
+
+            .invoice-title {
+                font-size: 1.1rem;
+            }
+
+            .invoice-table th,
+            .invoice-table td {
+                padding: 0.3rem 0.4rem;
+                font-size: 0.7rem;
+            }
+
+            .total-row {
+                gap: 1rem;
+                font-size: 0.85rem;
+            }
+
+            .total-row.grand-total .total-amount {
+                font-size: 1.1rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="invoice-container" th:if="${invoice != null}">
-        <!-- Header -->
-        <div class="invoice-header">
-            <div class="invoice-brand">
+    <!-- NAVBAR (matching dashboard) -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/customer/dashboard">
                 <i class="fas fa-leaf"></i> Scentify
+            </a>
+            <div class="ms-auto d-flex align-items-center gap-1 gap-sm-2 flex-wrap">
+                <a class="nav-link" href="/customer/dashboard"><i class="fas fa-home"></i> <span class="d-none d-sm-inline">Home</span></a>
+                <a class="nav-link" href="/customer/cart"><i class="fas fa-shopping-cart"></i> <span class="d-none d-sm-inline">Cart</span></a>
+                <a class="nav-link" href="/customer/order-history"><i class="fas fa-list"></i> <span class="d-none d-sm-inline">Orders</span></a>
+                <a class="nav-link" href="/customer/about"><i class="fas fa-info-circle"></i> <span class="d-none d-sm-inline">About</span></a>
+                
+                <!-- Membership / Premium -->
+                <span th:if="${customer != null and customer.isMember == true}" class="membership-badge">
+                    <i class="fas fa-crown"></i> Premium
+                </span>
+                <a th:if="${customer != null and customer.isMember == false and membershipApplication == null}" 
+                   href="/customer/apply-membership" class="join-membership-btn">
+                    <i class="fas fa-crown"></i> Join
+                </a>
+                <span th:if="${membershipApplication != null and membershipApplication.status == 'PENDING'}" 
+                      class="pending-badge">
+                    <i class="fas fa-hourglass-half"></i> Pending
+                </span>
+                <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
             </div>
-            <div class="invoice-title">
-                <i class="fas fa-file-invoice"></i> INVOICE
+        </div>
+    </nav>
+
+    <!-- INVOICE CONTENT -->
+    <div class="invoice-wrapper">
+        <div class="invoice-container" th:if="${invoice != null}">
+            <!-- Header -->
+            <div class="invoice-header">
+                <div class="invoice-brand">
+                    <i class="fas fa-leaf"></i> Scentify
+                </div>
+                <div class="invoice-title">
+                    <i class="fas fa-file-invoice"></i> INVOICE
+                </div>
+            </div>
+
+            <!-- Invoice Info -->
+            <div class="invoice-info">
+                <div>
+                    <h6>Invoice Number</h6>
+                    <p th:text="${invoice.invoiceNumber}">INV-2026-001</p>
+                </div>
+                <div>
+                    <h6>Date</h6>
+                    <p th:text="${#temporals.format(invoice.invoiceDate, 'dd MMM yyyy, hh:mm a')}">18 Jun 2026</p>
+                </div>
+                <div>
+                    <h6>Order Number</h6>
+                    <p>#<span th:text="${invoice.order.orderId}">51</span></p>
+                </div>
+                <div>
+                    <h6>Status</h6>
+                    <p class="status-paid"><i class="fas fa-check-circle"></i> PAID</p>
+                </div>
+            </div>
+
+            <!-- Customer Info -->
+            <div class="customer-section">
+                <div>
+                    <h6>Billed To</h6>
+                    <p th:text="${invoice.order.customer.fullname}">Customer Name</p>
+                    <p class="text-muted-detail" th:text="${invoice.order.shippingAddress}">Address</p>
+                </div>
+                <div>
+                    <h6>Payment Method</h6>
+                    <p th:text="${invoice.paymentMethod}">ToyyibPay</p>
+                    <p class="text-muted-detail">Reference: <span th:text="${invoice.paymentReference}">REF-123</span></p>
+                </div>
+            </div>
+
+            <!-- Items Table -->
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th style="text-align: center;">Quantity</th>
+                        <th style="text-align: right;">Unit Price</th>
+                        <th style="text-align: right;">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${invoice.order.orderItems}">
+                        <td th:text="${item.product.productName}">Product Name</td>
+                        <td style="text-align: center;" th:text="${item.quantity}">1</td>
+                        <td style="text-align: right;">RM <span th:text="${#numbers.formatDecimal(item.price, 1, 2)}">0.00</span></td>
+                        <td style="text-align: right;">RM <span th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}">0.00</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Totals -->
+            <div class="invoice-total">
+                <div class="total-row">
+                    <span class="total-label">Subtotal</span>
+                    <span class="total-amount">RM <span th:text="${#numbers.formatDecimal(invoice.subtotal, 1, 2)}">0.00</span></span>
+                </div>
+                <div class="total-row" th:if="${invoice.tax != null and invoice.tax > 0}">
+                    <span class="total-label">Tax (<span th:text="${invoice.taxRate}">0%</span>)</span>
+                    <span class="total-amount">RM <span th:text="${#numbers.formatDecimal(invoice.tax, 1, 2)}">0.00</span></span>
+                </div>
+                <div class="total-row grand-total">
+                    <span class="total-label">Total</span>
+                    <span class="total-amount">RM <span th:text="${#numbers.formatDecimal(invoice.total, 1, 2)}">0.00</span></span>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="invoice-footer">
+                <a href="/customer/order-history" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Back to Orders
+                </a>
+                <button class="btn-print" onclick="window.print()">
+                    <i class="fas fa-print"></i> Print Invoice
+                </button>
             </div>
         </div>
 
-        <!-- Invoice Info -->
-        <div class="invoice-info">
-            <div>
-                <h6>Invoice Number</h6>
-                <p th:text="${invoice.invoiceNumber}">INV-2026-001</p>
-            </div>
-            <div>
-                <h6>Date</h6>
-                <p th:text="${#temporals.format(invoice.invoiceDate, 'dd MMM yyyy, hh:mm a')}">18 Jun 2026</p>
-            </div>
-            <div>
-                <h6>Order Number</h6>
-                <p>#<span th:text="${invoice.order.orderId}">51</span></p>
-            </div>
-            <div>
-                <h6>Status</h6>
-                <p class="status-paid"><i class="fas fa-check-circle"></i> PAID</p>
-            </div>
-        </div>
-
-        <!-- Customer Info -->
-        <div class="invoice-info" style="margin-bottom: 2rem;">
-            <div>
-                <h6>Billed To</h6>
-                <p th:text="${invoice.order.customer.fullname}">Customer Name</p>
-                <p style="font-weight: 400; color: var(--text-muted); font-size: 0.9rem;" th:text="${invoice.order.shippingAddress}">Address</p>
-            </div>
-            <div>
-                <h6>Payment Method</h6>
-                <p th:text="${invoice.paymentMethod}">ToyyibPay</p>
-                <p style="font-weight: 400; color: var(--text-muted); font-size: 0.9rem;">Reference: <span th:text="${invoice.paymentReference}">REF-123</span></p>
-            </div>
-        </div>
-
-        <!-- Items Table -->
-        <table class="invoice-table">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th style="text-align: center;">Quantity</th>
-                    <th style="text-align: right;">Unit Price</th>
-                    <th style="text-align: right;">Subtotal</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="item : ${invoice.order.orderItems}">
-                    <td th:text="${item.product.productName}">Product Name</td>
-                    <td style="text-align: center;" th:text="${item.quantity}">1</td>
-                    <td style="text-align: right;">RM <span th:text="${#numbers.formatDecimal(item.price, 1, 2)}">0.00</span></td>
-                    <td style="text-align: right;">RM <span th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}">0.00</span></td>
-                </tr>
-            </tbody>
-        </table>
-
-        <!-- Totals -->
-        <div class="invoice-total">
-            <div style="display: flex; justify-content: flex-end; gap: 3rem; margin-bottom: 0.5rem;">
-                <span class="total-label">Subtotal</span>
-                <span style="font-weight: 600;">RM <span th:text="${#numbers.formatDecimal(invoice.subtotal, 1, 2)}">0.00</span></span>
-            </div>
-            <div style="display: flex; justify-content: flex-end; gap: 3rem; margin-bottom: 0.5rem;">
-                <span class="total-label">Tax (<span th:text="${invoice.taxRate}">0%</span>)</span>
-                <span style="font-weight: 600;">RM <span th:text="${#numbers.formatDecimal(invoice.tax, 1, 2)}">0.00</span></span>
-            </div>
-            <div style="display: flex; justify-content: flex-end; gap: 3rem;">
-                <span class="total-label" style="font-size: 1.2rem;">Total</span>
-                <span class="total-amount">RM <span th:text="${#numbers.formatDecimal(invoice.total, 1, 2)}">0.00</span></span>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="invoice-footer">
-            <a href="/customer/order-history" class="btn-back">
+        <!-- Not Found -->
+        <div th:if="${invoice == null}" class="invoice-container not-found">
+            <div class="not-found-icon"><i class="fas fa-file-invoice"></i></div>
+            <h3>Invoice Not Found</h3>
+            <p>The invoice you're looking for doesn't exist or has been removed.</p>
+            <a href="/customer/order-history" class="btn-back" style="margin-top: 1rem; display: inline-block;">
                 <i class="fas fa-arrow-left"></i> Back to Orders
             </a>
-            <button class="btn-print" onclick="window.print()">
-                <i class="fas fa-print"></i> Print Invoice
-            </button>
         </div>
-    </div>
-
-    <div th:if="${invoice == null}" style="text-align: center; padding: 3rem;">
-        <h3>Invoice not found</h3>
-        <a href="/customer/order-history" class="btn-back">Back to Orders</a>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>

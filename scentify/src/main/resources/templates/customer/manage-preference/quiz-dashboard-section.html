@@ -1,41 +1,1097 @@
-<!-- ADD THIS SECTION TO YOUR CUSTOMER DASHBOARD HTML -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+    <title>Customer Dashboard - Scentify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #C4A484;    
+            --secondary-color: #E6D3C1;     
+            --accent-color: #FAF7F4;     
+            --text-dark: #3E3A36;
+            --text-muted: #8A7F75;
+        }
 
-<!-- Manage Preference / Quiz Section -->
-<div class="card shadow-lg" style="margin-bottom: 30px; border-radius: 15px; overflow: hidden; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border: 2px solid #667eea30;">
-    <div class="card-body p-5">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <h3 class="card-title" style="color: #667eea; font-weight: 700; margin-bottom: 10px;">
-                    ✨ Find Your Perfect Fragrance
-                </h3>
-                <p class="card-text text-muted" style="font-size: 1.05em; line-height: 1.6;">
-                    Discover perfumes tailored to your unique taste! Our intelligent quiz analyzes your preferences 
-                    and recommends the 3 most suitable fragrances from our collection. It only takes 2-3 minutes!
-                </p>
-                <div style="margin-top: 15px;">
-                    <div class="badge bg-success me-2">✓ Fun & Interactive</div>
-                    <div class="badge bg-warning">✓ Personalized</div>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #FFFFFF;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 0.75rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar .container-fluid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            flex-wrap: wrap;
+        }
+
+        .navbar-brand {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark) !important;
+        }
+
+        .navbar .ms-auto {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .nav-link {
+            color: var(--text-dark) !important;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.4rem 0.6rem;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        .nav-link.active {
+            color: var(--primary-color) !important;
+            font-weight: 700;
+        }
+
+        .logout-btn {
+            background: #2C2C2C;
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 4px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .logout-btn:hover {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .membership-badge {
+            background: linear-gradient(135deg, #c2a98d, #b49374);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+
+        .join-membership-btn {
+            background: linear-gradient(135deg, #c2a98d, #b49374);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .pending-badge {
+            background: #fff3cd;
+            color: #856404;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* ================= HERO CAROUSEL ================= */
+        .hero-carousel {
+            height: 300px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .carousel-item {
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .carousel-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .carousel-caption {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            bottom: auto;
+            text-align: center;
+            z-index: 10;
+            padding: 0 1rem;
+        }
+
+        .carousel-caption h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .carousel-caption p {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .carousel-caption .btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            font-size: 0.95rem;
+        }
+
+        .carousel-caption .btn:hover {
+            background: #B89673;
+            transform: translateY(-2px);
+        }
+
+        /* ================= QUIZ CARD ================= */
+        .quiz-card {
+            background: var(--accent-color);
+            border: 1px solid var(--secondary-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .quiz-card .badge-success {
+            background: #28a745;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .quiz-card .badge-warning {
+            background: #ffc107;
+            color: #212529;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .quiz-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .quiz-btn:hover {
+            background: #B89673;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.3);
+            color: white;
+        }
+
+        .quiz-emoji {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .quiz-card .card-title {
+            color: var(--text-dark);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .quiz-card .card-text {
+            color: var(--text-muted);
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+
+        /* ================= RECENT RECOMMENDATIONS ================= */
+        .recommendations-card {
+            border: 1px solid var(--secondary-color);
+            border-radius: 12px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .recommendations-card .card-header {
+            background: var(--accent-color);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--secondary-color);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .recommendations-card .card-header h5 {
+            color: var(--text-dark);
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .recommendations-card .card-header h5 i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        .recommendations-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .btn-recommendations {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-recommendations:hover {
+            background: #B89673;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.3);
+        }
+
+        /* ================= MAIN CONTAINER ================= */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem 2rem 1rem;
+        }
+
+        /* ================= SEARCH BAR ================= */
+        .search-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-bar form {
+            flex: 1;
+            display: flex;
+            gap: 0.5rem;
+            min-width: 180px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            min-width: 120px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .filter-toggle {
+            background: var(--text-dark);
+            color: white;
+            padding: 0.6rem 1rem;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            white-space: nowrap;
+        }
+
+        .filter-toggle:hover {
+            background: #5a5a5a;
+        }
+
+        /* ================= ACTIVE FILTERS ================= */
+        .active-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--secondary-color);
+            padding: 0.3rem 0.7rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .filter-badge .remove-filter {
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 0.2rem;
+        }
+
+        .filter-badge .remove-filter:hover {
+            color: #c62828;
+        }
+
+        /* ================= RESULTS COUNT ================= */
+        .results-count {
+            margin-bottom: 1rem;
+            padding: 0.4rem 0.8rem;
+            background: var(--accent-color);
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        /* ================= PRODUCTS GRID ================= */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .product-card {
+            background: white;
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 180px;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 0.8rem 1rem 1rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-name {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            font-size: 0.95rem;
+        }
+
+        .product-category {
+            font-size: 0.7rem;
+            color: var(--primary-color);
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .product-price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0.3rem 0;
+            color: var(--primary-color);
+        }
+
+        .view-details-btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-decoration: none;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .view-details-btn:hover {
+            background: #B89673;
+            color: white;
+        }
+
+        .no-products {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            grid-column: 1 / -1;
+        }
+
+        /* ================= FILTER SIDEBAR ================= */
+        .filter-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+
+        .filter-overlay.active {
+            display: block;
+        }
+
+        .filter-sidebar {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 90%;
+            max-width: 400px;
+            height: 100%;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+            padding: 1.2rem;
+        }
+
+        .filter-sidebar.active {
+            right: 0;
+        }
+
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 1.2rem;
+        }
+
+        .filter-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .close-filter {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            padding: 0 0.5rem;
+        }
+
+        .filter-section {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 1.2rem;
+        }
+
+        .filter-section h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .category-options, .rating-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .category-option, .rating-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .price-inputs {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .price-input-group {
+            flex: 1;
+        }
+
+        .price-input-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.2rem;
+        }
+
+        .price-input-group input {
+            width: 100%;
+            padding: 0.4rem 0.6rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .price-slider {
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 0.1rem;
+            color: #DAA520;
+            font-size: 0.9rem;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .apply-filter-btn, .reset-filter-btn {
+            flex: 1;
+            padding: 0.6rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .apply-filter-btn {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .reset-filter-btn {
+            background: #f0f0f0;
+            color: var(--text-dark);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        /* ================= PAYMENT MODAL ================= */
+        .modal-dialog {
+            margin: 1rem;
+        }
+
+        .modal-content {
+            border-radius: 20px !important;
+        }
+
+        .modal-header {
+            padding: 1rem 1.2rem !important;
+        }
+
+        .modal-body {
+            padding: 1.5rem 1.2rem !important;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.2rem !important;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .modal-footer .btn,
+        .modal-footer a {
+            min-width: 100px;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+        }
+
+        .bg-success-header {
+            background: linear-gradient(135deg, #C4A484, #B89673) !important;
+        }
+        .bg-danger-header {
+            background: linear-gradient(135deg, #A67C6B, #8A6B5A) !important;
+        }
+
+        .rating-stars-small {
+            color: #DAA520;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+        .text-muted-small {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* ================= RESPONSIVE ================= */
+        @media (min-width: 576px) {
+            .hero-carousel { height: 400px; }
+            .carousel-item { height: 400px; }
+            .carousel-caption h1 { font-size: 2.8rem; }
+            .products-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+        }
+
+        @media (min-width: 992px) {
+            .navbar .container-fluid { padding: 0 2rem; }
+            .hero-carousel { height: 500px; }
+            .carousel-item { height: 500px; }
+            .carousel-caption h1 { font-size: 3.5rem; }
+            .products-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+            .main-container { padding: 0 2rem 3rem 2rem; }
+            .filter-sidebar { width: 420px; right: -450px; }
+            .quiz-card { padding: 2.5rem; }
+            .quiz-emoji { font-size: 4.5rem; }
+        }
+
+        @media (max-width: 575px) {
+            .navbar .ms-auto { gap: 0.3rem; }
+            .nav-link { font-size: 0.75rem; padding: 0.3rem 0.4rem; }
+            .logout-btn { font-size: 0.75rem; padding: 0.3rem 0.7rem; }
+            .membership-badge, .join-membership-btn, .pending-badge { font-size: 0.65rem; padding: 0.2rem 0.6rem; }
+            .quiz-card { padding: 1.25rem; }
+            .quiz-emoji { font-size: 3rem; }
+            .quiz-card .card-title { font-size: 1.1rem; }
+            .quiz-btn { padding: 10px 20px; font-size: 0.85rem; }
+            .product-image { height: 140px; }
+            .product-name { font-size: 0.85rem; }
+            .product-price { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ================= NAVBAR ================= -->
+    <nav class="navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/customer/dashboard">
+                <i class="fas fa-leaf"></i> Scentify
+            </a>
+            <div class="ms-auto d-flex align-items-center gap-1 gap-sm-2 flex-wrap">
+                <a class="nav-link active" href="/customer/dashboard"><i class="fas fa-home"></i> <span class="d-none d-sm-inline">Home</span></a>
+                <a class="nav-link" href="/customer/cart"><i class="fas fa-shopping-cart"></i> <span class="d-none d-sm-inline">Cart</span></a>
+                <a class="nav-link" href="/customer/order-history"><i class="fas fa-list"></i> <span class="d-none d-sm-inline">Orders</span></a>
+                <a class="nav-link" href="/customer/about"><i class="fas fa-info-circle"></i> <span class="d-none d-sm-inline">About</span></a>
+                
+                <!-- Membership / Premium -->
+                <span th:if="${customer != null and customer.isMember == true}" class="membership-badge">
+                    <i class="fas fa-crown"></i> Premium
+                </span>
+                <a th:if="${customer != null and customer.isMember == false and membershipApplication == null}" 
+                   href="/customer/apply-membership" class="join-membership-btn">
+                    <i class="fas fa-crown"></i> Join
+                </a>
+                <span th:if="${membershipApplication != null and membershipApplication.status == 'PENDING'}" 
+                      class="pending-badge">
+                    <i class="fas fa-hourglass-half"></i> Pending
+                </span>
+                <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ================= HERO CAROUSEL ================= -->
+    <div id="heroCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active" style="background-image: url('https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg?w=800&h=500&fit=crop');">
+                <div class="carousel-caption">
+                    <h1>Discover Your Signature Scent</h1>
+                    <p>Explore our premium fragrances</p>
+                    <a href="#products" class="btn">Shop Now</a>
                 </div>
             </div>
-            <div class="col-md-4 text-center">
-                <div style="font-size: 4em; margin-bottom: 15px;">🌸</div>
-                <a href="/customer/quiz/start" class="btn btn-primary btn-lg" 
-                   style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; padding: 12px 30px; font-weight: 600; border-radius: 10px; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);">
-                    Start Quiz Now 🚀
+            <div class="carousel-item" style="background-image: url('https://images.pexels.com/photos/396132/pexels-photo-396132.jpeg?w=800&h=500&fit=crop');">
+                <div class="carousel-caption">
+                    <h1>Luxury Perfumes</h1>
+                    <p>Experience finest craftsmanship</p>
+                    <a href="#products" class="btn">Explore</a>
+                </div>
+            </div>
+            <div class="carousel-item" style="background-image: url('https://images.pexels.com/photos/4041392/pexels-photo-4041392.jpeg?w=800&h=500&fit=crop');">
+                <div class="carousel-caption">
+                    <h1>Member Exclusive</h1>
+                    <p>Join for discounts & free delivery</p>
+                    <a href="/customer/apply-membership" class="btn">Join Now</a>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <div class="main-container" id="products">
+        <!-- ================= QUIZ CARD ================= -->
+        <div class="quiz-card">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3 class="card-title">
+                        ✨ Find Your Perfect Fragrance
+                    </h3>
+                    <p class="card-text">
+                        Discover perfumes tailored to your unique taste! Our intelligent quiz analyzes your preferences 
+                        and recommends the 3 most suitable fragrances from our collection. It only takes 2-3 minutes!
+                    </p>
+                    <div style="margin-top: 15px;">
+                        <span class="badge-success">✓ Fun & Interactive</span>
+                        <span class="badge-warning">✓ Personalized</span>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <span class="quiz-emoji">🌸</span>
+                    <a href="/customer/quiz/start" class="quiz-btn">
+                        Start Quiz Now 🚀
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= RECENT RECOMMENDATIONS ================= -->
+        <div th:if="${hasRecommendations}" class="recommendations-card">
+            <div class="card-header">
+                <h5>
+                    <i class="fas fa-gift"></i>
+                    Your Recent Recommendations
+                </h5>
+            </div>
+            <div class="card-body">
+                <a href="/customer/quiz/history" class="btn-recommendations">
+                    <i class="fas fa-history"></i> View Your Recommendation History
                 </a>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Recent Recommendations (if available) -->
-<div th:if="${hasRecommendations}" class="card shadow-sm" style="margin-bottom: 30px; border-radius: 15px;">
-    <div class="card-header bg-light" style="border-radius: 15px 15px 0 0; padding: 20px;">
-        <h5 class="mb-0" style="color: #333; font-weight: 600;">📦 Your Recent Recommendations</h5>
+        <!-- ================= SEARCH + FILTER ================= -->
+        <div class="search-bar">
+            <form method="get" action="/customer/dashboard" id="searchForm">
+                <input type="text" name="search" class="search-input" placeholder="Search perfumes..." th:value="${search}">
+                <button type="submit" class="filter-toggle"><i class="fas fa-search"></i> <span class="d-none d-sm-inline">Search</span></button>
+            </form>
+            <button class="filter-toggle" onclick="openFilterSidebar()">
+                <i class="fas fa-sliders-h"></i> <span class="d-none d-sm-inline">Filter</span>
+            </button>
+        </div>
+
+        <!-- ================= ACTIVE FILTERS ================= -->
+        <div id="activeFilters" class="active-filters"></div>
+
+        <!-- ================= RESULTS COUNT ================= -->
+        <div class="results-count">
+            <i class="fas fa-box"></i> Showing <strong th:text="${#lists.size(approvedProducts)}">0</strong> products
+        </div>
+
+        <!-- ================= PRODUCTS GRID ================= -->
+        <div class="products-grid">
+            <div th:if="${#lists.isEmpty(approvedProducts)}" class="no-products">
+                <i class="fas fa-search" style="font-size: 2.5rem; margin-bottom: 0.5rem; display: block;"></i>
+                <p th:if="${search != null || category != null || minPrice != null || maxPrice != null || minRating != null}">No products found. Try adjusting filters.</p>
+                <p th:unless="${search != null || category != null || minPrice != null || maxPrice != null || minRating != null}">No products available.</p>
+            </div>
+
+            <div th:each="product : ${approvedProducts}" class="product-card">
+                <div class="product-image">
+                    <img th:src="${product.prodimage}" 
+                         th:alt="${product.productName}"
+                         onerror="this.src='https://via.placeholder.com/260x260?text=No+Image'">
+                </div>
+                <div class="product-info">
+                    <div class="product-category" th:text="${product.category != null ? product.category : 'FRAGRANCE'}">FRAGRANCE</div>
+                    <h3 class="product-name" th:text="${product.productName}">Product Name</h3>
+                    
+                    <!-- Rating -->
+                    <div style="margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap;">
+                        <div class="rating-stars-small">
+                            <th:block th:with="rating=${productRatings.get(product.productId) ?: 0.0}">
+                                <span th:each="i : ${#numbers.sequence(1, 5)}" 
+                                      th:text="${i <= rating ? '★' : '☆'}"></span>
+                            </th:block>
+                        </div>
+                        <span class="text-muted-small" 
+                              th:text="${#numbers.formatDecimal(productRatings.get(product.productId) ?: 0.0, 1, 1)}">0.0</span>
+                    </div>
+                    
+                    <div class="product-price" th:text="'RM' + ${#numbers.formatDecimal(product.price, 1, 0)}">RM0</div>
+                    <a th:href="'/customer/product/' + ${product.productId}" class="view-details-btn">View Details</a>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="card-body p-4">
-        <a href="/customer/quiz/history" class="btn btn-outline-primary btn-sm">
-            View Your Recommendation History
-        </a>
+
+    <!-- ================= FILTER OVERLAY ================= -->
+    <div id="filterOverlay" class="filter-overlay" onclick="closeFilterSidebar()"></div>
+
+    <!-- ================= FILTER SIDEBAR ================= -->
+    <div id="filterSidebar" class="filter-sidebar">
+        <div class="filter-header">
+            <h3><i class="fas fa-filter"></i> Filter</h3>
+            <button class="close-filter" onclick="closeFilterSidebar()">&times;</button>
+        </div>
+
+        <form method="get" action="/customer/dashboard" id="filterForm">
+            <div class="filter-section">
+                <h4><i class="fas fa-tags"></i> Category</h4>
+                <div class="category-options">
+                    <label class="category-option"><input type="checkbox" name="category" value="male" th:checked="${category == 'male'}"> Male</label>
+                    <label class="category-option"><input type="checkbox" name="category" value="female" th:checked="${category == 'female'}"> Female</label>
+                    <label class="category-option"><input type="checkbox" name="category" value="unisex" th:checked="${category == 'unisex'}"> Unisex</label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h4><i class="fas fa-dollar-sign"></i> Price (RM)</h4>
+                <div class="price-inputs">
+                    <div class="price-input-group">
+                        <label>Min</label>
+                        <input type="number" name="minPrice" id="minPrice" placeholder="0" min="0" step="10" th:value="${minPrice}">
+                    </div>
+                    <div class="price-input-group">
+                        <label>Max</label>
+                        <input type="number" name="maxPrice" id="maxPrice" placeholder="1000" min="0" step="10" th:value="${maxPrice}">
+                    </div>
+                </div>
+                <input type="range" id="priceSlider" class="price-slider" min="0" max="1000" step="10">
+            </div>
+
+            <div class="filter-section">
+                <h4><i class="fas fa-star"></i> Min Rating</h4>
+                <div class="rating-options">
+                    <label class="rating-option"><input type="radio" name="minRating" value="4" th:checked="${minRating == '4'}"> <span class="rating-stars">★★★★★</span> 4.0+</label>
+                    <label class="rating-option"><input type="radio" name="minRating" value="3" th:checked="${minRating == '3'}"> <span class="rating-stars">★★★★☆</span> 3.0+</label>
+                    <label class="rating-option"><input type="radio" name="minRating" value="2" th:checked="${minRating == '2'}"> <span class="rating-stars">★★★☆☆</span> 2.0+</label>
+                    <label class="rating-option"><input type="radio" name="minRating" value="1" th:checked="${minRating == '1'}"> <span class="rating-stars">★★☆☆☆</span> 1.0+</label>
+                    <label class="rating-option"><input type="radio" name="minRating" value="" th:checked="${minRating == null}"> Any</label>
+                </div>
+            </div>
+
+            <input type="hidden" name="search" th:value="${search}">
+            <div class="filter-actions">
+                <button type="submit" class="apply-filter-btn">Apply</button>
+                <a href="/customer/dashboard" class="reset-filter-btn">Reset</a>
+            </div>
+        </form>
     </div>
-</div>
+
+    <!-- ================= PAYMENT MODAL ================= -->
+    <div th:if="${session.paymentPopup != null and session.paymentPopup}" 
+         class="modal fade" id="paymentResultModal" 
+         tabindex="-1" 
+         data-bs-backdrop="static" 
+         data-bs-keyboard="false"
+         th:data-payment-success="${session.paymentSuccess}"
+         th:data-payment-order-id="${session.paymentOrderId}"
+         th:data-payment-invoice-id="${session.paymentInvoiceId}"
+         th:data-payment-message="${session.paymentMessage}">
+         
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" 
+                     th:classappend="${session.paymentSuccess} ? 'bg-success-header' : 'bg-danger-header'">
+                    <h5 class="modal-title fw-bold text-white" 
+                        th:text="${session.paymentSuccess} ? '✅ Payment Successful!' : '❌ Payment Failed'">
+                    </h5>
+                    <button type="button" class="btn-close" 
+                            th:attr="onclick=|window.location.href='/payment/clear-payment-popup'|"
+                            style="filter: brightness(0) invert(1);">
+                    </button>
+                </div>
+                <div class="modal-body text-center py-3">
+                    <div style="font-size: 3.5rem; margin-bottom: 10px;">
+                        <span th:if="${session.paymentSuccess}">🌸</span>
+                        <span th:unless="${session.paymentSuccess}">🌿</span>
+                    </div>
+                    <h4 th:text="${session.paymentSuccess} ? 'Thank you for your purchase!' : 'Payment Issue'"
+                        style="margin-bottom: 0.5rem; color: #3E3A36; font-weight: 600;">
+                    </h4>
+                    <p style="color: #8A7F75; font-size: 0.95rem;" th:text="${session.paymentMessage}"></p>
+                    
+                    <div th:if="${session.paymentSuccess}" style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 12px; border: 1px solid #E6D3C1;">
+                        <div><span style="color: #8A7F75; font-size: 0.8rem;">Order #</span><h5 style="color: #C4A484; font-weight: 700; margin: 0.2rem 0;">#<span th:text="${session.paymentOrderId}"></span></h5></div>
+                        <div th:if="${session.paymentInvoiceId != null}"><span style="color: #8A7F75; font-size: 0.8rem;">Invoice INV-<span th:text="${session.paymentOrderId}"></span></span></div>
+                        <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+                            <span style="background: #C4A484; color: white; padding: 0.2rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">✅ Confirmed</span>
+                            <span style="background: #E6D3C1; color: #3E3A36; padding: 0.2rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">📦 Delivered</span>
+                        </div>
+                        <p style="margin-top: 0.5rem; color: #8A7F75; font-size: 0.8rem;">Check email for invoice.</p>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center gap-2">
+                    <button type="button" class="btn px-3 py-1" 
+                            style="border-radius: 50px; font-weight: 600; background: #E6D3C1; color: #3E3A36; border: none;"
+                            th:attr="onclick=|window.location.href='/payment/clear-payment-popup'|">
+                        OK
+                    </button>
+                    <a th:if="${session.paymentSuccess}" 
+                       th:href="@{/customer/order-history}" 
+                       class="btn px-3 py-1"
+                       style="border-radius: 50px; font-weight: 600; background: #C4A484; color: white; border: none;">
+                        <i class="fas fa-list-alt"></i> Orders
+                    </a>
+                    <a th:unless="${session.paymentSuccess}" 
+                       th:href="@{/customer/cart}" 
+                       class="btn px-3 py-1"
+                       style="border-radius: 50px; font-weight: 600; background: #C4A484; color: white; border: none;">
+                        <i class="fas fa-redo"></i> Try Again
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Price slider sync
+        const minPriceInput = document.getElementById('minPrice');
+        const maxPriceInput = document.getElementById('maxPrice');
+        const priceSlider = document.getElementById('priceSlider');
+
+        if (priceSlider) {
+            const maxVal = maxPriceInput ? (parseInt(maxPriceInput.value) || 1000) : 1000;
+            priceSlider.value = Math.min(maxVal, 1000);
+            priceSlider.max = 1000;
+
+            priceSlider.addEventListener('input', function(e) {
+                if (maxPriceInput) maxPriceInput.value = e.target.value;
+            });
+        }
+        if (maxPriceInput) {
+            maxPriceInput.addEventListener('input', function(e) {
+                if (priceSlider) priceSlider.value = e.target.value;
+            });
+        }
+
+        // Filter sidebar
+        function openFilterSidebar() {
+            document.getElementById('filterSidebar').classList.add('active');
+            document.getElementById('filterOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeFilterSidebar() {
+            document.getElementById('filterSidebar').classList.remove('active');
+            document.getElementById('filterOverlay').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Active filters display
+        function updateActiveFiltersDisplay() {
+            const container = document.getElementById('activeFilters');
+            if (!container) return;
+            container.innerHTML = '';
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category');
+            if (category) addFilterBadge(container, `Category: ${category.charAt(0).toUpperCase() + category.slice(1)}`, 'category');
+            const minPrice = urlParams.get('minPrice'), maxPrice = urlParams.get('maxPrice');
+            if (minPrice || maxPrice) {
+                const min = minPrice || '0', max = maxPrice || '1000';
+                addFilterBadge(container, `Price: RM${min} - RM${max}`, 'price');
+            }
+            const minRating = urlParams.get('minRating');
+            if (minRating) {
+                let stars = '';
+                for (let i = 1; i <= 5; i++) stars += i <= parseInt(minRating) ? '★' : '☆';
+                addFilterBadge(container, `Rating: ${stars} ${minRating}+`, 'rating');
+            }
+            const search = urlParams.get('search');
+            if (search) addFilterBadge(container, `Search: "${search}"`, 'search');
+        }
+
+        function addFilterBadge(container, text, type) {
+            const badge = document.createElement('span');
+            badge.className = 'filter-badge';
+            badge.innerHTML = `${text} <span class="remove-filter" data-type="${type}">&times;</span>`;
+            container.appendChild(badge);
+            badge.querySelector('.remove-filter').addEventListener('click', function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                urlParams.delete(type);
+                if (type === 'price') { urlParams.delete('minPrice'); urlParams.delete('maxPrice'); }
+                window.location.href = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', updateActiveFiltersDisplay);
+
+        // Payment modal auto-show
+        document.addEventListener('DOMContentLoaded', function() {
+            const modalEl = document.getElementById('paymentResultModal');
+            if (modalEl) {
+                const myModal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
+                myModal.show();
+                const isSuccess = modalEl.dataset.paymentSuccess === 'true';
+                setTimeout(function() {
+                    if (myModal._isShown) {
+                        myModal.hide();
+                        window.location.href = '/payment/clear-payment-popup';
+                    }
+                }, isSuccess ? 15000 : 10000);
+            }
+        });
+    </script>
+</body>
+</html>
