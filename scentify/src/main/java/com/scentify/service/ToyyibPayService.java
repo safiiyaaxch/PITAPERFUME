@@ -58,6 +58,10 @@ public class ToyyibPayService {
     private static final String PROD_CHECK_BILL_URL = "https://toyyibpay.com/index.php/api/getBillTransactions";
     private static final String SANDBOX_CHECK_BILL_URL = "https://dev.toyyibpay.com/index.php/api/getBillTransactions";
     
+    // HARDCODED PRODUCTION URL FOR TESTING
+    private static final String PRODUCTION_RETURN_URL = "https://pitaperfume-production.up.railway.app/payment/return";
+    private static final String PRODUCTION_CALLBACK_URL = "https://pitaperfume-production.up.railway.app/payment/callback";
+    
     private String getCreateBillUrl() {
         return sandboxMode ? SANDBOX_CREATE_BILL_URL : PROD_CREATE_BILL_URL;
     }
@@ -73,26 +77,31 @@ public class ToyyibPayService {
     public Payment createPaymentBill(Order order, String returnUrl) {
         try {
             String createBillUrl = getCreateBillUrl();
-            System.out.println("=== TOYYIBPAY URL CONFIGURATION ===");
-            System.out.println("Base URL: " + baseUrl);
-            System.out.println("Configured Return URL: " + configuredReturnUrl);
-            System.out.println("Configured Callback URL: " + configuredCallbackUrl);
-            System.out.println("Passed Return URL: " + returnUrl);
-            System.out.println("=== CREATING TOYYIBPAY BILL ===");
-            System.out.println("Environment: " + (sandboxMode ? "SANDBOX (Testing)" : "PRODUCTION"));
-            System.out.println("Base URL: " + baseUrl);
-            System.out.println("Callback URL: " + configuredCallbackUrl);
+            
+            System.out.println("🚨🚨🚨 ===== TOYYIBPAY CREATE BILL ===== 🚨🚨🚨");
+            System.out.println("📌 Environment: " + (sandboxMode ? "SANDBOX (Testing)" : "PRODUCTION"));
+            System.out.println("📌 Base URL from config: " + baseUrl);
+            System.out.println("📌 Configured Return URL: " + configuredReturnUrl);
+            System.out.println("📌 Configured Callback URL: " + configuredCallbackUrl);
+            System.out.println("📌 Passed Return URL parameter: " + returnUrl);
+            
+            // ✅ FORCE HARDCODED URLS FOR RAILWAY DEPLOYMENT
+            String finalReturnUrl = PRODUCTION_RETURN_URL;
+            String finalCallbackUrl = PRODUCTION_CALLBACK_URL;
+            
+            System.out.println("🔥🔥🔥 USING HARDCODED RETURN URL: " + finalReturnUrl);
+            System.out.println("🔥🔥🔥 USING HARDCODED CALLBACK URL: " + finalCallbackUrl);
             
             // Create payment record
             Payment payment = new Payment(order, order.getTotalPrice());
             
             // Convert amount to cents
             long amountInCents = order.getTotalPrice().multiply(new BigDecimal("100")).longValue();
-            System.out.println("Amount: RM " + order.getTotalPrice() + " = " + amountInCents + " cents");
+            System.out.println("💰 Amount: RM " + order.getTotalPrice() + " = " + amountInCents + " cents");
             
             // Build bill description with all items
             String billDescription = buildBillDescription(order);
-            System.out.println("Bill Description: " + billDescription);
+            System.out.println("📝 Bill Description: " + billDescription);
             
             // Build bill name
             String billName = "Scentify Order #" + order.getOrderId();
@@ -103,12 +112,7 @@ public class ToyyibPayService {
             
             // Get validated phone number
             String phone = getValidPhoneNumber(order);
-            System.out.println("Phone: " + phone);
-            
-            // Determine final return URL
-            String finalReturnUrl = (returnUrl != null && !returnUrl.isEmpty()) 
-                ? returnUrl 
-                : configuredReturnUrl;
+            System.out.println("📞 Phone: " + phone);
             
             // Prepare ToyyibPay request
             MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
@@ -119,8 +123,8 @@ public class ToyyibPayService {
             requestBody.add("billPriceSetting", "1");
             requestBody.add("billPayorInfo", "1");
             requestBody.add("billAmount", String.valueOf(amountInCents));
-            requestBody.add("billReturnUrl", finalReturnUrl);
-            requestBody.add("billCallbackUrl", configuredCallbackUrl);
+            requestBody.add("billReturnUrl", finalReturnUrl);  // ✅ HARDCODED
+            requestBody.add("billCallbackUrl", finalCallbackUrl);  // ✅ HARDCODED
             requestBody.add("billExternalReferenceNo", "ORDER-" + order.getOrderId());
             requestBody.add("billTo", order.getCustomer().getFullname());
             requestBody.add("billEmail", order.getCustomer().getUser().getEmail());
@@ -131,13 +135,13 @@ public class ToyyibPayService {
             String emailContent = buildEmailContent(order);
             requestBody.add("billContentEmail", emailContent);
             
-            System.out.println("Sending request to ToyyibPay...");
-            System.out.println("URL: " + createBillUrl);
-            System.out.println("Bill Name: " + billName);
-            System.out.println("Bill Description: " + billDescription);
-            System.out.println("Return URL: " + finalReturnUrl);
-            System.out.println("Callback URL: " + configuredCallbackUrl);
-            System.out.println("Phone: " + phone);
+            System.out.println("📤 Sending request to ToyyibPay...");
+            System.out.println("📤 URL: " + createBillUrl);
+            System.out.println("📤 Bill Name: " + billName);
+            System.out.println("📤 Bill Description: " + billDescription);
+            System.out.println("📤 Return URL being sent: " + finalReturnUrl);
+            System.out.println("📤 Callback URL being sent: " + finalCallbackUrl);
+            System.out.println("📤 Phone: " + phone);
             
             // Send request to ToyyibPay
             HttpHeaders headers = new HttpHeaders();
@@ -147,13 +151,13 @@ public class ToyyibPayService {
             // Get response as String first to handle HTML error responses
             String responseBody = restTemplate.postForObject(createBillUrl, request, String.class);
             
-            System.out.println("Raw response received (length: " + (responseBody != null ? responseBody.length() : "NULL") + ")");
+            System.out.println("📦 Raw response received (length: " + (responseBody != null ? responseBody.length() : "NULL") + ")");
             if (responseBody != null && responseBody.length() > 0) {
-                System.out.println("Response preview: " + responseBody.substring(0, Math.min(500, responseBody.length())));
+                System.out.println("📦 Response preview: " + responseBody.substring(0, Math.min(500, responseBody.length())));
             }
             
             if (responseBody == null || responseBody.trim().isEmpty()) {
-                System.err.println("Response body is null or empty!");
+                System.err.println("❌ Response body is null or empty!");
                 return null;
             }
             
@@ -163,37 +167,37 @@ public class ToyyibPayService {
             
             try {
                 response = objectMapper.readValue(responseBody, new TypeReference<Map<String, Object>>() {});
-                System.out.println("Successfully parsed response as JSON Object");
+                System.out.println("✅ Successfully parsed response as JSON Object");
             } catch (Exception e1) {
                 try {
                     java.util.List<Map<String, Object>> responseArray = objectMapper.readValue(responseBody, new TypeReference<java.util.List<Map<String, Object>>>() {});
-                    System.out.println("Response is a JSON array - extracting first element");
+                    System.out.println("⚠️ Response is a JSON array - extracting first element");
                     
                     if (responseArray != null && !responseArray.isEmpty()) {
                         response = responseArray.get(0);
-                        System.out.println("Extracted first element from array: " + response);
+                        System.out.println("✅ Extracted first element from array: " + response);
                     } else {
-                        System.err.println("Response array is empty!");
+                        System.err.println("❌ Response array is empty!");
                         return null;
                     }
                 } catch (Exception e2) {
-                    System.err.println("Failed to parse response as JSON: " + e1.getMessage());
-                    System.err.println("Raw response body: " + responseBody);
+                    System.err.println("⚠️ Failed to parse response as JSON: " + e1.getMessage());
+                    System.err.println("📝 Raw response body: " + responseBody);
                     return null;
                 }
             }
                 
             if (response == null) {
-                System.err.println("Response is null");
+                System.err.println("❌ Response is null");
                 return null;
             }
             
-            System.out.println("Full response: " + response);
+            System.out.println("📊 Full response: " + response);
             
             // Check for error status
             if (response.containsKey("status") && "error".equals(response.get("status"))) {
                 String errorMsg = response.containsKey("msg") ? (String) response.get("msg") : "Unknown error";
-                System.err.println("ToyyibPay error: " + errorMsg);
+                System.err.println("❌ ToyyibPay error: " + errorMsg);
                 return null;
             }
             
@@ -225,24 +229,25 @@ public class ToyyibPayService {
                 order.setPaymentStatus("PENDING");
                 orderRepository.save(order);
                 
-                System.out.println("ToyyibPay bill created successfully!");
-                System.out.println("Bill Code: " + billCode);
-                System.out.println("Payment URL: " + paymentUrl);
-                System.out.println("Order saved with bill code: " + order.getOrderId());
+                System.out.println("✅ ToyyibPay bill created successfully!");
+                System.out.println("✅ Bill Code: " + billCode);
+                System.out.println("✅ Payment URL: " + paymentUrl);
+                System.out.println("✅ Return URL stored in bill: " + finalReturnUrl);
+                System.out.println("✅ Order saved with bill code: " + order.getOrderId());
                 return payment;
             } else {
-                System.err.println("Failed to extract BillCode from ToyyibPay response");
-                System.err.println("Response: " + response);
+                System.err.println("❌ Failed to extract BillCode from ToyyibPay response");
+                System.err.println("❌ Response: " + response);
                 if (response.containsKey("status")) {
-                    System.err.println("Response status: " + response.get("status"));
+                    System.err.println("❌ Response status: " + response.get("status"));
                 }
                 if (response.containsKey("msg")) {
-                    System.err.println("Response message: " + response.get("msg"));
+                    System.err.println("❌ Response message: " + response.get("msg"));
                 }
                 return null;
             }
         } catch (Exception e) {
-            System.err.println("Error creating ToyyibPay bill: " + e.getMessage());
+            System.err.println("❌ Error creating ToyyibPay bill: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
