@@ -871,7 +871,7 @@
             
             <div class="divider"></div>
             
-            <p class="persona-quote" th:text="${primaryPersona == 'Fresh & Airy' ? '"Like a sunrise breeze over ocean waves, awakening and alive."' : primaryPersona == 'Warm & Cozy' ? '"Like the warmth of a cozy fireside with hot spiced tea."' : primaryPersona == 'Floral & Romantic' ? '"Like a garden of blooming roses at twilight."' : primaryPersona == 'Woody & Earthy' ? '"Like the calm essence of a peaceful forest sanctuary."' : primaryPersona == 'Bold & Spicy' ? '"Like the warm, rich complexity of an exotic marketplace at sundown."' : '"Your unique scent signature."'}"></p>
+            <p class="persona-quote" th:text="${primaryPersona == 'Fresh & Airy' ? 'Like a sunrise breeze over ocean waves, awakening and alive.' : primaryPersona == 'Warm & Cozy' ? 'Like the warmth of a cozy fireside with hot spiced tea.' : primaryPersona == 'Floral & Romantic' ? 'Like a garden of blooming roses at twilight.' : primaryPersona == 'Woody & Earthy' ? 'Like the calm essence of a peaceful forest sanctuary.' : primaryPersona == 'Bold & Spicy' ? 'Like the warm, rich complexity of an exotic marketplace at sundown.' : 'Your unique scent signature.'}"></p>
             
             <p class="persona-full-description" th:text="${primaryPersona == 'Fresh & Airy' ? 'You love the feeling of freshness and vitality. Crisp citrus notes, aquatic accords, and green scents invigorate your senses. You prefer fragrances that feel light, refreshing, and energizing—perfect for daytime wear and making a bright impression.' : primaryPersona == 'Warm & Cozy' ? 'You seek comfort and warmth in your fragrances. Amber, vanilla, and woody notes wrap around you like a cozy blanket. You appreciate gourmand scents that feel indulgent, creamy, and perfect for intimate moments and evening wear.' : primaryPersona == 'Floral & Romantic' ? 'You celebrate the beauty of flowers in all their forms. Rose, jasmine, peony, and other floral notes speak to your romantic spirit. You prefer sophisticated, feminine fragrances that feel timeless and eternally elegant.' : primaryPersona == 'Woody & Earthy' ? 'You connect with nature through scent. Cedarwood, sandalwood, patchouli, and vetiver ground you. You appreciate organic, natural-feeling fragrances that have depth, complexity, and a sense of peace.' : primaryPersona == 'Bold & Spicy' ? 'You make a statement with fragrance. Spicy notes like cardamom, pepper, and cinnamon excite you. You love bold, intense, and memorable scents that showcase your confident and adventurous personality.' : 'Discover your unique fragrance journey.'}"></p>
             
@@ -1013,9 +1013,7 @@
                         <div class="card-number" th:text="${iterStat.count}"></div>
                         <div class="card-content">
                             <div class="product-name" th:text="${recommendation.productName}"></div>
-                            <!-- ✅ FIXED: Removed th:if from product-brand -->
                             <div class="product-brand" th:text="${recommendation.category}"></div>
-                            <!-- ✅ FIXED: Removed th:if from price-badge and added text -->
                             <div class="price-badge">
                                 RM <span th:text="${#numbers.formatDecimal(recommendation.price, 0, 2)}"></span>
                             </div>
@@ -1068,7 +1066,7 @@
                         
                         <!-- View Details Button -->
                         <div class="btn-view-wrapper">
-                            <a th:href="'/customer/product/' + ${recommendation.productId}" class="btn-view-details">
+                            <a th:href="@{/customer/product/{id}(id=${recommendation.productId})}" class="btn-view-details">
                                 View Details <i class="fas fa-arrow-right"></i>
                             </a>
                         </div>
