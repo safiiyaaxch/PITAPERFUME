@@ -1013,9 +1013,11 @@
                         <div class="card-number" th:text="${iterStat.count}"></div>
                         <div class="card-content">
                             <div class="product-name" th:text="${recommendation.productName}"></div>
-                            <div class="product-brand" th:if="${recommendation.category}" th:text="${recommendation.category}"></div>
-                            <div class="price-badge" th:if="${recommendation.price}">
-                                <span th:text="'RM' + ${#numbers.formatDecimal(recommendation.price, 0, 2)}"></span>
+                            <!-- ✅ FIXED: Removed th:if from product-brand -->
+                            <div class="product-brand" th:text="${recommendation.category}"></div>
+                            <!-- ✅ FIXED: Removed th:if from price-badge and added text -->
+                            <div class="price-badge">
+                                RM <span th:text="${#numbers.formatDecimal(recommendation.price, 0, 2)}"></span>
                             </div>
                         </div>
                     </div>

@@ -18,13 +18,7 @@ public class Order {
     @JoinColumn(name = "customerId", nullable = false)
     private Customer customer;
     
-    // REMOVE these single-product fields:
-    // @ManyToOne
-    // @JoinColumn(name = "productId", nullable = false)
-    // private Product product;
-    // private Integer quantity;
-    
-    // ADD One-to-Many relationship for multiple items
+    // One-to-Many relationship for multiple items
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
     
@@ -54,6 +48,10 @@ public class Order {
 
     @Column(length = 100)
     private String toyyibPayBillCode;
+
+    // ✅ ADD THIS FIELD - Track if stock has been deducted
+    @Column(name = "stock_deducted", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean stockDeducted = false;
 
     // Constructors
     public Order() {
@@ -184,6 +182,15 @@ public class Order {
         this.toyyibPayBillCode = toyyibPayBillCode;
     }
 
+    // ✅ GETTER AND SETTER FOR stockDeducted
+    public boolean isStockDeducted() {
+        return stockDeducted;
+    }
+
+    public void setStockDeducted(boolean stockDeducted) {
+        this.stockDeducted = stockDeducted;
+    }
+
     @Override
     public String toString() {
         return "Order{" +
@@ -192,6 +199,7 @@ public class Order {
                 ", totalPrice=" + totalPrice +
                 ", orderStatus='" + orderStatus + '\'' +
                 ", orderDate=" + orderDate +
+                ", stockDeducted=" + stockDeducted +
                 '}';
     }
 }

@@ -1,10 +1,13 @@
 package com.scentify.controller;
 
 import com.scentify.model.Order;
+import com.scentify.model.OrderItem;
 import com.scentify.model.Payment;
 import com.scentify.model.Invoice;
+import com.scentify.model.Product;
 import com.scentify.repository.OrderRepository;
 import com.scentify.repository.PaymentRepository;
+import com.scentify.repository.ProductRepository;
 import com.scentify.service.ToyyibPayService;
 import com.scentify.service.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +46,9 @@ public class PaymentController {
     private PaymentRepository paymentRepository;
     
     @Autowired
+    private ProductRepository productRepository;
+    
+    @Autowired
     private ToyyibPayService toyyibPayService;
     
     @Autowired
@@ -62,6 +68,44 @@ public class PaymentController {
         urls.put("status", "OK");
         urls.put("message", "URLs are configured correctly");
         return urls;
+    }
+    
+    /**
+     * Deduct stock for all items in an order
+     */
+    private void deductStock(Order order) {
+        // Check if stock was already deducted (prevent double deduction)
+        if (order.isStockDeducted()) {
+            System.out.println("⚠️ Stock already deducted for Order #" + order.getOrderId());
+            return;
+        }
+        
+        System.out.println("📦 DEDUCTING STOCK FOR ORDER #" + order.getOrderId());
+        
+        for (OrderItem item : order.getOrderItems()) {
+            Product product = item.getProduct();
+            int currentStock = product.getStock();
+            int quantity = item.getQuantity();
+            
+            System.out.println("   Product: " + product.getProductName());
+            System.out.println("   Current stock: " + currentStock);
+            System.out.println("   Quantity ordered: " + quantity);
+            
+            if (currentStock < quantity) {
+                System.err.println("❌ Not enough stock for product: " + product.getProductName());
+                System.err.println("   Current stock: " + currentStock + ", Requested: " + quantity);
+                throw new RuntimeException("Not enough stock for product: " + product.getProductName());
+            }
+            
+            product.setStock(currentStock - quantity);
+            productRepository.save(product);
+            System.out.println("   ✅ New stock: " + product.getStock());
+        }
+        
+        // Mark order as stock deducted
+        order.setStockDeducted(true);
+        orderRepository.save(order);
+        System.out.println("✅ Stock deduction complete for Order #" + order.getOrderId());
     }
     
     /**
@@ -99,12 +143,16 @@ public class PaymentController {
                     payment.setCompletedAt(LocalDateTime.now());
                     
                     order.setPaymentStatus("PAID");
-                    order.setOrderStatus("DELIVERED");  // 🚀 Auto-deliver!
-                    order.setDeliveryDate(LocalDateTime.now());  // Set delivery date to now
+                    order.setOrderStatus("DELIVERED");
+                    order.setDeliveryDate(LocalDateTime.now());
                     order.setUpdatedAt(LocalDateTime.now());
+                    
+                    // ✅ DEDUCT STOCK
+                    deductStock(order);
                     
                     System.out.println("✅ Payment confirmed for Order #" + order.getOrderId());
                     System.out.println("📦 Order automatically marked as DELIVERED");
+                    System.out.println("📦 Stock deducted for all items");
                     
                     // Generate invoice
                     Invoice invoice = invoiceService.generateInvoice(order, payment);
@@ -179,7 +227,6 @@ public class PaymentController {
             Optional<Payment> paymentOpt = paymentRepository.findByBillCode(billcode);
             
             // Check if payment was successful
-            // ToyyibPay status: "1" = success, "2" = pending, "3" = failed
             boolean paymentSuccess = "1".equals(status_id);
             
             if (paymentSuccess) {
@@ -201,6 +248,14 @@ public class PaymentController {
                     order.setOrderStatus("DELIVERED");
                     order.setDeliveryDate(LocalDateTime.now());
                     order.setUpdatedAt(LocalDateTime.now());
+                    
+                    // ✅ DEDUCT STOCK (in case callback didn't run)
+                    // Check if stock was already deducted
+                    if (!order.isStockDeducted()) {
+                        deductStock(order);
+                        System.out.println("📦 Stock deducted for Order #" + orderId + " (via return)");
+                    }
+                    
                     orderRepository.save(order);
                     System.out.println("✅ Order updated to PAID/DELIVERED");
                 }
@@ -219,7 +274,7 @@ public class PaymentController {
                     invoiceId = existingInvoice.getInvoiceId();
                 }
                 
-                // ✅ Store payment success info in session for popup
+                // Store payment success info in session for popup
                 session.setAttribute("paymentPopup", true);
                 session.setAttribute("paymentSuccess", true);
                 session.setAttribute("paymentOrderId", orderId);
@@ -352,7 +407,6 @@ public class PaymentController {
             System.out.println("✅ Invoice found/generated. Invoice ID: " + invoice.getInvoiceId());
             System.out.println("   Redirecting to /payment/invoice/" + invoice.getInvoiceId());
             
-            // Redirect to the actual invoice view with invoice ID
             return "redirect:/payment/invoice/" + invoice.getInvoiceId();
             
         } catch (Exception e) {
