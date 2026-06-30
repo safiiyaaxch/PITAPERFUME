@@ -282,6 +282,14 @@
             margin-bottom: 0.4rem;
         }
 
+        .total-row.discount-row {
+            color: #28a745;
+        }
+
+        .total-row.discount-row .total-amount {
+            color: #28a745;
+        }
+
         .total-label {
             font-size: 0.9rem;
             font-weight: 600;
@@ -392,6 +400,21 @@
 
         .not-found p {
             color: var(--text-muted);
+        }
+
+        /* ================= VOUCHER INFO ================= */
+        .voucher-info {
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            margin: 0.5rem 0;
+            display: inline-block;
+        }
+
+        .voucher-info i {
+            color: #28a745;
+            margin-right: 0.5rem;
         }
 
         /* ================= PRINT ================= */
@@ -609,19 +632,43 @@
                 </tbody>
             </table>
 
-            <!-- Totals -->
+            <!-- ===== TOTALS WITH DISCOUNT ===== -->
             <div class="invoice-total">
+                <!-- Subtotal -->
                 <div class="total-row">
                     <span class="total-label">Subtotal</span>
                     <span class="total-amount">RM <span th:text="${#numbers.formatDecimal(invoice.subtotal, 1, 2)}">0.00</span></span>
                 </div>
+
+                <!-- ✅ DISCOUNT ROW - GREEN COLOR -->
+                <div class="total-row discount-row" th:if="${invoice.discount != null and invoice.discount > 0}">
+                    <span class="total-label">
+                        <i class="fas fa-ticket-alt"></i> Discount
+                    </span>
+                    <span class="total-amount">- RM <span th:text="${#numbers.formatDecimal(invoice.discount, 1, 2)}">0.00</span></span>
+                </div>
+
+                <!-- Tax (if applicable) -->
                 <div class="total-row" th:if="${invoice.tax != null and invoice.tax > 0}">
                     <span class="total-label">Tax (<span th:text="${invoice.taxRate}">0%</span>)</span>
                     <span class="total-amount">RM <span th:text="${#numbers.formatDecimal(invoice.tax, 1, 2)}">0.00</span></span>
                 </div>
+
+                <!-- Grand Total -->
                 <div class="total-row grand-total">
                     <span class="total-label">Total</span>
                     <span class="total-amount">RM <span th:text="${#numbers.formatDecimal(invoice.total, 1, 2)}">0.00</span></span>
+                </div>
+
+                <!-- ✅ Voucher Info - Show if discount was applied -->
+                <div th:if="${invoice.discount != null and invoice.discount > 0}" 
+                     style="margin-top: 1rem; text-align: center;">
+                    <div class="voucher-info">
+                        <i class="fas fa-gift"></i> 
+                        <span style="font-weight: 600; color: #2e7d32;">
+                            You saved RM <span th:text="${#numbers.formatDecimal(invoice.discount, 1, 2)}">0.00</span> with voucher!
+                        </span>
+                    </div>
                 </div>
             </div>
 

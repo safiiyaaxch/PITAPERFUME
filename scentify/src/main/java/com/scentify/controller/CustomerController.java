@@ -91,100 +91,135 @@ public class CustomerController {
     
     // ========== DASHBOARD ==========
     @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model, 
+public String dashboard(HttpSession session, Model model, 
                         @RequestParam(required = false) String search,
                         @RequestParam(required = false) String category,
                         @RequestParam(required = false) Double minPrice,
                         @RequestParam(required = false) Double maxPrice,
                         @RequestParam(required = false) Double minRating) {
-        
-        System.out.println("========== CUSTOMER DASHBOARD ==========");
-        User user = getLoggedInUser(session);
-        
-        if (!isCustomerLoggedIn(session)) {
-            return "redirect:/login";
-        }
-
-        Boolean paymentPopup = (Boolean) session.getAttribute("paymentPopup");
-        if (paymentPopup != null && paymentPopup) {
-            model.addAttribute("paymentPopup", true);
-            model.addAttribute("paymentSuccess", session.getAttribute("paymentSuccess"));
-            model.addAttribute("paymentOrderId", session.getAttribute("paymentOrderId"));
-            model.addAttribute("paymentInvoiceId", session.getAttribute("paymentInvoiceId"));
-            model.addAttribute("paymentMessage", session.getAttribute("paymentMessage"));
-        }
-        // Get all approved products
-        List<Product> approvedProducts = productRepository.findByApprovalStatus("approved");
-        
-        // Filter by category
-        if (category != null && !category.isEmpty()) {
-            approvedProducts = approvedProducts.stream()
-                    .filter(p -> p.getCategory() != null && p.getCategory().equalsIgnoreCase(category))
-                    .toList();
-        }
-        
-        // Filter by price range
-        if (minPrice != null) {
-            approvedProducts = approvedProducts.stream()
-                    .filter(p -> p.getPrice() >= minPrice)
-                    .toList();
-        }
-        if (maxPrice != null) {
-            approvedProducts = approvedProducts.stream()
-                    .filter(p -> p.getPrice() <= maxPrice)
-                    .toList();
-        }
-        
-        // Filter by search term
-        if (search != null && !search.isEmpty()) {
-            String searchTerm = search.toLowerCase();
-            approvedProducts = approvedProducts.stream()
-                    .filter(p -> p.getProductName().toLowerCase().contains(searchTerm) ||
-                            (p.getDescription() != null && p.getDescription().toLowerCase().contains(searchTerm)))
-                    .toList();
-        }
-        
-        // Calculate ratings and filter by minRating
-        java.util.Map<String, Double> productRatings = new java.util.HashMap<>();
-        List<Product> finalProducts = new java.util.ArrayList<>();
-        
-        for (Product product : approvedProducts) {
-            List<Review> reviews = reviewRepository.findByProduct_ProductId(product.getProductId());
-            double avgRating = 0.0;
-            if (reviews != null && !reviews.isEmpty()) {
-                avgRating = reviews.stream()
-                    .mapToDouble(Review::getRating)
-                    .average()
-                    .orElse(0.0);
-            }
-            productRatings.put(product.getProductId(), avgRating);
-            
-            // Filter by minimum rating
-            if (minRating == null || avgRating >= minRating) {
-                finalProducts.add(product);
-            }
-        }
-        
-        // Get customer details
-        Optional<Customer> customerOpt = customerRepository.findByUser(user);
-        if (customerOpt.isPresent()) {
-            model.addAttribute("customer", customerOpt.get());
-            Optional<MembershipApplication> membershipApp = membershipApplicationRepository.findByCustomer(customerOpt.get());
-            membershipApp.ifPresent(app -> model.addAttribute("membershipApplication", app));
-        }
-        
-        model.addAttribute("user", user);
-        model.addAttribute("approvedProducts", finalProducts);
-        model.addAttribute("productRatings", productRatings);
-        model.addAttribute("search", search);
-        model.addAttribute("category", category);
-        model.addAttribute("minPrice", minPrice);
-        model.addAttribute("maxPrice", maxPrice);
-        model.addAttribute("minRating", minRating);
-        
-        return "customer/dashboard";
+    
+    System.out.println("========== CUSTOMER DASHBOARD ==========");
+    User user = getLoggedInUser(session);
+    
+    if (!isCustomerLoggedIn(session)) {
+        return "redirect:/login";
     }
 
+    // CHECK FLASH ATTRIBUTES FIRST (from RedirectAttributes)
+    Boolean paymentPopup = (Boolean) model.getAttribute("paymentPopup");
+    
+    // If not in flash, check session
+    if (paymentPopup == null) {
+        paymentPopup = (Boolean) session.getAttribute("paymentPopup");
+        System.out.println("🔍 Checked session for paymentPopup: " + paymentPopup);
+    } else {
+        System.out.println("🔍 Found paymentPopup in flash attributes: " + paymentPopup);
+    }
+    
+    if (paymentPopup != null && paymentPopup) {
+        // Get values from flash attributes first, fallback to session
+        Boolean paymentSuccess = (Boolean) model.getAttribute("paymentSuccess");
+        if (paymentSuccess == null) {
+            paymentSuccess = (Boolean) session.getAttribute("paymentSuccess");
+        }
+        
+        Long paymentOrderId = (Long) model.getAttribute("paymentOrderId");
+        if (paymentOrderId == null) {
+            paymentOrderId = (Long) session.getAttribute("paymentOrderId");
+        }
+        
+        Long paymentInvoiceId = (Long) model.getAttribute("paymentInvoiceId");
+        if (paymentInvoiceId == null) {
+            paymentInvoiceId = (Long) session.getAttribute("paymentInvoiceId");
+        }
+        
+        String paymentMessage = (String) model.getAttribute("paymentMessage");
+        if (paymentMessage == null) {
+            paymentMessage = (String) session.getAttribute("paymentMessage");
+        }
+        
+        model.addAttribute("paymentPopup", true);
+        model.addAttribute("paymentSuccess", paymentSuccess);
+        model.addAttribute("paymentOrderId", paymentOrderId);
+        model.addAttribute("paymentInvoiceId", paymentInvoiceId);
+        model.addAttribute("paymentMessage", paymentMessage);
+        
+        System.out.println("✅ Payment popup added to model:");
+        System.out.println("   paymentSuccess: " + paymentSuccess);
+        System.out.println("   paymentOrderId: " + paymentOrderId);
+        System.out.println("   paymentMessage: " + paymentMessage);
+    }
+    
+    // Get all approved products
+    List<Product> approvedProducts = productRepository.findByApprovalStatus("approved");
+    
+    // Filter by category
+    if (category != null && !category.isEmpty()) {
+        approvedProducts = approvedProducts.stream()
+                .filter(p -> p.getCategory() != null && p.getCategory().equalsIgnoreCase(category))
+                .toList();
+    }
+    
+    // Filter by price range
+    if (minPrice != null) {
+        approvedProducts = approvedProducts.stream()
+                .filter(p -> p.getPrice() >= minPrice)
+                .toList();
+    }
+    if (maxPrice != null) {
+        approvedProducts = approvedProducts.stream()
+                .filter(p -> p.getPrice() <= maxPrice)
+                .toList();
+    }
+    
+    // Filter by search term
+    if (search != null && !search.isEmpty()) {
+        String searchTerm = search.toLowerCase();
+        approvedProducts = approvedProducts.stream()
+                .filter(p -> p.getProductName().toLowerCase().contains(searchTerm) ||
+                        (p.getDescription() != null && p.getDescription().toLowerCase().contains(searchTerm)))
+                .toList();
+    }
+    
+    // Calculate ratings and filter by minRating
+    java.util.Map<String, Double> productRatings = new java.util.HashMap<>();
+    List<Product> finalProducts = new java.util.ArrayList<>();
+    
+    for (Product product : approvedProducts) {
+        List<Review> reviews = reviewRepository.findByProduct_ProductId(product.getProductId());
+        double avgRating = 0.0;
+        if (reviews != null && !reviews.isEmpty()) {
+            avgRating = reviews.stream()
+                .mapToDouble(Review::getRating)
+                .average()
+                .orElse(0.0);
+        }
+        productRatings.put(product.getProductId(), avgRating);
+        
+        if (minRating == null || avgRating >= minRating) {
+            finalProducts.add(product);
+        }
+    }
+    
+    // Get customer details
+    Optional<Customer> customerOpt = customerRepository.findByUser(user);
+    if (customerOpt.isPresent()) {
+        model.addAttribute("customer", customerOpt.get());
+        Optional<MembershipApplication> membershipApp = membershipApplicationRepository.findByCustomer(customerOpt.get());
+        membershipApp.ifPresent(app -> model.addAttribute("membershipApplication", app));
+    }
+    
+    model.addAttribute("user", user);
+    model.addAttribute("approvedProducts", finalProducts);
+    model.addAttribute("productRatings", productRatings);
+    model.addAttribute("search", search);
+    model.addAttribute("category", category);
+    model.addAttribute("minPrice", minPrice);
+    model.addAttribute("maxPrice", maxPrice);
+    model.addAttribute("minRating", minRating);
+    
+    return "customer/dashboard";
+}
    
     // ========== ABOUT US ==========
 @GetMapping("/about")

@@ -189,143 +189,179 @@ public class PaymentController {
      * User returns from ToyyibPay - WITH POPUP
      */
     @GetMapping("/return")
-    public String handlePaymentReturn(
-            @RequestParam(required = false) Long orderId,
-            @RequestParam(required = false) String status_id,
-            @RequestParam(required = false) String billcode,
-            @RequestParam(required = false) String msg,
-            HttpSession session,
-            Model model,
-            RedirectAttributes redirect) {
+public String handlePaymentReturn(
+        @RequestParam(required = false) Long orderId,
+        @RequestParam(required = false) String status_id,
+        @RequestParam(required = false) String billcode,
+        @RequestParam(required = false) String msg,
+        HttpSession session,
+        Model model,
+        RedirectAttributes redirect) {
+    
+    try {
+        System.out.println("\n" + "=".repeat(70));
+        System.out.println("💳 === PAYMENT RETURN RECEIVED ===");
+        System.out.println("=".repeat(70));
+        System.out.println("📥 Order ID: " + orderId);
+        System.out.println("📥 Status ID: " + status_id);
+        System.out.println("📥 Bill Code: " + billcode);
+        System.out.println("📥 Message: " + msg);
         
-        try {
-            System.out.println("\n" + "=".repeat(70));
-            System.out.println("💳 === PAYMENT RETURN RECEIVED ===");
-            System.out.println("=".repeat(70));
-            System.out.println("📥 Order ID: " + orderId);
-            System.out.println("📥 Status ID: " + status_id);
-            System.out.println("📥 Bill Code: " + billcode);
-            System.out.println("📥 Message: " + msg);
+        if (orderId == null) {
+            System.err.println("❌ No orderId provided in return URL");
+            redirect.addFlashAttribute("error", "Invalid order reference");
+            return "redirect:/customer/dashboard";
+        }
+        
+        Optional<Order> orderOpt = orderRepository.findById(orderId);
+        
+        if (orderOpt.isEmpty()) {
+            System.err.println("❌ Order not found: " + orderId);
+            redirect.addFlashAttribute("error", "Order not found");
+            return "redirect:/customer/dashboard";
+        }
+        
+        Order order = orderOpt.get();
+        Optional<Payment> paymentOpt = paymentRepository.findByBillCode(billcode);
+        
+        // Check if payment was successful
+        boolean paymentSuccess = "1".equals(status_id);
+        
+        if (paymentSuccess) {
+            System.out.println("✅ Payment SUCCESSFUL for Order #" + orderId);
             
-            if (orderId == null) {
-                System.err.println("❌ No orderId provided in return URL");
-                redirect.addFlashAttribute("error", "Invalid order reference");
-                return "redirect:/customer/dashboard";
-            }
-            
-            Optional<Order> orderOpt = orderRepository.findById(orderId);
-            
-            if (orderOpt.isEmpty()) {
-                System.err.println("❌ Order not found: " + orderId);
-                redirect.addFlashAttribute("error", "Order not found");
-                return "redirect:/customer/dashboard";
-            }
-            
-            Order order = orderOpt.get();
-            Optional<Payment> paymentOpt = paymentRepository.findByBillCode(billcode);
-            
-            boolean paymentSuccess = "1".equals(status_id);
-            
-            if (paymentSuccess) {
-                System.out.println("✅ Payment SUCCESSFUL for Order #" + orderId);
-                
-                if (paymentOpt.isPresent()) {
-                    Payment payment = paymentOpt.get();
-                    if (!"COMPLETED".equals(payment.getPaymentStatus())) {
-                        payment.setPaymentStatus("COMPLETED");
-                        payment.setCompletedAt(LocalDateTime.now());
-                        paymentRepository.save(payment);
-                    }
-                }
-                
-                if (!"PAID".equals(order.getPaymentStatus())) {
-                    order.setPaymentStatus("PAID");
-                    order.setOrderStatus("DELIVERED");
-                    order.setDeliveryDate(LocalDateTime.now());
-                    order.setUpdatedAt(LocalDateTime.now());
-                    
-                    if (!order.isStockDeducted()) {
-                        deductStock(order);
-                        System.out.println("📦 Stock deducted for Order #" + orderId + " (via return)");
-                    }
-                    
-                    orderRepository.save(order);
-                    System.out.println("✅ Order updated to PAID/DELIVERED");
-                }
-                
-                Invoice existingInvoice = invoiceService.getInvoiceByOrder(order);
-                Long invoiceId = null;
-                
-                if (existingInvoice == null && paymentOpt.isPresent()) {
-                    Invoice invoice = invoiceService.generateInvoice(order, paymentOpt.get());
-                    if (invoice != null) {
-                        invoiceId = invoice.getInvoiceId();
-                        System.out.println("✅ Invoice generated for Order #" + orderId);
-                    }
-                } else if (existingInvoice != null) {
-                    invoiceId = existingInvoice.getInvoiceId();
-                }
-                
-                redirect.addFlashAttribute("paymentPopup", true);
-                redirect.addFlashAttribute("paymentSuccess", true);
-                redirect.addFlashAttribute("paymentOrderId", orderId);
-                redirect.addFlashAttribute("paymentInvoiceId", invoiceId);
-                redirect.addFlashAttribute("paymentMessage", "Payment successful! Your order has been confirmed and automatically delivered. You can view your invoice in Order History.");
-                
-                System.out.println("✅ Flash attributes set for popup");
-                
-                return "redirect:/customer/dashboard";
-                
-            } else if ("2".equals(status_id)) {
-                System.out.println("⏳ Payment PENDING for Order #" + orderId);
-                
-                redirect.addFlashAttribute("paymentPopup", true);
-                redirect.addFlashAttribute("paymentSuccess", false);
-                redirect.addFlashAttribute("paymentOrderId", orderId);
-                redirect.addFlashAttribute("paymentMessage", "Your payment is being processed. Please check back later.");
-                
-                return "redirect:/customer/dashboard";
-                
-            } else if ("3".equals(status_id)) {
-                System.out.println("❌ Payment FAILED for Order #" + orderId);
-                
-                if (paymentOpt.isPresent()) {
-                    Payment payment = paymentOpt.get();
-                    payment.setPaymentStatus("FAILED");
+            // Update payment if exists
+            if (paymentOpt.isPresent()) {
+                Payment payment = paymentOpt.get();
+                if (!"COMPLETED".equals(payment.getPaymentStatus())) {
+                    payment.setPaymentStatus("COMPLETED");
+                    payment.setCompletedAt(LocalDateTime.now());
                     paymentRepository.save(payment);
                 }
-                order.setPaymentStatus("FAILED");
-                order.setOrderStatus("CANCELLED");
-                orderRepository.save(order);
-                
-                redirect.addFlashAttribute("paymentPopup", true);
-                redirect.addFlashAttribute("paymentSuccess", false);
-                redirect.addFlashAttribute("paymentOrderId", orderId);
-                redirect.addFlashAttribute("paymentMessage", "Payment was not successful. Please try again.");
-                
-                return "redirect:/customer/dashboard";
-                
-            } else {
-                System.out.println("⚠️ Unknown status: " + status_id);
-                
-                redirect.addFlashAttribute("paymentPopup", true);
-                redirect.addFlashAttribute("paymentSuccess", false);
-                redirect.addFlashAttribute("paymentMessage", "Payment verification pending. Please check back soon.");
-                
-                return "redirect:/customer/dashboard";
             }
             
-        } catch (Exception e) {
-            System.err.println("❌ Error in payment return: " + e.getMessage());
-            e.printStackTrace();
+            // Update order
+            if (!"PAID".equals(order.getPaymentStatus())) {
+                order.setPaymentStatus("PAID");
+                order.setOrderStatus("DELIVERED");
+                order.setDeliveryDate(LocalDateTime.now());
+                order.setUpdatedAt(LocalDateTime.now());
+                
+                // Deduct stock (in case callback didn't run)
+                if (!order.isStockDeducted()) {
+                    deductStock(order);
+                    System.out.println("📦 Stock deducted for Order #" + orderId + " (via return)");
+                }
+                
+                orderRepository.save(order);
+                System.out.println("✅ Order updated to PAID/DELIVERED");
+            }
+            
+            // Generate or get invoice
+            Invoice existingInvoice = invoiceService.getInvoiceByOrder(order);
+            Long invoiceId = null;
+            
+            if (existingInvoice == null && paymentOpt.isPresent()) {
+                Invoice invoice = invoiceService.generateInvoice(order, paymentOpt.get());
+                if (invoice != null) {
+                    invoiceId = invoice.getInvoiceId();
+                    System.out.println("✅ Invoice generated for Order #" + orderId);
+                }
+            } else if (existingInvoice != null) {
+                invoiceId = existingInvoice.getInvoiceId();
+            }
+            
+            // ✅ SET BOTH FLASH ATTRIBUTES AND SESSION ATTRIBUTES
+            redirect.addFlashAttribute("paymentPopup", true);
+            redirect.addFlashAttribute("paymentSuccess", true);
+            redirect.addFlashAttribute("paymentOrderId", orderId);
+            redirect.addFlashAttribute("paymentInvoiceId", invoiceId);
+            redirect.addFlashAttribute("paymentMessage", "Payment successful! Your order has been confirmed and automatically delivered. You can view your invoice in Order History.");
+            
+            // ✅ Also set session attributes as backup
+            session.setAttribute("paymentPopup", true);
+            session.setAttribute("paymentSuccess", true);
+            session.setAttribute("paymentOrderId", orderId);
+            session.setAttribute("paymentInvoiceId", invoiceId);
+            session.setAttribute("paymentMessage", "Payment successful! Your order has been confirmed and automatically delivered. You can view your invoice in Order History.");
+            
+            System.out.println("✅ Flash and Session attributes set for popup");
+            System.out.println("   paymentOrderId: " + orderId);
+            System.out.println("   paymentInvoiceId: " + invoiceId);
+            
+            return "redirect:/customer/dashboard";
+            
+        } else if ("2".equals(status_id)) {
+            // Payment pending
+            System.out.println("⏳ Payment PENDING for Order #" + orderId);
             
             redirect.addFlashAttribute("paymentPopup", true);
             redirect.addFlashAttribute("paymentSuccess", false);
-            redirect.addFlashAttribute("paymentMessage", "An error occurred while processing your payment: " + e.getMessage());
+            redirect.addFlashAttribute("paymentOrderId", orderId);
+            redirect.addFlashAttribute("paymentMessage", "Your payment is being processed. Please check back later.");
+            
+            session.setAttribute("paymentPopup", true);
+            session.setAttribute("paymentSuccess", false);
+            session.setAttribute("paymentOrderId", orderId);
+            session.setAttribute("paymentMessage", "Your payment is being processed. Please check back later.");
+            
+            return "redirect:/customer/dashboard";
+            
+        } else if ("3".equals(status_id)) {
+            // Payment failed
+            System.out.println("❌ Payment FAILED for Order #" + orderId);
+            
+            if (paymentOpt.isPresent()) {
+                Payment payment = paymentOpt.get();
+                payment.setPaymentStatus("FAILED");
+                paymentRepository.save(payment);
+            }
+            order.setPaymentStatus("FAILED");
+            order.setOrderStatus("CANCELLED");
+            orderRepository.save(order);
+            
+            redirect.addFlashAttribute("paymentPopup", true);
+            redirect.addFlashAttribute("paymentSuccess", false);
+            redirect.addFlashAttribute("paymentOrderId", orderId);
+            redirect.addFlashAttribute("paymentMessage", "Payment was not successful. Please try again.");
+            
+            session.setAttribute("paymentPopup", true);
+            session.setAttribute("paymentSuccess", false);
+            session.setAttribute("paymentOrderId", orderId);
+            session.setAttribute("paymentMessage", "Payment was not successful. Please try again.");
+            
+            return "redirect:/customer/dashboard";
+            
+        } else {
+            // Unknown status
+            System.out.println("⚠️ Unknown status: " + status_id);
+            
+            redirect.addFlashAttribute("paymentPopup", true);
+            redirect.addFlashAttribute("paymentSuccess", false);
+            redirect.addFlashAttribute("paymentMessage", "Payment verification pending. Please check back soon.");
+            
+            session.setAttribute("paymentPopup", true);
+            session.setAttribute("paymentSuccess", false);
+            session.setAttribute("paymentMessage", "Payment verification pending. Please check back soon.");
             
             return "redirect:/customer/dashboard";
         }
+        
+    } catch (Exception e) {
+        System.err.println("❌ Error in payment return: " + e.getMessage());
+        e.printStackTrace();
+        
+        redirect.addFlashAttribute("paymentPopup", true);
+        redirect.addFlashAttribute("paymentSuccess", false);
+        redirect.addFlashAttribute("paymentMessage", "An error occurred while processing your payment: " + e.getMessage());
+        
+        session.setAttribute("paymentPopup", true);
+        session.setAttribute("paymentSuccess", false);
+        session.setAttribute("paymentMessage", "An error occurred while processing your payment: " + e.getMessage());
+        
+        return "redirect:/customer/dashboard";
     }
+}
     
     @GetMapping("/clear-payment-popup")
     public String clearPaymentPopup(HttpSession session) {
