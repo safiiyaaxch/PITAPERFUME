@@ -1,61 +1,573 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
     <title>Sign Up | Scentify</title>
 
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    
     <style>
-        html { height: 100%; }
-        body { font-family: 'Inter', sans-serif; background: #fdfcfa; height: 100%; margin: 0; padding: 0; }
-        .container-fluid { padding: 0; }
-        .row { margin: 0; }
+        :root {
+            --primary-color: #C4A484;
+            --primary-dark: #B89673;
+            --secondary-color: #E6D3C1;
+            --accent-color: #FAF7F4;
+            --text-dark: #3E3A36;
+            --text-muted: #8A7F75;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            background: #fdfcfa;
+        }
+
+        .container-fluid {
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .row {
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* ===== BRAND PANEL ===== */
         .brand-panel {
             background:
-                linear-gradient(rgba(247,242,239,0.92), rgba(247,242,239,0.92)),
+                linear-gradient(rgba(247, 242, 239, 0.92), rgba(247, 242, 239, 0.92)),
                 url("https://images.unsplash.com/photo-1594035910387-fea47794261f");
             background-size: cover;
             background-position: center;
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .brand-title { font-family: 'Playfair Display', serif; }
-        .signup-card { border-radius: 18px; box-shadow: 0 25px 60px rgba(0,0,0,0.08); }
-        .form-control { border-radius: 12px; }
-        .btn-scentify { background: linear-gradient(135deg, #c2a98d, #b49374); }
-        .role-option { border: 2px solid #ddd; border-radius: 14px; padding: 14px; cursor: pointer; text-align: center; }
-        .role-option.selected { border-color: #c2a98d; background: #f7f2ef; }
-        .form-section { display: none; }
-        .form-section.active { display: block; }
-        .upload-area { border: 2px dashed #ddd; border-radius: 14px; padding: 18px; cursor: pointer; }
+
+        .brand-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .brand-title i {
+            color: var(--primary-color);
+            margin-right: 0.3rem;
+        }
+
+        .brand-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== SIGNUP CARD ===== */
+        .signup-wrapper {
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 550px;
+            margin: 0 auto;
+        }
+
+        .signup-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.08);
+            background: white;
+            overflow: hidden;
+        }
+
+        .signup-card .card-body {
+            padding: 2rem;
+        }
+
+        .signup-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .signup-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ===== ROLE OPTIONS ===== */
+        .role-option {
+            border: 2px solid #e8e0d8;
+            border-radius: 14px;
+            padding: 14px 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: white;
+            flex: 1;
+        }
+
+        .role-option:hover {
+            border-color: var(--primary-color);
+            background: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .role-option.selected {
+            border-color: var(--primary-color);
+            background: var(--accent-color);
+            box-shadow: 0 4px 15px rgba(196, 164, 132, 0.15);
+        }
+
+        .role-option .role-icon {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .role-option .role-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+        }
+
+        /* ===== FORM ===== */
+        .form-control {
+            border-radius: 12px;
+            padding: 0.7rem 0.9rem;
+            border: 1.5px solid #e8e0d8;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: var(--accent-color);
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(196, 164, 132, 0.15);
+            border-color: var(--primary-color);
+            background: white;
+        }
+
+        .form-control::placeholder {
+            color: #b0a8a0;
+            font-size: 0.9rem;
+        }
+
+        .form-control:disabled {
+            background: #f0ece8;
+            cursor: not-allowed;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== UPLOAD AREA ===== */
+        .upload-area {
+            border: 2px dashed #e0d8d0;
+            border-radius: 14px;
+            padding: 18px 14px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: var(--accent-color);
+            color: var(--text-muted);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: #f5f0ea;
+        }
+
+        .upload-area .upload-icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 6px;
+            color: var(--primary-color);
+        }
+
+        .upload-area .upload-text {
+            font-size: 0.9rem;
+        }
+
+        .upload-area .upload-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        #fileName {
+            display: block;
+            margin-top: 6px;
+            font-size: 0.8rem;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        /* ===== BUTTON ===== */
+        .btn-scentify {
+            background: var(--primary-color);
+            border: none;
+            border-radius: 14px;
+            padding: 0.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            color: white;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-scentify:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(196, 164, 132, 0.3);
+            color: white;
+        }
+
+        .btn-scentify:active {
+            transform: translateY(0);
+        }
+
+        .btn-scentify i {
+            margin-right: 0.5rem;
+        }
+
+        /* ===== ALERTS ===== */
+        .alert {
+            border-radius: 12px;
+            font-size: 0.85rem;
+            padding: 0.75rem 1rem;
+            border: none;
+            margin-bottom: 1rem;
+        }
+
+        .alert-danger {
+            background: #fef2f0;
+            color: #c0392b;
+            border-left: 4px solid #c0392b;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #2e7d32;
+        }
+
+        .error-text {
+            font-size: 0.75rem;
+            margin-top: 0.2rem;
+        }
+
+        /* ===== LOGIN LINK ===== */
+        .login-link {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .login-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .login-link a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 991px) {
+            .brand-panel {
+                display: none !important;
+            }
+            
+            .col-lg-6 {
+                flex: 0 0 100%;
+                max-width: 100%;
+                padding: 0;
+            }
+            
+            .signup-wrapper {
+                padding: 1rem;
+                max-width: 100%;
+            }
+            
+            .signup-card .card-body {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .signup-wrapper {
+                padding: 0.5rem;
+            }
+
+            .signup-card {
+                border-radius: 16px;
+            }
+
+            .signup-card .card-body {
+                padding: 1.25rem;
+            }
+
+            .signup-title {
+                font-size: 1.4rem;
+            }
+
+            .signup-subtitle {
+                font-size: 0.8rem;
+            }
+
+            .role-option {
+                padding: 10px 8px;
+                border-radius: 10px;
+            }
+
+            .role-option .role-icon {
+                font-size: 1.4rem;
+            }
+
+            .role-option .role-name {
+                font-size: 0.8rem;
+            }
+
+            .form-control {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.9rem;
+                border-radius: 10px;
+            }
+
+            .btn-scentify {
+                padding: 0.65rem;
+                font-size: 0.9rem;
+                border-radius: 12px;
+            }
+
+            .upload-area {
+                padding: 14px 10px;
+                border-radius: 10px;
+            }
+
+            .upload-area .upload-icon {
+                font-size: 1.6rem;
+            }
+
+            .upload-area .upload-text {
+                font-size: 0.8rem;
+            }
+
+            .login-link {
+                font-size: 0.8rem;
+            }
+
+            .alert {
+                font-size: 0.8rem;
+                padding: 0.6rem 0.8rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .signup-card .card-body {
+                padding: 1rem;
+            }
+
+            .signup-title {
+                font-size: 1.2rem;
+            }
+
+            .role-option {
+                padding: 8px 6px;
+            }
+
+            .role-option .role-icon {
+                font-size: 1.2rem;
+            }
+
+            .form-control {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.7rem;
+            }
+
+            .btn-scentify {
+                font-size: 0.85rem;
+                padding: 0.55rem;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .signup-wrapper {
+                padding: 2rem;
+                max-width: 580px;
+            }
+
+            .brand-title {
+                font-size: 4rem;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .signup-wrapper {
+                max-width: 600px;
+            }
+        }
+
+        /* ===== DARK MODE ===== */
+        @media (prefers-color-scheme: dark) {
+            body, .container-fluid {
+                background: #1a1a1a;
+            }
+
+            .brand-panel {
+                background:
+                    linear-gradient(rgba(26, 26, 26, 0.92), rgba(26, 26, 26, 0.92)),
+                    url("https://images.unsplash.com/photo-1594035910387-fea47794261f");
+                background-size: cover;
+                background-position: center;
+            }
+
+            .brand-title {
+                color: #e8e0d8;
+            }
+
+            .brand-subtitle {
+                color: #999;
+            }
+
+            .signup-card {
+                background: #2c2c2c;
+                box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            }
+
+            .signup-title {
+                color: #e8e0d8;
+            }
+
+            .signup-subtitle {
+                color: #999;
+            }
+
+            .role-option {
+                background: #2c2c2c;
+                border-color: #4a4a4a;
+            }
+
+            .role-option:hover {
+                background: #3a3a3a;
+                border-color: var(--primary-color);
+            }
+
+            .role-option.selected {
+                background: #3a3a3a;
+                border-color: var(--primary-color);
+            }
+
+            .role-option .role-name {
+                color: #e8e0d8;
+            }
+
+            .form-control {
+                background: #3a3a3a;
+                border-color: #4a4a4a;
+                color: #e8e0d8;
+            }
+
+            .form-control:focus {
+                background: #3a3a3a;
+                border-color: var(--primary-color);
+            }
+
+            .form-control::placeholder {
+                color: #888;
+            }
+
+            .form-control:disabled {
+                background: #2a2a2a;
+            }
+
+            .upload-area {
+                background: #3a3a3a;
+                border-color: #4a4a4a;
+                color: #999;
+            }
+
+            .upload-area:hover {
+                border-color: var(--primary-color);
+                background: #4a4a4a;
+            }
+
+            .login-link {
+                color: #999;
+            }
+
+            .alert-danger {
+                background: #3d1f1c;
+                color: #f5a097;
+                border-left-color: #e74c3c;
+            }
+
+            .alert-success {
+                background: #1a3d1a;
+                color: #81c784;
+                border-left-color: #4caf50;
+            }
+        }
     </style>
 </head>
 
 <body>
-<div class="container-fluid min-vh-100">
-    <div class="row h-100">
+<div class="container-fluid">
+    <div class="row">
 
+        <!-- Brand Panel -->
         <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center brand-panel">
-            <div class="text-center">
-                <h1 class="brand-title display-4">Scentify</h1>
-                <p class="lead">Discover your signature scent.</p>
+            <div class="text-center px-4">
+                <h1 class="brand-title">
+                    <i class="fas fa-leaf"></i> Scentify
+                </h1>
+                <p class="brand-subtitle">Discover your signature scent.</p>
             </div>
         </div>
 
+        <!-- Signup Form -->
         <div class="col-lg-6 d-flex align-items-center justify-content-center">
-            <div class="col-md-10 col-lg-8">
+            <div class="signup-wrapper">
                 <div class="card signup-card">
                     <div class="card-body">
 
-                        <h3 class="text-center mb-3">Create Account</h3>
+                        <h3 class="signup-title text-center">
+                            <i class="fas fa-user-plus" style="color: var(--primary-color);"></i> Create Account
+                        </h3>
+                        <p class="signup-subtitle text-center">Join the Scentify community</p>
 
-                        <!-- Backend Error Alert -->
+                        <!-- Error Alert -->
                         <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
                             <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
 
-                        <!-- Backend Success Alert -->
+                        <!-- Success Alert -->
                         <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
                             <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -67,64 +579,78 @@
                             <input type="hidden" id="roleInput" name="role" value="customer">
 
                             <div class="d-flex gap-2 mb-3">
-                                <label class="role-option flex-fill selected" data-role="customer">🛍️<br><b>Customer</b></label>
-                                <label class="role-option flex-fill" data-role="supplier">📦<br><b>Supplier</b></label>
+                                <label class="role-option selected" data-role="customer">
+                                    <span class="role-icon">🛍️</span>
+                                    <span class="role-name">Customer</span>
+                                </label>
+                                <label class="role-option" data-role="supplier">
+                                    <span class="role-icon">📦</span>
+                                    <span class="role-name">Supplier</span>
+                                </label>
                             </div>
 
                             <!-- CUSTOMER -->
                             <div id="customerForm" class="form-section active">
-                                <input class="form-control mb-2" name="fullname" placeholder="Full name">
-                                <input class="form-control mb-2" id="customerUsername" name="username" placeholder="Username">
-                                <small id="customerUsernameError" class="text-danger d-none">This username is already taken</small>
-                                <input class="form-control mb-2" type="email" name="email" placeholder="Email">
+                                <input class="form-control mb-2" name="fullname" placeholder="Full name" required>
+                                <input class="form-control mb-2" id="customerUsername" name="username" placeholder="Username" required>
+                                <small id="customerUsernameError" class="error-text text-danger d-none">
+                                    <i class="fas fa-exclamation-circle"></i> This username is already taken
+                                </small>
+                                <input class="form-control mb-2" type="email" name="email" placeholder="Email" required>
                                 <input class="form-control mb-2" type="password" name="password" 
                                     id="customerPassword" placeholder="Password (min 6 chars, 1 uppercase, 1 number)"
                                     minlength="6" required>
-                                <small id="customerPasswordError" class="text-danger d-none">
-                                    Password must be at least 6 characters with 1 uppercase letter and 1 number
+                                <small id="customerPasswordError" class="error-text text-danger d-none">
+                                    <i class="fas fa-exclamation-circle"></i> Password must be at least 6 characters with 1 uppercase letter and 1 number
                                 </small>
-                                
                                 <input class="form-control mb-2" type="password" name="confirmPassword" 
                                     id="customerConfirm" placeholder="Confirm password" required>
-                                <small id="confirmError" class="text-danger d-none">Passwords do not match</small>
+                                <small id="confirmError" class="error-text text-danger d-none">
+                                    <i class="fas fa-exclamation-circle"></i> Passwords do not match
+                                </small>
                             </div>
 
                             <!-- SUPPLIER -->
                             <div id="supplierForm" class="form-section">
-                                <input class="form-control mb-2" name="fullname" placeholder="Brand name">
-                                <input class="form-control mb-2" id="supplierUsername" name="username" placeholder="Username">
-                                <small id="supplierUsernameError" class="text-danger d-none">This username is already taken</small>
-                                <input class="form-control mb-2" type="email" name="email" placeholder="Email">
-                               
+                                <input class="form-control mb-2" name="fullname" placeholder="Brand name" required>
+                                <input class="form-control mb-2" id="supplierUsername" name="username" placeholder="Username" required>
+                                <small id="supplierUsernameError" class="error-text text-danger d-none">
+                                    <i class="fas fa-exclamation-circle"></i> This username is already taken
+                                </small>
+                                <input class="form-control mb-2" type="email" name="email" placeholder="Email" required>
                                 <input class="form-control mb-2" type="password" name="password" 
                                     id="supplierPassword" placeholder="Password (min 6 chars, 1 uppercase, 1 number)"
                                     minlength="6" required>
-                                <input class="form-control mb-2" type="password" name="confirmPassword" id="supplierConfirm" placeholder="Confirm password" required>
-
-                                <small id="supplierPasswordError" class="text-danger d-none">
-                                    Password must be at least 6 characters with 1 uppercase letter and 1 number
+                                <input class="form-control mb-2" type="password" name="confirmPassword" 
+                                    id="supplierConfirm" placeholder="Confirm password" required>
+                                <small id="supplierPasswordError" class="error-text text-danger d-none">
+                                    <i class="fas fa-exclamation-circle"></i> Password must be at least 6 characters with 1 uppercase letter and 1 number
                                 </small>
-                                <small id="supplierConfirmError" class="text-danger d-none">Passwords do not match</small>
+                                <small id="supplierConfirmError" class="error-text text-danger d-none">
+                                    <i class="fas fa-exclamation-circle"></i> Passwords do not match
+                                </small>
                                 <div class="upload-area mt-3" id="uploadArea">
-                                    📄 Upload business proof (PDF)
+                                    <span class="upload-icon">📄</span>
+                                    <span class="upload-text">Upload business proof (PDF)</span>
+                                    <span class="upload-hint">Click to select a file</span>
                                     <input type="file" id="businessProof" name="businessProof" hidden accept=".pdf">
+                                    <span id="fileName"></span>
                                 </div>
-                                <small id="fileName"></small>
                             </div>
 
-            <button type="submit" id="submitBtn" class="btn btn-scentify w-100 text-white mt-3">
-                                Create Account
+                            <button type="submit" id="submitBtn" class="btn-scentify mt-3">
+                                <i class="fas fa-user-plus"></i> Create Account
                             </button>
 
-                            <!-- ERROR ALERT -->
+                            <!-- Error Alert -->
                             <div id="errorAlert" class="alert alert-danger mt-3 d-none" role="alert">
-                                <strong>Please fix the following errors:</strong>
+                                <strong><i class="fas fa-exclamation-triangle"></i> Please fix the following errors:</strong>
                                 <ul id="errorList" class="mb-0 mt-2"></ul>
                             </div>
 
                         </form>
 
-                        <p class="text-center mt-3">
+                        <p class="text-center login-link mt-3">
                             Already have an account? <a href="/login">Login</a>
                         </p>
 
@@ -135,6 +661,7 @@
     </div>
 </div>
 
+<script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
 <script>
     const customerForm = document.getElementById('customerForm');
     const supplierForm = document.getElementById('supplierForm');
@@ -154,38 +681,31 @@
 
     function activateCustomer() {
         roleInput.value = 'customer';
-
         customerForm.classList.add('active');
         supplierForm.classList.remove('active');
-
         toggleInputs(customerForm, true);
         toggleInputs(supplierForm, false);
-
         businessProof.disabled = true;
-        submitBtn.textContent = 'Create Account';
+        submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
     }
 
     function activateSupplier() {
         roleInput.value = 'supplier';
-
         supplierForm.classList.add('active');
         customerForm.classList.remove('active');
-
         toggleInputs(supplierForm, true);
         toggleInputs(customerForm, false);
-
         businessProof.disabled = false;
-        submitBtn.textContent = 'Submit Application';
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Application';
     }
 
-    // PASSWORD VALIDATION
     function validatePassword(passwordInput, errorElement, minLength = 6) {
         const password = passwordInput.value;
         const hasUppercase = /[A-Z]/.test(password);
         const hasNumber = /\d/.test(password);
         const isLongEnough = password.length >= minLength;
 
-        if (!password) return true; // empty is handled by 'required'
+        if (!password) return true;
         
         if (!isLongEnough || !hasUppercase || !hasNumber) {
             errorElement.classList.remove('d-none');
@@ -196,7 +716,6 @@
         }
     }
 
-    // CONFIRM PASSWORD MATCH
     function validateConfirmPassword(passwordInput, confirmInput, errorElement) {
         if (passwordInput.value && confirmInput.value && passwordInput.value !== confirmInput.value) {
             errorElement.classList.remove('d-none');
@@ -207,10 +726,8 @@
         }
     }
 
-    // USERNAME UNIQUENESS CHECK
     function checkUsernameAvailability(usernameInput, errorElement) {
         const username = usernameInput.value.trim();
-        
         if (!username) {
             errorElement.classList.add('d-none');
             return;
@@ -294,7 +811,12 @@
 
             let errors = [];
 
-            // Check password requirements
+            // Check username
+            if (!usernameInput.value) {
+                errors.push('Username is required');
+            }
+
+            // Check password
             const password = passwordInput.value;
             if (!password) {
                 errors.push('Password is required');
@@ -317,7 +839,11 @@
                 errors.push('Passwords do not match');
             }
 
-            // Show errors if any
+            // Supplier-specific: check business proof
+            if (currentRole === 'supplier' && !businessProof.files.length) {
+                errors.push('Please upload your business proof document');
+            }
+
             if (errors.length > 0) {
                 errors.forEach(error => {
                     const li = document.createElement('li');
@@ -326,7 +852,6 @@
                 });
                 errorAlert.classList.remove('d-none');
             } else {
-                // All validations passed, submit the form
                 signupForm.submit();
             }
         });
@@ -351,7 +876,12 @@
     // FILE UPLOAD
     document.getElementById('uploadArea').onclick = () => businessProof.click();
     businessProof.onchange = e => {
-        fileName.textContent = e.target.files[0]?.name || '';
+        if (e.target.files[0]) {
+            fileName.textContent = '📎 ' + e.target.files[0].name;
+            fileName.style.color = '#28a745';
+        } else {
+            fileName.textContent = '';
+        }
     };
 </script>
 

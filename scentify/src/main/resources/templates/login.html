@@ -2,14 +2,34 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Login | Scentify</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+    
     <!-- Bootstrap -->
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.0/css/bootstrap.min.css}">
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    
     <style>
+        :root {
+            --primary-color: #C4A484;
+            --primary-dark: #B89673;
+            --secondary-color: #E6D3C1;
+            --accent-color: #FAF7F4;
+            --text-dark: #3E3A36;
+            --text-muted: #8A7F75;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             background: linear-gradient(135deg, #f7f2ef, #fdfcfa);
             font-family: 'Inter', sans-serif;
@@ -17,95 +37,359 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 1rem;
+            margin: 0;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 450px;
+            padding: 1rem;
         }
 
         .login-card {
             border: none;
-            border-radius: 18px;
+            border-radius: 20px;
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.08);
             backdrop-filter: blur(10px);
+            background: white;
+            overflow: hidden;
+            padding: 0;
         }
 
         .card-header {
             background: transparent;
             border-bottom: none;
             text-align: center;
-            padding-top: 2rem;
+            padding: 2rem 2rem 0.5rem 2rem;
         }
 
         .brand-title {
             font-family: 'Playfair Display', serif;
-            font-size: 2rem;
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: var(--text-dark);
             letter-spacing: 1px;
+        }
+
+        .brand-title i {
+            color: var(--primary-color);
+            margin-right: 0.3rem;
         }
 
         .tagline {
             font-size: 0.85rem;
-            color: #8b8b8b;
+            color: var(--text-muted);
             margin-top: 4px;
+            font-weight: 300;
+            letter-spacing: 0.3px;
+        }
+
+        .card-body {
+            padding: 1.5rem 2rem 2rem 2rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            margin-bottom: 0.3rem;
         }
 
         .form-control {
             border-radius: 12px;
             padding: 0.7rem 0.9rem;
-            border: 1px solid #ddd;
+            border: 1.5px solid #e8e0d8;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: var(--accent-color);
         }
 
         .form-control:focus {
-            box-shadow: none;
-            border-color: #c2a98d;
+            box-shadow: 0 0 0 3px rgba(196, 164, 132, 0.15);
+            border-color: var(--primary-color);
+            background: white;
+        }
+
+        .form-control::placeholder {
+            color: #b0a8a0;
+            font-size: 0.9rem;
         }
 
         .btn-scentify {
-            background: linear-gradient(135deg, #c2a98d, #b49374);
+            background: var(--primary-color);
             border: none;
             border-radius: 14px;
-            padding: 0.7rem;
-            font-weight: 500;
+            padding: 0.75rem;
+            font-weight: 600;
+            font-size: 1rem;
             letter-spacing: 0.5px;
+            color: white;
+            transition: all 0.3s ease;
+            width: 100%;
         }
 
         .btn-scentify:hover {
-            background: linear-gradient(135deg, #b49374, #a88363);
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(196, 164, 132, 0.3);
+        }
+
+        .btn-scentify:active {
+            transform: translateY(0);
+        }
+
+        .signup-link {
+            color: var(--text-muted);
+            font-size: 0.9rem;
         }
 
         .signup-link a {
-            color: #b49374;
+            color: var(--primary-color);
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
+            transition: all 0.3s;
         }
 
         .signup-link a:hover {
+            color: var(--primary-dark);
             text-decoration: underline;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e8e0d8;
+        }
+
+        .divider::before {
+            margin-right: 1rem;
+        }
+
+        .divider::after {
+            margin-left: 1rem;
         }
 
         .alert {
             border-radius: 12px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            padding: 0.75rem 1rem;
+            border: none;
+            margin-bottom: 1.25rem;
+        }
+
+        .alert-danger {
+            background: #fef2f0;
+            color: #c0392b;
+            border-left: 4px solid #c0392b;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #2e7d32;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 576px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .login-wrapper {
+                padding: 0.5rem;
+                max-width: 100%;
+            }
+
+            .login-card {
+                border-radius: 16px;
+            }
+
+            .card-header {
+                padding: 1.5rem 1.25rem 0.25rem 1.25rem;
+            }
+
+            .brand-title {
+                font-size: 1.7rem;
+            }
+
+            .tagline {
+                font-size: 0.75rem;
+            }
+
+            .card-body {
+                padding: 1rem 1.25rem 1.5rem 1.25rem;
+            }
+
+            .form-control {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.9rem;
+                border-radius: 10px;
+            }
+
+            .btn-scentify {
+                padding: 0.65rem;
+                font-size: 0.9rem;
+                border-radius: 12px;
+            }
+
+            .divider {
+                margin: 1rem 0;
+                font-size: 0.7rem;
+            }
+
+            .signup-link {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .card-header {
+                padding: 1rem 1rem 0.25rem 1rem;
+            }
+
+            .brand-title {
+                font-size: 1.5rem;
+            }
+
+            .card-body {
+                padding: 0.75rem 1rem 1.25rem 1rem;
+            }
+
+            .form-control {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.7rem;
+            }
+
+            .btn-scentify {
+                font-size: 0.85rem;
+                padding: 0.55rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .login-wrapper {
+                max-width: 480px;
+            }
+
+            .brand-title {
+                font-size: 2.5rem;
+            }
+
+            .card-body {
+                padding: 2rem 2.5rem 2.5rem 2.5rem;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .login-wrapper {
+                max-width: 500px;
+            }
+        }
+
+        /* Dark mode support (optional) */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #2c2c2c, #1a1a1a);
+            }
+
+            .login-card {
+                background: #2c2c2c;
+                box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            }
+
+            .brand-title {
+                color: #e8e0d8;
+            }
+
+            .tagline {
+                color: #999;
+            }
+
+            .form-label {
+                color: #e8e0d8;
+            }
+
+            .form-control {
+                background: #3a3a3a;
+                border-color: #4a4a4a;
+                color: #e8e0d8;
+            }
+
+            .form-control:focus {
+                background: #3a3a3a;
+                border-color: var(--primary-color);
+            }
+
+            .form-control::placeholder {
+                color: #888;
+            }
+
+            .divider {
+                color: #888;
+            }
+
+            .divider::before,
+            .divider::after {
+                border-bottom-color: #4a4a4a;
+            }
+
+            .signup-link {
+                color: #999;
+            }
+
+            .alert-danger {
+                background: #3d1f1c;
+                color: #f5a097;
+                border-left-color: #e74c3c;
+            }
+
+            .alert-success {
+                background: #1a3d1a;
+                color: #81c784;
+                border-left-color: #4caf50;
+            }
         }
     </style>
 </head>
 
 <body>
-<div style="width: 100%; max-width: 450px; padding: 1rem;">
-    <div class="card login-card">
+    <div class="login-wrapper">
+        <div class="card login-card">
 
             <div class="card-header">
-                <div class="brand-title">Scentify</div>
+                <div class="brand-title">
+                    <i class="fas fa-leaf"></i> Scentify
+                </div>
                 <div class="tagline">Discover your signature scent</div>
             </div>
 
-            <div class="card-body px-4 pb-4">
+            <div class="card-body">
 
                 <!-- Error Message -->
                 <div th:if="${param.error}" class="alert alert-danger text-center">
-                    Invalid username or password
+                    <i class="fas fa-exclamation-circle"></i> Invalid username or password
+                </div>
+
+                <!-- Success Message (for logout) -->
+                <div th:if="${param.logout}" class="alert alert-success text-center">
+                    <i class="fas fa-check-circle"></i> You have been logged out successfully
                 </div>
 
                 <form th:action="@{/login}" method="post">
                     <div class="mb-3">
                         <label class="form-label">Username</label>
-                        <input type="text" class="form-control" name="username" placeholder="Enter your username" required>
+                        <input type="text" class="form-control" name="username" placeholder="Enter your username" required autofocus>
                     </div>
 
                     <div class="mb-4">
@@ -113,12 +397,12 @@
                         <input type="password" class="form-control" name="password" placeholder="Enter your password" required>
                     </div>
 
-                    <button type="submit" class="btn btn-scentify w-100 text-white">
-                        Sign In
+                    <button type="submit" class="btn-scentify">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
                     </button>
                 </form>
 
-                <hr class="my-4">
+                <div class="divider">or</div>
 
                 <p class="text-center signup-link mb-0">
                     New to Scentify?
@@ -127,6 +411,12 @@
 
             </div>
         </div>
-</div>
+    </div>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap JS (optional) -->
+    <script th:src="@{/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
