@@ -2,15 +2,21 @@ package com.scentify.service;
 
 import com.scentify.model.Invoice;
 import com.scentify.model.Order;
+import com.scentify.model.OrderItem;
 import com.scentify.model.Payment;
+import com.scentify.model.OrderVoucher;
 import com.scentify.repository.InvoiceRepository;
 import com.scentify.repository.OrderRepository;
+import com.scentify.repository.OrderVoucherRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
@@ -20,6 +26,9 @@ public class InvoiceServiceImpl implements InvoiceService {
     
     @Autowired
     private OrderRepository orderRepository;
+    
+    @Autowired
+    private OrderVoucherRepository orderVoucherRepository;
     
     @Override
     @Transactional
@@ -37,15 +46,66 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
         
         try {
-            // ✅ Use the Invoice constructor that takes Order and Payment
-            Invoice invoice = new Invoice(order, payment);
+            // ✅ Calculate invoice details
+            String invoiceNumber = generateInvoiceNumber(order);
+            LocalDateTime invoiceDate = LocalDateTime.now();
             
-            // Set additional fields if needed
-            invoice.setInvoiceDate(LocalDateTime.now());
+            // ✅ Calculate subtotal from order items
+            BigDecimal subtotal = order.getOrderItems().stream()
+                .map(OrderItem::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            
+            // ✅ Calculate discount from order vouchers
+            BigDecimal discount = BigDecimal.ZERO;
+            try {
+                List<OrderVoucher> orderVouchers = orderVoucherRepository.findByOrderId(order.getOrderId().intValue());
+                for (OrderVoucher ov : orderVouchers) {
+                    if (ov.getDiscountAmount() != null) {
+                        discount = discount.add(ov.getDiscountAmount());
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("⚠️ Error fetching vouchers: " + e.getMessage());
+            }
+            
+            // ✅ If no voucher found, calculate discount from order total difference
+            if (discount.compareTo(BigDecimal.ZERO) == 0) {
+                BigDecimal orderTotal = order.getTotalPrice();
+                if (subtotal.compareTo(orderTotal) > 0) {
+                    discount = subtotal.subtract(orderTotal);
+                    System.out.println("📊 Calculated discount from order total difference: RM" + discount);
+                }
+            }
+            
+            // ✅ Tax - set to 0% since you don't use tax
+            BigDecimal taxRate = BigDecimal.valueOf(0.00);
+            BigDecimal tax = BigDecimal.ZERO;
+            
+            // ✅ Total = subtotal - discount + tax
+            BigDecimal total = subtotal.subtract(discount).add(tax);
+            
+            System.out.println("   Invoice calculation for Order #" + order.getOrderId());
+            System.out.println("   Subtotal: RM" + subtotal);
+            System.out.println("   Discount: RM" + discount);
+            System.out.println("   Tax (0%): RM" + tax);
+            System.out.println("   Total: RM" + total);
+            
+            // Create invoice using the constructor
+            Invoice invoice = new Invoice(order, payment);
+            invoice.setInvoiceNumber(invoiceNumber);
+            invoice.setInvoiceDate(invoiceDate);
+            invoice.setSubtotal(subtotal);
+            invoice.setDiscount(discount);
+            invoice.setTax(tax);
+            invoice.setTaxRate("0%");
+            invoice.setTotal(total);
+            invoice.setPaymentMethod("ToyyibPay");
+            invoice.setPaymentReference(payment.getBillCode());
             
             Invoice savedInvoice = invoiceRepository.save(invoice);
             System.out.println("✅ Invoice generated: " + savedInvoice.getInvoiceNumber() + 
                              " for Order #" + order.getOrderId());
+            System.out.println("   Total: RM" + savedInvoice.getTotal());
             return savedInvoice;
             
         } catch (Exception e) {
@@ -53,6 +113,16 @@ public class InvoiceServiceImpl implements InvoiceService {
             e.printStackTrace();
             return null;
         }
+    }
+    
+    private String generateInvoiceNumber(Order order) {
+        LocalDateTime now = LocalDateTime.now();
+        String year = String.valueOf(now.getYear());
+        String month = String.format("%02d", now.getMonthValue());
+        String day = String.format("%02d", now.getDayOfMonth());
+        // Add a random element to ensure uniqueness
+        int random = (int) (Math.random() * 1000);
+        return "INV-" + year + month + day + "-" + order.getOrderId() + "-" + String.format("%03d", random);
     }
     
     @Override

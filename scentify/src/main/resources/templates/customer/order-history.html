@@ -734,24 +734,30 @@
                 </div>
 
                 <!-- Order Footer -->
-                <div class="order-footer">
-                    <div class="order-footer-left">
-                        <div th:if="${order.shippingAddress != null}" class="order-shipping">
-                            <i class="fas fa-shipping-fast"></i> 
-                            <span th:text="${order.shippingAddress}"></span>
+                    <div class="order-footer">
+                        <div class="order-footer-left">
+                            <div th:if="${order.shippingAddress != null}" class="order-shipping">
+                                <i class="fas fa-shipping-fast"></i> 
+                                <span th:text="${order.shippingAddress}"></span>
+                            </div>
+                            <!-- ✅ Show discount if applied -->
+                            <div th:if="${order.totalPrice < order.orderItems.stream().map(item -> item.subtotal).sum()}" 
+                                class="discount-badge" style="color: #28a745; font-size: 0.85rem; margin-top: 0.3rem;">
+                                <i class="fas fa-ticket-alt"></i> 
+                                Discount applied: -RM <span th:text="${#numbers.formatDecimal(order.orderItems.stream().map(item -> item.subtotal).reduce(0, (a,b) -> a + b) - order.totalPrice, 1, 2)}">0.00</span>
+                            </div>
+                        </div>
+                        <div class="order-footer-right">
+                            <div class="order-total">
+                                Total: <span>RM <span th:text="${#numbers.formatDecimal(order.totalPrice, 1, 2)}">0.00</span></span>
+                            </div>
+                            <a th:if="${order.paymentStatus == 'PAID'}" 
+                            th:href="'/payment/invoice/order/' + ${order.orderId}" 
+                            class="btn-invoice">
+                                <i class="fas fa-file-invoice"></i> Invoice
+                            </a>
                         </div>
                     </div>
-                    <div class="order-footer-right">
-                        <div class="order-total">
-                            Total: <span>RM <span th:text="${#numbers.formatDecimal(order.totalPrice, 1, 2)}">0.00</span></span>
-                        </div>
-                        <a th:if="${order.paymentStatus == 'PAID'}" 
-                           th:href="'/payment/invoice/order/' + ${order.orderId}" 
-                           class="btn-invoice">
-                            <i class="fas fa-file-invoice"></i> Invoice
-                        </a>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

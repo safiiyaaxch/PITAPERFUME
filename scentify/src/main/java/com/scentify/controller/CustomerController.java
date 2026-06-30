@@ -1012,15 +1012,14 @@ public String orderHistory(HttpSession session, Model model) {
         return "redirect:/login";
     }
     
-        Customer customer = customerOpt.get();
+    Customer customer = customerOpt.get();
     System.out.println("✅ Customer: " + customer.getFullname());
     System.out.println("✅ Customer ID: " + customer.getCustomerId());
     
     // ✅ ORDER BY orderDate DESC - Latest first
     List<Order> orders = orderRepository.findByCustomer_CustomerIdOrderByOrderDateDesc((long) customer.getCustomerId());
     System.out.println("📦 Total orders found: " + orders.size());
-
-    // ✅ Process each order safely - NO JOIN FETCH
+    
     List<Order> validOrders = new java.util.ArrayList<>();
     
     for (Order order : orders) {
@@ -1032,7 +1031,7 @@ public String orderHistory(HttpSession session, Model model) {
         
         System.out.println("   ✅ Processing order #" + order.getOrderId());
         
-        // ✅ Get order items WITHOUT joining products (lazy loading)
+        // ✅ Get order items
         List<OrderItem> items = orderItemRepository.findByOrder_OrderId(order.getOrderId());
         System.out.println("      📦 Found " + items.size() + " items");
         
@@ -1040,17 +1039,13 @@ public String orderHistory(HttpSession session, Model model) {
         
         for (OrderItem item : items) {
             try {
-                // ✅ Get the product ID safely without triggering lazy loading
                 String productId = null;
                 try {
-                    // This might trigger lazy loading, but we'll catch it
                     if (item.getProduct() != null) {
                         productId = item.getProduct().getProductId();
                     }
                 } catch (Exception e) {
-                    // If lazy loading fails, try to get it from a native query
                     System.out.println("      ⚠️ Lazy loading failed for item: " + item.getOrderItemId());
-                    // You could use a native query here as fallback
                 }
                 
                 if (productId == null) {
@@ -1060,11 +1055,9 @@ public String orderHistory(HttpSession session, Model model) {
                 
                 System.out.println("      🔍 Checking product: " + productId);
                 
-                // ✅ Verify product exists in database
                 Optional<Product> productOpt = productRepository.findById(productId);
                 if (productOpt.isPresent()) {
                     Product product = productOpt.get();
-                    // ✅ Manually set the product on the item
                     item.setProduct(product);
                     validItems.add(item);
                     System.out.println("      ✅ Product found: " + product.getProductName());
@@ -1079,11 +1072,11 @@ public String orderHistory(HttpSession session, Model model) {
             }
         }
         
-        // Only keep orders that have at least one valid item
         if (!validItems.isEmpty()) {
             order.setOrderItems(validItems);
             validOrders.add(order);
             System.out.println("   ✅ Order #" + order.getOrderId() + " has " + validItems.size() + " valid items");
+            System.out.println("   ✅ Order total (discounted): RM" + order.getTotalPrice());
         } else {
             System.out.println("   ⏭️ Order #" + order.getOrderId() + " has no valid items - skipping");
         }

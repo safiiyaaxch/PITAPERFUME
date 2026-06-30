@@ -38,6 +38,9 @@ public class Invoice {
     
     @Column(nullable = false)
     private LocalDateTime invoiceDate;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal discount; 
     
     @Column(length = 50)
     private String paymentMethod = "ToyyibPay";
@@ -51,15 +54,30 @@ public class Invoice {
     // Constructors
     public Invoice() {}
     
+    // ✅ FIXED CONSTRUCTOR - Now properly calculates subtotal, discount, and total
     public Invoice(Order order, Payment payment) {
         this.order = order;
         this.payment = payment;
         this.invoiceDate = LocalDateTime.now();
         this.invoiceNumber = generateInvoiceNumber();
-        this.subtotal = order.getTotalPrice();
-        this.tax = BigDecimal.ZERO;
-        this.total = order.getTotalPrice();
+        this.paymentMethod = "ToyyibPay";
         this.paymentReference = payment.getBillCode();
+        this.tax = BigDecimal.ZERO;
+        this.taxRate = "0%";
+        
+        // ✅ Calculate subtotal (sum of all order items)
+        this.subtotal = order.getOrderItems().stream()
+            .map(OrderItem::getSubtotal)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        // ✅ Calculate discount (difference between subtotal and order total)
+        this.discount = this.subtotal.subtract(order.getTotalPrice());
+        if (this.discount.compareTo(BigDecimal.ZERO) < 0) {
+            this.discount = BigDecimal.ZERO;
+        }
+        
+        // ✅ Total is the order total (already discounted)
+        this.total = order.getTotalPrice();
     }
     
     private String generateInvoiceNumber() {
@@ -162,5 +180,14 @@ public class Invoice {
     
     public void setInvoiceHtml(String invoiceHtml) { 
         this.invoiceHtml = invoiceHtml; 
+    }
+    
+    // GETTER AND SETTER FOR DISCOUNT
+    public BigDecimal getDiscount() { 
+        return discount; 
+    }
+    
+    public void setDiscount(BigDecimal discount) { 
+        this.discount = discount; 
     }
 }
