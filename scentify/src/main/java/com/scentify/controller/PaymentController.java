@@ -54,6 +54,9 @@ public class PaymentController {
     @Autowired
     private InvoiceService invoiceService;
     
+    // ✅ HARDCODED PRODUCTION URL
+    private static final String PRODUCTION_BASE_URL = "https://pitaperfume-production.up.railway.app";
+    
     /**
      * Test endpoint to verify URLs are configured correctly
      */
@@ -74,7 +77,6 @@ public class PaymentController {
      * Deduct stock for all items in an order
      */
     private void deductStock(Order order) {
-        // Check if stock was already deducted (prevent double deduction)
         if (order.isStockDeducted()) {
             System.out.println("⚠️ Stock already deducted for Order #" + order.getOrderId());
             return;
@@ -102,7 +104,6 @@ public class PaymentController {
             System.out.println("   ✅ New stock: " + product.getStock());
         }
         
-        // Mark order as stock deducted
         order.setStockDeducted(true);
         orderRepository.save(order);
         System.out.println("✅ Stock deduction complete for Order #" + order.getOrderId());
@@ -138,7 +139,6 @@ public class PaymentController {
                 Order order = payment.getOrder();
                 
                 if ("1".equals(status)) {
-                    // ✅ Payment successful - AUTO-DELIVER
                     payment.setPaymentStatus("COMPLETED");
                     payment.setCompletedAt(LocalDateTime.now());
                     
@@ -147,14 +147,12 @@ public class PaymentController {
                     order.setDeliveryDate(LocalDateTime.now());
                     order.setUpdatedAt(LocalDateTime.now());
                     
-                    // ✅ DEDUCT STOCK
                     deductStock(order);
                     
                     System.out.println("✅ Payment confirmed for Order #" + order.getOrderId());
                     System.out.println("📦 Order automatically marked as DELIVERED");
                     System.out.println("📦 Stock deducted for all items");
                     
-                    // Generate invoice
                     Invoice invoice = invoiceService.generateInvoice(order, payment);
                     if (invoice != null) {
                         System.out.println("✅ Invoice generated: " + invoice.getInvoiceNumber());
@@ -226,13 +224,11 @@ public class PaymentController {
             Order order = orderOpt.get();
             Optional<Payment> paymentOpt = paymentRepository.findByBillCode(billcode);
             
-            // Check if payment was successful
             boolean paymentSuccess = "1".equals(status_id);
             
             if (paymentSuccess) {
                 System.out.println("✅ Payment SUCCESSFUL for Order #" + orderId);
                 
-                // Update payment if exists
                 if (paymentOpt.isPresent()) {
                     Payment payment = paymentOpt.get();
                     if (!"COMPLETED".equals(payment.getPaymentStatus())) {
@@ -242,15 +238,12 @@ public class PaymentController {
                     }
                 }
                 
-                // Update order
                 if (!"PAID".equals(order.getPaymentStatus())) {
                     order.setPaymentStatus("PAID");
                     order.setOrderStatus("DELIVERED");
                     order.setDeliveryDate(LocalDateTime.now());
                     order.setUpdatedAt(LocalDateTime.now());
                     
-                    // ✅ DEDUCT STOCK (in case callback didn't run)
-                    // Check if stock was already deducted
                     if (!order.isStockDeducted()) {
                         deductStock(order);
                         System.out.println("📦 Stock deducted for Order #" + orderId + " (via return)");
@@ -260,7 +253,6 @@ public class PaymentController {
                     System.out.println("✅ Order updated to PAID/DELIVERED");
                 }
                 
-                // Generate or get invoice
                 Invoice existingInvoice = invoiceService.getInvoiceByOrder(order);
                 Long invoiceId = null;
                 
@@ -274,28 +266,27 @@ public class PaymentController {
                     invoiceId = existingInvoice.getInvoiceId();
                 }
                 
-                // Store payment success info in session for popup
-                session.setAttribute("paymentPopup", true);
-                session.setAttribute("paymentSuccess", true);
-                session.setAttribute("paymentOrderId", orderId);
-                session.setAttribute("paymentInvoiceId", invoiceId);
-                session.setAttribute("paymentMessage", "🎉 Payment successful! Your order has been confirmed and automatically delivered. You can view your invoice in Order History.");
+                redirect.addFlashAttribute("paymentPopup", true);
+                redirect.addFlashAttribute("paymentSuccess", true);
+                redirect.addFlashAttribute("paymentOrderId", orderId);
+                redirect.addFlashAttribute("paymentInvoiceId", invoiceId);
+                redirect.addFlashAttribute("paymentMessage", "Payment successful! Your order has been confirmed and automatically delivered. You can view your invoice in Order History.");
+                
+                System.out.println("✅ Flash attributes set for popup");
                 
                 return "redirect:/customer/dashboard";
                 
             } else if ("2".equals(status_id)) {
-                // Payment pending
                 System.out.println("⏳ Payment PENDING for Order #" + orderId);
                 
-                session.setAttribute("paymentPopup", true);
-                session.setAttribute("paymentSuccess", false);
-                session.setAttribute("paymentOrderId", orderId);
-                session.setAttribute("paymentMessage", "⏳ Your payment is being processed. Please check back later.");
+                redirect.addFlashAttribute("paymentPopup", true);
+                redirect.addFlashAttribute("paymentSuccess", false);
+                redirect.addFlashAttribute("paymentOrderId", orderId);
+                redirect.addFlashAttribute("paymentMessage", "Your payment is being processed. Please check back later.");
                 
                 return "redirect:/customer/dashboard";
                 
             } else if ("3".equals(status_id)) {
-                // Payment failed
                 System.out.println("❌ Payment FAILED for Order #" + orderId);
                 
                 if (paymentOpt.isPresent()) {
@@ -307,20 +298,19 @@ public class PaymentController {
                 order.setOrderStatus("CANCELLED");
                 orderRepository.save(order);
                 
-                session.setAttribute("paymentPopup", true);
-                session.setAttribute("paymentSuccess", false);
-                session.setAttribute("paymentOrderId", orderId);
-                session.setAttribute("paymentMessage", "❌ Payment was not successful. Please try again.");
+                redirect.addFlashAttribute("paymentPopup", true);
+                redirect.addFlashAttribute("paymentSuccess", false);
+                redirect.addFlashAttribute("paymentOrderId", orderId);
+                redirect.addFlashAttribute("paymentMessage", "Payment was not successful. Please try again.");
                 
                 return "redirect:/customer/dashboard";
                 
             } else {
-                // Unknown status
                 System.out.println("⚠️ Unknown status: " + status_id);
                 
-                session.setAttribute("paymentPopup", true);
-                session.setAttribute("paymentSuccess", false);
-                session.setAttribute("paymentMessage", "⚠️ Payment verification pending. Please check back soon.");
+                redirect.addFlashAttribute("paymentPopup", true);
+                redirect.addFlashAttribute("paymentSuccess", false);
+                redirect.addFlashAttribute("paymentMessage", "Payment verification pending. Please check back soon.");
                 
                 return "redirect:/customer/dashboard";
             }
@@ -329,17 +319,14 @@ public class PaymentController {
             System.err.println("❌ Error in payment return: " + e.getMessage());
             e.printStackTrace();
             
-            session.setAttribute("paymentPopup", true);
-            session.setAttribute("paymentSuccess", false);
-            session.setAttribute("paymentMessage", "An error occurred while processing your payment: " + e.getMessage());
+            redirect.addFlashAttribute("paymentPopup", true);
+            redirect.addFlashAttribute("paymentSuccess", false);
+            redirect.addFlashAttribute("paymentMessage", "An error occurred while processing your payment: " + e.getMessage());
             
             return "redirect:/customer/dashboard";
         }
     }
     
-    /**
-     * Clear payment popup after it's been shown
-     */
     @GetMapping("/clear-payment-popup")
     public String clearPaymentPopup(HttpSession session) {
         session.removeAttribute("paymentPopup");
@@ -367,20 +354,17 @@ public class PaymentController {
             System.out.println("   Payment Status: " + order.getPaymentStatus());
             System.out.println("   Order Status: " + order.getOrderStatus());
             
-            // Check if order is paid
             if (!"PAID".equals(order.getPaymentStatus())) {
                 System.out.println("❌ Order is not paid");
                 redirect.addFlashAttribute("error", "Invoice not available for unpaid orders");
                 return "redirect:/customer/order-history";
             }
             
-            // Try to find existing invoice
             Invoice invoice = invoiceService.getInvoiceByOrder(order);
             
             if (invoice == null) {
                 System.out.println("⚠️ No invoice found for Order #" + orderId + ", generating...");
                 
-                // Try to find payment
                 Optional<Payment> paymentOpt = paymentRepository.findByOrder_OrderId(orderId);
                 if (paymentOpt.isPresent()) {
                     invoice = invoiceService.generateInvoice(order, paymentOpt.get());
@@ -417,9 +401,6 @@ public class PaymentController {
         }
     }
 
-    /**
-     * View invoice by Invoice ID
-     */
     @GetMapping("/invoice/{invoiceId}")
     public String viewInvoice(@PathVariable Long invoiceId, Model model, RedirectAttributes redirect) {
         try {

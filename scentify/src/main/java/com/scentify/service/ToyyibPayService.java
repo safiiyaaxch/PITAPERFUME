@@ -85,7 +85,6 @@ public class ToyyibPayService {
             System.out.println("📌 Configured Callback URL: " + configuredCallbackUrl);
             System.out.println("📌 Passed Return URL parameter: " + returnUrl);
             
-            // ✅ FORCE HARDCODED URLS FOR RAILWAY DEPLOYMENT
             String finalReturnUrl = PRODUCTION_RETURN_URL;
             String finalCallbackUrl = PRODUCTION_CALLBACK_URL;
             

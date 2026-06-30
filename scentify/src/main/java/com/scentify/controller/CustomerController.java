@@ -104,7 +104,15 @@ public class CustomerController {
         if (!isCustomerLoggedIn(session)) {
             return "redirect:/login";
         }
-        
+
+        Boolean paymentPopup = (Boolean) session.getAttribute("paymentPopup");
+        if (paymentPopup != null && paymentPopup) {
+            model.addAttribute("paymentPopup", true);
+            model.addAttribute("paymentSuccess", session.getAttribute("paymentSuccess"));
+            model.addAttribute("paymentOrderId", session.getAttribute("paymentOrderId"));
+            model.addAttribute("paymentInvoiceId", session.getAttribute("paymentInvoiceId"));
+            model.addAttribute("paymentMessage", session.getAttribute("paymentMessage"));
+        }
         // Get all approved products
         List<Product> approvedProducts = productRepository.findByApprovalStatus("approved");
         
@@ -838,19 +846,29 @@ public String checkoutConfirm(@RequestParam(required = false) String recipientNa
         }
         System.out.println("📊 Original Total: RM" + originalTotal);
         
-        // Use discounted total if provided and valid
+        // ✅ USE DISCOUNTED TOTAL FOR PAYMENT
         BigDecimal finalTotal = originalTotal;
+        BigDecimal discountAmount = BigDecimal.ZERO;
+        
+        // ✅ CRITICAL FIX: Use discountedTotal if provided and valid
         if (discountedTotal != null && discountedTotal.compareTo(BigDecimal.ZERO) > 0) {
             if (discountedTotal.compareTo(originalTotal) < 0) {
                 finalTotal = discountedTotal;
+                discountAmount = originalTotal.subtract(discountedTotal);
                 System.out.println("✅ Using discounted total: RM" + finalTotal);
-                System.out.println("   You saved: RM" + originalTotal.subtract(finalTotal));
+                System.out.println("   Discount amount: RM" + discountAmount);
+            } else {
+                System.out.println("⚠️ Discounted total is greater than original total - using original");
             }
+        } else {
+            System.out.println("ℹ️ No discount applied - using original total");
         }
         
+        // ✅ SAVE ORDER WITH FINAL TOTAL
         order.setTotalPrice(finalTotal);
         order = orderRepository.save(order);
         System.out.println("✅ Order saved! ID: " + order.getOrderId());
+        System.out.println("   Total price saved: RM" + order.getTotalPrice());
 
         // ===== CREATE ORDER ITEMS =====
         System.out.println("📦 Creating order items...");
@@ -873,8 +891,11 @@ public String checkoutConfirm(@RequestParam(required = false) String recipientNa
             }
         }
         
+        // ✅ RE-SAVE ORDER AFTER ADDING ITEMS (to ensure total is correct)
+        order.recalculateTotal();
         order = orderRepository.save(order);
         System.out.println("✅ All order items saved! Total items: " + order.getOrderItems().size());
+        System.out.println("   Final order total: RM" + order.getTotalPrice());
         
         // ===== APPLY VOUCHER IF SELECTED =====
         if (voucherId != null && !voucherId.isEmpty()) {
@@ -885,11 +906,9 @@ public String checkoutConfirm(@RequestParam(required = false) String recipientNa
                     PromotionVoucher voucher = voucherOpt.get();
                     System.out.println("✅ Applying voucher: " + voucher.getVoucherCode());
                     
-                    BigDecimal discountAmount = originalTotal.subtract(finalTotal);
-                    
-                    // ✅ Create OrderVoucher with your existing model
+                    // ✅ Use the calculated discount amount
                     OrderVoucher orderVoucher = new OrderVoucher();
-                    orderVoucher.setOrderId(order.getOrderId().intValue());  // Long to Integer
+                    orderVoucher.setOrderId(order.getOrderId().intValue());
                     orderVoucher.setVoucherId(voucherIdInt);
                     orderVoucher.setCustomerId(customer.getCustomerId());
                     orderVoucher.setDiscountAmount(discountAmount);
@@ -902,7 +921,6 @@ public String checkoutConfirm(@RequestParam(required = false) String recipientNa
             } catch (Exception e) {
                 System.err.println("⚠️ Error applying voucher: " + e.getMessage());
                 e.printStackTrace();
-                // Continue without voucher - don't fail the entire checkout
             }
         }
         
@@ -917,16 +935,20 @@ public String checkoutConfirm(@RequestParam(required = false) String recipientNa
             System.out.println("✅ Direct purchase cart removed from session");
         }
         
-        // ===== CREATE PAYMENT =====
+        // ===== CREATE PAYMENT WITH DISCOUNTED TOTAL =====
         System.out.println("💳 Creating ToyyibPay payment...");
         System.out.println("   Order ID: " + order.getOrderId());
-        System.out.println("   Total: RM" + finalTotal);
+        System.out.println("   Original Total: RM" + originalTotal);
+        System.out.println("   Discount: RM" + discountAmount);
+        System.out.println("   Final Total (to be charged): RM" + order.getTotalPrice());
         
-        String returnUrl = "http://localhost:8080/payment/return?orderId=" + order.getOrderId();
+        // ✅ CRITICAL: Pass the CORRECT return URL with the order ID
+        String returnUrl = "https://pitaperfume-production.up.railway.app/payment/return?orderId=" + order.getOrderId();
         Payment payment = toyyibPayService.createPaymentBill(order, returnUrl);
         
         if (payment != null && payment.getPaymentUrl() != null) {
             System.out.println("✅ Payment created! Redirecting to: " + payment.getPaymentUrl());
+            System.out.println("   Amount to be paid: RM" + order.getTotalPrice());
             return "redirect:" + payment.getPaymentUrl();
         } else {
             System.err.println("❌ Payment creation failed!");
@@ -959,14 +981,14 @@ public String orderHistory(HttpSession session, Model model) {
         return "redirect:/login";
     }
     
-    Customer customer = customerOpt.get();
+        Customer customer = customerOpt.get();
     System.out.println("✅ Customer: " + customer.getFullname());
     System.out.println("✅ Customer ID: " + customer.getCustomerId());
     
-    // ✅ Get orders without loading ANY relationships
-    List<Order> orders = orderRepository.findByCustomer_CustomerId((long) customer.getCustomerId());
+    // ✅ ORDER BY orderDate DESC - Latest first
+    List<Order> orders = orderRepository.findByCustomer_CustomerIdOrderByOrderDateDesc((long) customer.getCustomerId());
     System.out.println("📦 Total orders found: " + orders.size());
-    
+
     // ✅ Process each order safely - NO JOIN FETCH
     List<Order> validOrders = new java.util.ArrayList<>();
     

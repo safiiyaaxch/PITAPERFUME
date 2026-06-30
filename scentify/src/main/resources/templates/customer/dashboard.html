@@ -585,34 +585,148 @@
             display: inline-block;
         }
 
-        /* ---------- PAYMENT MODAL RESPONSIVE ---------- */
-        .modal-dialog {
-            margin: 1rem;
+        /* ================= PAYMENT MODAL ================= */
+        .payment-modal .modal-content {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
         }
 
-        .modal-content {
-            border-radius: 20px !important;
+        .payment-modal .modal-header {
+            padding: 1.5rem 1.5rem 1rem 1.5rem;
+            border-bottom: none;
         }
 
-        .modal-header {
-            padding: 1rem 1.2rem !important;
+        .payment-modal .modal-header.bg-success-header {
+            background: linear-gradient(135deg, #C4A484, #B89673) !important;
+            border-radius: 20px 20px 0 0;
         }
 
-        .modal-body {
-            padding: 1.5rem 1.2rem !important;
+        .payment-modal .modal-header.bg-danger-header {
+            background: linear-gradient(135deg, #A67C6B, #8A6B5A) !important;
+            border-radius: 20px 20px 0 0;
         }
 
-        .modal-footer {
-            padding: 1rem 1.2rem !important;
-            flex-wrap: wrap;
-            gap: 0.6rem;
+        .payment-modal .modal-body {
+            padding: 1.5rem 2rem 1rem 2rem;
         }
 
-        .modal-footer .btn,
-        .modal-footer a {
-            min-width: 100px;
+        .payment-modal .modal-footer {
+            padding: 0.5rem 2rem 1.5rem 2rem;
+            border-top: none;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .payment-modal .btn-close-custom {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: white;
+            opacity: 0.8;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .payment-modal .btn-close-custom:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+
+        .payment-modal .icon-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2.5rem;
+        }
+
+        .payment-modal .icon-circle.success {
+            background: rgba(196, 164, 132, 0.15);
+            color: var(--primary-color);
+        }
+
+        .payment-modal .icon-circle.failure {
+            background: rgba(166, 124, 107, 0.15);
+            color: #A67C6B;
+        }
+
+        .payment-modal .btn-primary-custom {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.6rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
             font-size: 0.9rem;
-            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .payment-modal .btn-primary-custom:hover {
+            background: #B89673;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(196, 164, 132, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        .payment-modal .btn-secondary-custom {
+            background: var(--secondary-color);
+            color: var(--text-dark);
+            padding: 0.6rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .payment-modal .btn-secondary-custom:hover {
+            background: #D4C0AE;
+            transform: translateY(-2px);
+            color: var(--text-dark);
+            text-decoration: none;
+        }
+
+        .payment-modal .order-details-box {
+            background: var(--accent-color);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            border: 1px solid var(--secondary-color);
+            margin: 1rem 0;
+        }
+
+        .payment-modal .status-tag {
+            display: inline-block;
+            padding: 0.2rem 1rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .payment-modal .status-tag.confirmed {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .payment-modal .status-tag.delivered {
+            background: var(--secondary-color);
+            color: var(--text-dark);
         }
 
         /* ---------- TABLET & DESKTOP TWEAKS ---------- */
@@ -667,22 +781,19 @@
             .product-image { height: 140px; }
             .product-name { font-size: 0.85rem; }
             .product-price { font-size: 1rem; }
+            .payment-modal .modal-body { padding: 1rem; }
+            .payment-modal .modal-footer { 
+                flex-direction: column;
+                padding: 0.5rem 1rem 1rem 1rem;
+            }
+            .payment-modal .btn-primary-custom,
+            .payment-modal .btn-secondary-custom {
+                width: 100%;
+                justify-content: center;
+            }
         }
 
         /* ---------- UTILITIES ---------- */
-        .bg-success-header {
-            background: linear-gradient(135deg, #C4A484, #B89673) !important;
-        }
-        .bg-danger-header {
-            background: linear-gradient(135deg, #A67C6B, #8A6B5A) !important;
-        }
-        .modal-footer .btn {
-            transition: all 0.3s ease;
-        }
-        .modal-footer .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(196, 164, 132, 0.3);
-        }
         .rating-stars-small {
             color: #DAA520;
             font-size: 0.8rem;
@@ -885,65 +996,76 @@
         </form>
     </div>
 
-    <!-- PAYMENT MODAL (responsive) -->
-    <div th:if="${session.paymentPopup != null and session.paymentPopup}" 
-         class="modal fade" id="paymentResultModal" 
+    <!-- PAYMENT MODAL - Using Flash Attributes (model attributes) -->
+    <div th:if="${paymentPopup != null and paymentPopup}" 
+         class="modal fade payment-modal" id="paymentResultModal" 
          tabindex="-1" 
          data-bs-backdrop="static" 
          data-bs-keyboard="false"
-         th:data-payment-success="${session.paymentSuccess}"
-         th:data-payment-order-id="${session.paymentOrderId}"
-         th:data-payment-invoice-id="${session.paymentInvoiceId}"
-         th:data-payment-message="${session.paymentMessage}">
+         th:data-payment-success="${paymentSuccess}"
+         th:data-payment-order-id="${paymentOrderId}"
+         th:data-payment-invoice-id="${paymentInvoiceId}"
+         th:data-payment-message="${paymentMessage}">
          
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header" 
-                     th:classappend="${session.paymentSuccess} ? 'bg-success-header' : 'bg-danger-header'">
+                     th:classappend="${paymentSuccess} ? 'bg-success-header' : 'bg-danger-header'">
                     <h5 class="modal-title fw-bold text-white" 
-                        th:text="${session.paymentSuccess} ? '✅ Payment Successful!' : '❌ Payment Failed'">
+                        th:text="${paymentSuccess} ? 'Payment Successful!' : 'Payment Failed'">
                     </h5>
-                    <button type="button" class="btn-close" 
-                            th:attr="onclick=|window.location.href='/payment/clear-payment-popup'|"
-                            style="filter: brightness(0) invert(1);">
-                    </button>
-                </div>
-                <div class="modal-body text-center py-3">
-                    <div style="font-size: 3.5rem; margin-bottom: 10px;">
-                        <span th:if="${session.paymentSuccess}">🌸</span>
-                        <span th:unless="${session.paymentSuccess}">🌿</span>
-                    </div>
-                    <h4 th:text="${session.paymentSuccess} ? 'Thank you for your purchase!' : 'Payment Issue'"
-                        style="margin-bottom: 0.5rem; color: #3E3A36; font-weight: 600;">
-                    </h4>
-                    <p style="color: #8A7F75; font-size: 0.95rem;" th:text="${session.paymentMessage}"></p>
-                    
-                    <div th:if="${session.paymentSuccess}" style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 12px; border: 1px solid #E6D3C1;">
-                        <div><span style="color: #8A7F75; font-size: 0.8rem;">Order #</span><h5 style="color: #C4A484; font-weight: 700; margin: 0.2rem 0;">#<span th:text="${session.paymentOrderId}"></span></h5></div>
-                        <div th:if="${session.paymentInvoiceId != null}"><span style="color: #8A7F75; font-size: 0.8rem;">Invoice INV-<span th:text="${session.paymentOrderId}"></span></span></div>
-                        <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
-                            <span style="background: #C4A484; color: white; padding: 0.2rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">✅ Confirmed</span>
-                            <span style="background: #E6D3C1; color: #3E3A36; padding: 0.2rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">📦 Delivered</span>
-                        </div>
-                        <p style="margin-top: 0.5rem; color: #8A7F75; font-size: 0.8rem;">Check email for invoice.</p>
-                    </div>
-                </div>
-                <div class="modal-footer justify-content-center gap-2">
-                    <button type="button" class="btn px-3 py-1" 
-                            style="border-radius: 50px; font-weight: 600; background: #E6D3C1; color: #3E3A36; border: none;"
+                    <button type="button" class="btn-close-custom" 
                             th:attr="onclick=|window.location.href='/payment/clear-payment-popup'|">
-                        OK
+                        &times;
                     </button>
-                    <a th:if="${session.paymentSuccess}" 
+                </div>
+                
+                <div class="modal-body text-center">
+                    <div class="icon-circle" th:classappend="${paymentSuccess} ? 'success' : 'failure'">
+                        <span th:if="${paymentSuccess}">🌸</span>
+                        <span th:unless="${paymentSuccess}">🌿</span>
+                    </div>
+                    
+                    <h4 th:text="${paymentSuccess} ? 'Thank you for your purchase!' : 'Payment Issue'"
+                        style="margin-bottom: 0.5rem; color: var(--text-dark); font-weight: 700;">
+                    </h4>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 400px; margin: 0 auto;" 
+                       th:text="${paymentMessage}"></p>
+                    
+                    <div th:if="${paymentSuccess}" class="order-details-box">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                            <div>
+                                <span style="color: var(--text-muted); font-size: 0.75rem;">Order #</span>
+                                <h5 style="color: var(--primary-color); font-weight: 700; margin: 0;">#<span th:text="${paymentOrderId}"></span></h5>
+                            </div>
+                            <div th:if="${paymentInvoiceId != null}">
+                                <span style="color: var(--text-muted); font-size: 0.75rem;">Invoice</span>
+                                <p style="font-weight: 600; margin: 0; color: var(--text-dark);">INV-<span th:text="${paymentOrderId}"></span></p>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <span class="status-tag confirmed">✓ Confirmed</span>
+                                <span class="status-tag delivered">📦 Delivered</span>
+                            </div>
+                        </div>
+                        <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.8rem;">
+                            <i class="fas fa-info-circle"></i> View invoice in <a href="/customer/order-history" style="color: var(--primary-color); font-weight: 600;">Order History</a>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary-custom" 
+                            th:attr="onclick=|window.location.href='/payment/clear-payment-popup'|">
+                        <i class="fas fa-check"></i> OK
+                    </button>
+                    <a th:if="${paymentSuccess}" 
                        th:href="@{/customer/order-history}" 
-                       class="btn px-3 py-1"
-                       style="border-radius: 50px; font-weight: 600; background: #C4A484; color: white; border: none;">
-                        <i class="fas fa-list-alt"></i> Orders
+                       class="btn-primary-custom">
+                        <i class="fas fa-list-alt"></i> View Orders
                     </a>
-                    <a th:unless="${session.paymentSuccess}" 
+                    <a th:unless="${paymentSuccess}" 
                        th:href="@{/customer/cart}" 
-                       class="btn px-3 py-1"
-                       style="border-radius: 50px; font-weight: 600; background: #C4A484; color: white; border: none;">
+                       class="btn-primary-custom">
                         <i class="fas fa-redo"></i> Try Again
                     </a>
                 </div>
@@ -1023,19 +1145,27 @@
 
         document.addEventListener('DOMContentLoaded', updateActiveFiltersDisplay);
 
-        // Payment modal auto-show
+        // Payment modal auto-show using model attributes
         document.addEventListener('DOMContentLoaded', function() {
             const modalEl = document.getElementById('paymentResultModal');
             if (modalEl) {
+                console.log('✅ Payment modal found!');
                 const myModal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
                 myModal.show();
+                
                 const isSuccess = modalEl.dataset.paymentSuccess === 'true';
+                console.log('Payment success:', isSuccess);
+                console.log('Payment message:', modalEl.dataset.paymentMessage);
+                
+                // Auto-close after 15 seconds for success, 10 seconds for failure
                 setTimeout(function() {
                     if (myModal._isShown) {
                         myModal.hide();
                         window.location.href = '/payment/clear-payment-popup';
                     }
                 }, isSuccess ? 15000 : 10000);
+            } else {
+                console.log('ℹ️ No payment modal found');
             }
         });
     </script>
