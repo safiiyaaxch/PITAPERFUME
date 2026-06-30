@@ -846,29 +846,23 @@ public String checkoutConfirm(@RequestParam(required = false) String recipientNa
         }
         System.out.println("📊 Original Total: RM" + originalTotal);
         
-        // ✅ USE DISCOUNTED TOTAL FOR PAYMENT
+        // ✅ CALCULATE DISCOUNT
         BigDecimal finalTotal = originalTotal;
         BigDecimal discountAmount = BigDecimal.ZERO;
         
-        // ✅ CRITICAL FIX: Use discountedTotal if provided and valid
         if (discountedTotal != null && discountedTotal.compareTo(BigDecimal.ZERO) > 0) {
             if (discountedTotal.compareTo(originalTotal) < 0) {
                 finalTotal = discountedTotal;
                 discountAmount = originalTotal.subtract(discountedTotal);
                 System.out.println("✅ Using discounted total: RM" + finalTotal);
                 System.out.println("   Discount amount: RM" + discountAmount);
-            } else {
-                System.out.println("⚠️ Discounted total is greater than original total - using original");
             }
-        } else {
-            System.out.println("ℹ️ No discount applied - using original total");
         }
         
-        // ✅ SAVE ORDER WITH FINAL TOTAL
-        order.setTotalPrice(finalTotal);
+        // ✅ SAVE ORDER WITH ORIGINAL TOTAL FIRST (will be overwritten later)
+        order.setTotalPrice(originalTotal);
         order = orderRepository.save(order);
         System.out.println("✅ Order saved! ID: " + order.getOrderId());
-        System.out.println("   Total price saved: RM" + order.getTotalPrice());
 
         // ===== CREATE ORDER ITEMS =====
         System.out.println("📦 Creating order items...");
@@ -891,13 +885,14 @@ public String checkoutConfirm(@RequestParam(required = false) String recipientNa
             }
         }
         
-        // ✅ RE-SAVE ORDER AFTER ADDING ITEMS (to ensure total is correct)
-        order.recalculateTotal();
+        // ✅ FORCE SET THE DISCOUNTED TOTAL AFTER ITEMS ARE ADDED
+        // This prevents recalculateTotal() from overwriting the discount
+        order.setTotalPrice(finalTotal);
         order = orderRepository.save(order);
+        System.out.println("✅ Order total FORCE SET to: RM" + order.getTotalPrice());
         System.out.println("✅ All order items saved! Total items: " + order.getOrderItems().size());
-        System.out.println("   Final order total: RM" + order.getTotalPrice());
         
-        // ===== APPLY VOUCHER IF SELECTED =====
+        // ===== APPLY VOUCHER =====
         if (voucherId != null && !voucherId.isEmpty()) {
             try {
                 Integer voucherIdInt = Integer.parseInt(voucherId);
@@ -906,7 +901,6 @@ public String checkoutConfirm(@RequestParam(required = false) String recipientNa
                     PromotionVoucher voucher = voucherOpt.get();
                     System.out.println("✅ Applying voucher: " + voucher.getVoucherCode());
                     
-                    // ✅ Use the calculated discount amount
                     OrderVoucher orderVoucher = new OrderVoucher();
                     orderVoucher.setOrderId(order.getOrderId().intValue());
                     orderVoucher.setVoucherId(voucherIdInt);
@@ -942,7 +936,9 @@ public String checkoutConfirm(@RequestParam(required = false) String recipientNa
         System.out.println("   Discount: RM" + discountAmount);
         System.out.println("   Final Total (to be charged): RM" + order.getTotalPrice());
         
-        // ✅ CRITICAL: Pass the CORRECT return URL with the order ID
+        // ✅ VERIFY: Double check the order total before sending to ToyyibPay
+        System.out.println("🔍 VERIFYING ORDER TOTAL BEFORE PAYMENT: RM" + order.getTotalPrice());
+        
         String returnUrl = "https://pitaperfume-production.up.railway.app/payment/return?orderId=" + order.getOrderId();
         Payment payment = toyyibPayService.createPaymentBill(order, returnUrl);
         
