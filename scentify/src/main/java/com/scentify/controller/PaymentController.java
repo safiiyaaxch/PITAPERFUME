@@ -208,9 +208,19 @@ public String handlePaymentReturn(
         System.out.println("📥 Message: " + msg);
         
         if (orderId == null) {
-            System.err.println("❌ No orderId provided in return URL");
-            redirect.addFlashAttribute("error", "Invalid order reference");
-            return "redirect:/customer/dashboard";
+            if (billcode != null && !billcode.isBlank()) {
+                Optional<Payment> fallbackPaymentOpt = paymentRepository.findByBillCode(billcode);
+                if (fallbackPaymentOpt.isPresent() && fallbackPaymentOpt.get().getOrder() != null) {
+                    orderId = fallbackPaymentOpt.get().getOrder().getOrderId();
+                    System.out.println("✅ Recovered Order ID from bill code: " + orderId);
+                }
+            }
+
+            if (orderId == null) {
+                System.err.println("❌ No orderId provided in return URL and could not recover from bill code");
+                redirect.addFlashAttribute("error", "Invalid order reference");
+                return "redirect:/customer/dashboard";
+            }
         }
         
         Optional<Order> orderOpt = orderRepository.findById(orderId);

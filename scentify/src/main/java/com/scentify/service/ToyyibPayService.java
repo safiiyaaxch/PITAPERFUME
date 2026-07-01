@@ -85,8 +85,14 @@ public class ToyyibPayService {
             System.out.println("📌 Configured Callback URL: " + configuredCallbackUrl);
             System.out.println("📌 Passed Return URL parameter: " + returnUrl);
             
-            String finalReturnUrl = PRODUCTION_RETURN_URL;
-            String finalCallbackUrl = PRODUCTION_CALLBACK_URL;
+                String finalReturnUrl = (returnUrl != null && !returnUrl.isBlank())
+                    ? returnUrl
+                    : (configuredReturnUrl != null && !configuredReturnUrl.isBlank()
+                    ? configuredReturnUrl
+                    : PRODUCTION_RETURN_URL);
+                String finalCallbackUrl = (configuredCallbackUrl != null && !configuredCallbackUrl.isBlank())
+                    ? configuredCallbackUrl
+                    : PRODUCTION_CALLBACK_URL;
             
             System.out.println("🔥🔥🔥 USING HARDCODED RETURN URL: " + finalReturnUrl);
             System.out.println("🔥🔥🔥 USING HARDCODED CALLBACK URL: " + finalCallbackUrl);

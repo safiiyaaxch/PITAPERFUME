@@ -591,10 +591,12 @@
             border-radius: 20px;
             border: none;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            background: #fffdfb;
         }
 
         .payment-modal .modal-header {
-            padding: 1.5rem 1.5rem 1rem 1.5rem;
+            padding: 1.25rem 1.5rem;
             border-bottom: none;
         }
 
@@ -610,6 +612,7 @@
 
         .payment-modal .modal-body {
             padding: 1.5rem 2rem 1rem 2rem;
+            background: linear-gradient(180deg, #fffdfb 0%, #faf7f4 100%);
         }
 
         .payment-modal .modal-footer {
@@ -705,11 +708,28 @@
         }
 
         .payment-modal .order-details-box {
-            background: var(--accent-color);
+            background: linear-gradient(135deg, #faf7f4, #f4ece3);
             border-radius: 12px;
             padding: 1rem 1.25rem;
             border: 1px solid var(--secondary-color);
             margin: 1rem 0;
+        }
+
+        .payment-modal .summary-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.8rem;
+            border-radius: 999px;
+            background: white;
+            border: 1px solid #eadfd2;
+            color: var(--text-dark);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .payment-modal .modal-title {
+            letter-spacing: 0.2px;
         }
 
         .payment-modal .status-tag {
@@ -1026,9 +1046,15 @@
                         <span th:if="${paymentSuccess}">🌸</span>
                         <span th:unless="${paymentSuccess}">🌿</span>
                     </div>
+
+                    <div style="display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.85rem;">
+                        <span class="summary-pill" th:if="${paymentSuccess}"><i class="fas fa-check"></i> Paid</span>
+                        <span class="summary-pill" th:unless="${paymentSuccess}"><i class="fas fa-exclamation-triangle"></i> Attention Needed</span>
+                        <span class="summary-pill" th:if="${paymentOrderId != null}">Order #<span th:text="${paymentOrderId}"></span></span>
+                    </div>
                     
                     <h4 th:text="${paymentSuccess} ? 'Thank you for your purchase!' : 'Payment Issue'"
-                        style="margin-bottom: 0.5rem; color: var(--text-dark); font-weight: 700;">
+                        style="margin-bottom: 0.5rem; color: var(--text-dark); font-weight: 700; font-family: 'Playfair Display', serif;">
                     </h4>
                     <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 400px; margin: 0 auto;" 
                        th:text="${paymentMessage}"></p>
@@ -1150,13 +1176,10 @@
         document.addEventListener('DOMContentLoaded', function() {
             const modalEl = document.getElementById('paymentResultModal');
             if (modalEl) {
-                console.log('✅ Payment modal found!');
                 const myModal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
                 myModal.show();
                 
                 const isSuccess = modalEl.dataset.paymentSuccess === 'true';
-                console.log('Payment success:', isSuccess);
-                console.log('Payment message:', modalEl.dataset.paymentMessage);
                 
                 // Auto-close after 15 seconds for success, 10 seconds for failure
                 setTimeout(function() {
