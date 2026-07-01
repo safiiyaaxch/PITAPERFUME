@@ -308,10 +308,10 @@
                 
                 <!-- Show approve/reject buttons only for pending suppliers -->
                 <div th:if="${supplier.approvalStatus.toLowerCase() == 'pending'}" class="status-actions show">
-                    <form th:action="@{/manager/approve/{id}(id=${supplier.supplierId})}" method="POST" style="flex: 1;">
+                    <form th:action="@{/manager/suppliers/{id}/approve(id=${supplier.supplierId})}" method="POST" style="flex: 1;">
                         <button type="submit" class="btn btn-approve">Approve Supplier</button>
                     </form>
-                    <form th:action="@{/manager/reject/{id}(id=${supplier.supplierId})}" method="POST" style="flex: 1;">
+                    <form th:action="@{/manager/suppliers/{id}/reject(id=${supplier.supplierId})}" method="POST" style="flex: 1;">
                         <button type="submit" class="btn btn-reject">Reject Supplier</button>
                     </form>
                 </div>

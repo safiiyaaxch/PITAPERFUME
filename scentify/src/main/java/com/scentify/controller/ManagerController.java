@@ -348,12 +348,14 @@ public class ManagerController {
         }
         
         Product product = productOpt.get();
-        Optional<User> supplier = userRepository.findById(product.getUserId());
+        Optional<Supplier> supplier = supplierRepository.findByUser_UserId(product.getUserId());
+
+        if (supplier.isEmpty()) {
+            return "redirect:/manager/dashboard";
+        }
         
         model.addAttribute("product", product);
-        if (supplier.isPresent()) {
-            model.addAttribute("supplier", supplier.get());
-        }
+        model.addAttribute("supplier", supplier.get());
         
         return "manager/product-details";
     }
